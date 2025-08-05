@@ -30,18 +30,26 @@ import numpy as np
 ```{python}
 #| label: load-dataset
 #| message: false
+
+
+
 ```
 
-A brief description of your dataset including its provenance, dimensions, etc. as well as the reason why you chose this dataset.
+(A brief description of your dataset including its provenance, dimensions, etc. as well as the reason why you chose this dataset.
 
-Make sure to load the data and use inline code for some of this information.
+Make sure to load the data and use inline code for some of this information.)
+
+To measure urbanization, we will use traffic volume as our metric.
+To measure environmental quality, we will use climate data 
+
+
 
 ## Questions
 
 The two questions you want to answer.
 
 1. Can we predict environmental quality of a region based on urbanization indicators for that region?
-2. Are storm event data and traffic data successful environmental health and urbanization indicators respectively.
+2. Are storm event data and traffic data successful environmental health and urbanization indicators, respectively?
 
 ## Analysis plan
 

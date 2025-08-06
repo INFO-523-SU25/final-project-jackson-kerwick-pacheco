@@ -24,6 +24,7 @@ jupyter: python3
 #| message: false
 import numpy as np
 import pandas as pd
+import glob
 ```
 
 ## Datasets
@@ -55,12 +56,28 @@ Make sure to load the data and use inline code for some of this information.)
 
 # NOAA Data
 
+# reading in data and
+file_location = "data/NOAA/"
+all_files = glob.glob(file_location + "*.csv")
+
+list_of_dfs = []
+
+for file in all_files:
+  df = pd.read_csv(file)
+  list_of_dfs.append(df)
+
+# merging data together into one data frame
+noaadata = pd.concat(list_of_dfs, ignore_index = True)
 ```
 
-(A brief description of your dataset including its provenance, dimensions, etc. as well as the reason why you chose this dataset.
+```{python}
 
-Make sure to load the data and use inline code for some of this information.)
+# glance at NOAA climate data
 
+noaadata.head()
+```
+
+This data from [NOAA National Centers for Environmental Information] (https://www.ncdc.noaa.gov/cdo-web/datasets) will serve as a measure of environmental quality. The dataset `noaadata` is a compilation of daily land surface observations within Arizona from 2018 to 2023. Some variables of importance includes latitude and longitude of station, temperatures, precipitation, and snowfall 
 
 
 
@@ -104,7 +121,7 @@ Make sure to load the data and use inline code for some of this information.)
 
 
 To measure urbanization, we will use traffic volume as our metric.
-To measure environmental quality, we will use climate data 
+To measure environmental quality, we will use climate data from NOAA.
 
 
 

@@ -67,23 +67,29 @@ Make sure to load the data and use inline code for some of this information.)
 
 ```{python}
 
-# Traffic data sourced from https://www.fhwa.dot.gov/policyinformation/tables/tmasdata/ with aggregate station data over all months from 2019 to 2023. 
-# FWHA changed their data format in 2022, so the data are stored in two different formats
+# Traffic data sourced from https://www.fhwa.dot.gov/policyinformation/tables/tmasdata/ 
+# with aggregate station data over all months from 2019 to 2023. FWHA changed their data
+# format in 2022, so the data are stored in two different formats
 
+# storing each year of traffic data as a dictionary of pd.DataFrames
 traffic_year = {}
 
 for year in np.arange(2019,2024):
-  if (year < 2022):   # old format
+  df = pd.DataFrame()
+  if (year < 2022):   
+    # old data format
     fname = f'data/Traffic/Station_Data_Extract_Pipe_Delimited_CleanData_{str(year)}.txt'
     df = pd.read_csv(fname, sep='|', low_memory=False)
     # For old format only, remove every entry where state_code != 04 (entries not in Arizona)
-    df = df[(df['State_Code'] == 4)].values
+    df = df[(df['State_Code'] == 4)]
+    df.columns = [x.lower() for x in df.columns]  # make columns lowercase like new data format
   else:
-    # Traffic Data New Format
+    # new data format
     df = pd.read_csv('data/Traffic/AZ_2023 (TMAS).txt', sep='|')
 
+  df = df.reset_index()
   traffic_year[year] = df
-  print(f"Data from {year}:\n{df}")
+
 
 
 

@@ -60,6 +60,8 @@ This dataset contains storm event records in Arizona, sourced from the NOAA Stor
 
 The dataset consists of a mix of numerical and categorical values, specifically, 12 columns with integer types and 27 with object types. It was chosen for its relevance to climate and environmental analysis in Arizona. The data enables the exploration of temporal and spatial patterns in extreme weather events and supports investigations into trends related to climate change, urbanization, and risk assessment.
 
+### Dataset 2 - Weather Data in Arizona 
+
 ```{python}
 
 # NOAA Data
@@ -102,8 +104,7 @@ This data from [NOAA National Centers for Environmental Information] (https://ww
 
 This data contains primarily numerical values, with the only categorical variables being the name of the station where weather data is collected, and date the data was collected.
 
-
-
+### Dataset 3 - Traffic Data in Arizona 
 
 ```{python}
 
@@ -157,5 +158,5 @@ The two questions you want to answer.
 
 ## Analysis plan
 
--   We will identify the relationship between traffic data, the metric for urbanization, and weather and storm data the metrics for environmental quality. We will do this with multivariate regression models
--   We will conduct a PCA of data by county to compare urbanized and rural areas.
+-   We will identify the relationship between traffic data, the metric for urbanization, and weather and storm data, the metrics for environmental quality. We will do this with multivariate regression models.
+-   We will conduct a PCA of the data by region to compare urbanized and rural areas.

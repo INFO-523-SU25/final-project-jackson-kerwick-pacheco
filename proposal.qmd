@@ -22,6 +22,7 @@ jupyter: python3
 ```{python}
 #| label: load-pkgs
 #| message: false
+#| Test
 import numpy as np
 ```
 

@@ -157,4 +157,5 @@ The two questions you want to answer.
 
 ## Analysis plan
 
--   A plan for answering each of the questions including the variables involved, variables to be created (if any), external data to be merged in (if any).
+-   We will identify the relationship between traffic data, the metric for urbanization, and weather and storm data the metrics for environmental quality. We will do this with multivariate regression models
+-   We will conduct a PCA of data by county to compare urbanized and rural areas.

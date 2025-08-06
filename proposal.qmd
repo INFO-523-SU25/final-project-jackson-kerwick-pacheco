@@ -68,7 +68,9 @@ Make sure to load the data and use inline code for some of this information.)
 ```{python}
 
 # Traffic Data
+df_traffic = pd.read_csv('data/Traffic/AZ_2023 (TMAS).txt', sep='|')
 
+df_traffic.describe()
 
 
 ```

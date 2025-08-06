@@ -26,30 +26,38 @@ import numpy as np
 import pandas as pd
 ```
 
+The goal of our project is to analyze the relationship between urbanization and environmental quality across regions, identifying patterns and anomalies in how urban growth impacts climate-related factors such as storms, temperature, and drought
+
 ## Datasets
+
+### Dataset 1 - Storm Data in Arizona 
 
 ```{python}
 #| label: load-dataset
 #| message: false
 
-# Storm Events
+# Storm Events in Arizona
 
-df = pd.read_csv('data/StormEvents/StormEvents_locations-ftp_v1.0_d2024_c20250731.csv')
+# Load csv file
+df = pd.read_csv('data/StormEvents/storm_data_search_results.csv')
 
-df
+# Print using shape property
+print("Shape:", df.shape)
 
+# Print column names
+print("Columns:", df.columns.tolist())
 
+# Print data types of all of the columns
+print("Data types:", df.dtypes)
 
+# Print summary of the data
+df.info()
 
 ```
 
-(A brief description of your dataset including its provenance, dimensions, etc. as well as the reason why you chose this dataset.
+This dataset contains storm event records in Arizona, sourced from the NOAA Storm Events Database. It includes information about various weather events such as floods, tornadoes, and severe storms, along with details like location, date, event type, magnitude, fatalities, injuries, and property damage. It also includes metadata such as time zones, county information, and narrative descriptions of each event.
 
-Make sure to load the data and use inline code for some of this information.)
-
-
-
-
+The dataset consists of a mix of numerical and categorical values, specifically, 12 columns with integer types and 27 with object types. It was chosen for its relevance to climate and environmental analysis in Arizona. The data enables the exploration of temporal and spatial patterns in extreme weather events and supports investigations into trends related to climate change, urbanization, and risk assessment.
 
 ```{python}
 

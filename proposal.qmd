@@ -27,7 +27,7 @@ import pandas as pd
 import glob
 ```
 
-The goal of our project is to analyze the relationship between urbanization and environmental quality across regions, identifying patterns and anomalies in how urban growth impacts climate-related factors such as storms, temperature, and drought
+The goal of our project is to analyze the relationship between urbanization and environmental quality across regions within Arizona, identifying patterns and anomalies in how urban growth impacts climate-related factors such as storms, temperature, and drought
 
 ## Datasets
 

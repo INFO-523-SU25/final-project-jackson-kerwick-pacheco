@@ -107,10 +107,11 @@ This data contains primarily numerical values, with the only categorical variabl
 ### Dataset 3 - Traffic Data in Arizona 
 
 ```{python}
+# Traffic Station Data 
 
-# Traffic data sourced from FHWA
-# with aggregate station data over all months from 2019 to 2023. FWHA changed their data
-# format in 2022, so the data are stored in two different formats
+# Traffic data sourced from FHWA with aggregate station data over all 
+# months from 2019 to 2023. FWHA changed their data format in 2022, so 
+# the data are stored in two different formats
 
 # storing each year of traffic data as a dictionary of pd.DataFrames
 station_data = {}
@@ -177,17 +178,12 @@ df_volumes = df_volumes.drop(["Hour_{:02}".format(i) for i in range(24)], axis=1
 
 The traffic data above is sourced from the Federal Highway Administration (FHWA) of the U.S. Department of Transportation (https://www.fhwa.dot.gov/policyinformation/tables/tmasdata/). It will serve as a metric for urbanization level of regions throughout Arizona. It is presumed that counties with higher traffic flow have greater urbanization than counties with low traffic flow. 
 
-The traffic data are sourced from two different file structures, counts data and station data. Counts 
+The traffic data are sourced from two different file structures, counts data and station data. 
 
+* The station data contains information about sampling locations including latitude and longitude, number of lanes on road, and type of sensor. Our main variables of interest will be latitude (numerical), longitude (numerical), and county (categorical)
 
-Make sure to load the data and use inline code for some of this information.)
+* The count data is nearly all numerical. Each row is a station location on a specific day of the given file month/year. Each row includes counts of passing vehicles at the listed station location for every hour of that day. We will engineer a feature variable aggregating total counts over a year at each station location. Variables of interest include the hourly counts (ex. Hour_05) and the station number.
 
-
-
-
-
-To measure urbanization, we will use traffic volume as our metric.
-To measure environmental quality, we will use climate data from NOAA.
 
 
 
@@ -200,5 +196,6 @@ The two questions you want to answer.
 
 ## Analysis plan
 
--   We will identify the relationship between traffic data, the metric for urbanization, and weather and storm data, the metrics for environmental quality. We will do this with multivariate regression models.
--   We will conduct a PCA of the data by region to compare urbanized and rural areas.
+-   We will identify the relationship between traffic data, the metric for urbanization, and weather and storm data, the metrics for environmental quality. We will do this with multivariate regression models, with a hypothesis that there is a negative linear relationship between urbanization and environmental quality.
+-   We will conduct a PCA of the data by region to compare urbanized and rural counties within the state of Arizona.
+-   Time permitting, we will conduct a temporal analysis over a 5 year period to see how each region compares to itself in different years.

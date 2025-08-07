@@ -108,7 +108,7 @@ This data contains primarily numerical values, with the only categorical variabl
 
 ```{python}
 
-# Traffic data sourced from https://www.fhwa.dot.gov/policyinformation/tables/tmasdata/ 
+# Traffic data sourced from FHWA
 # with aggregate station data over all months from 2019 to 2023. FWHA changed their data
 # format in 2022, so the data are stored in two different formats
 
@@ -132,11 +132,18 @@ for year in np.arange(2019,2024):
   traffic_year[year] = df
 
 
+# Information about dataset
+
+traffic_year[2019].columns
+
+
+# data conversion tool https://github.com/policyinfo/TMAS-Traffic-Volume-Data-Rearrangement-Tool/blob/main/Tool_Document.pdf
 
 
 ```
 
-(A brief description of your dataset including its provenance, dimensions, etc. as well as the reason why you chose this dataset.
+The traffic data above is sourced from the Federal Highway Administration (FHWA) of the U.S. Department of Transportation (https://www.fhwa.dot.gov/policyinformation/tables/tmasdata/). It will serve as a metric for urbanization level of regions throughout Arizona. It is presumed that counties with higher traffic flow have greater urbanization than counties with low traffic flow. 
+
 
 Make sure to load the data and use inline code for some of this information.)
 

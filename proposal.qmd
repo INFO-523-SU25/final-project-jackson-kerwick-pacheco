@@ -113,31 +113,46 @@ This data contains primarily numerical values, with the only categorical variabl
 # format in 2022, so the data are stored in two different formats
 
 # storing each year of traffic data as a dictionary of pd.DataFrames
-traffic_year = {}
+station_data = {}
 
 for year in np.arange(2019,2024):
   df = pd.DataFrame()
   if (year < 2022):   
     # old data format
-    fname = f'data/Traffic/Station_Data_Extract_Pipe_Delimited_CleanData_{str(year)}.txt'
+    fname = f'data/Traffic/stations/Station_Data_Extract_Pipe_Delimited_CleanData_{str(year)}.txt'
     df = pd.read_csv(fname, sep='|', low_memory=False)
     # For old format only, remove every entry where state_code != 04 (entries not in Arizona)
     df = df[(df['State_Code'] == 4)]
     df.columns = [x.lower() for x in df.columns]  # make columns lowercase like new data format
   else:
     # new data format
-    df = pd.read_csv('data/Traffic/AZ_2023 (TMAS).txt', sep='|')
+    df = pd.read_csv('data/Traffic/stations/AZ_2023 (TMAS).txt', sep='|')
 
   df = df.reset_index()
-  traffic_year[year] = df
+  station_data[year] = df
 
 
 # Information about dataset
 
-traffic_year[2019].columns
+station_data[2019].columns
 
 
 # data conversion tool https://github.com/policyinfo/TMAS-Traffic-Volume-Data-Rearrangement-Tool/blob/main/Tool_Document.pdf
+
+count_data = {}
+
+for i in range(2019, 2023):
+  year = ":02",format(i)
+  for j in range(1,13):
+    fname = f"data/Traffic/counts/AZ{:02}{year}.VOL".format(j)
+    df_count = pd.read_csv(fname)
+
+
+# Combining hourly counts into a sum over each day
+df_count['daily_volume'] = df_count[["Hour_{:02}".format(i) for i in range(24)]].sum(axis=1)
+df_count = df_count.drop(["Hour_{:02}".format(i) for i in range(24)], axis=1)
+
+df_per_station = df_count.groupby("Station_Id")['daily_volume']
 
 
 ```

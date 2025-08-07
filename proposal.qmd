@@ -132,32 +132,52 @@ for year in np.arange(2019,2024):
   station_data[year] = df
 
 
-# Information about dataset
+# Information about station dataset
 
-station_data[2019].columns
+print("Geographic locations of each station are formatted as follows:")
+print(station_data[2019].columns)
+print(station_data[2019].info())
 
+
+# Traffic counts at each station are in files. All station and traffic data
+# will be aggregated together into a dataframe where each row is a traffic
+# count for each year for each county 
 
 # data conversion tool https://github.com/policyinfo/TMAS-Traffic-Volume-Data-Rearrangement-Tool/blob/main/Tool_Document.pdf
 
-count_data = {}
+traffic_files = []
 
-for i in range(2019, 2023):
-  year = ":02",format(i)
+for i in range(19, 23):
+  year = "{:02}".format(i)
   for j in range(1,13):
-    fname = f"data/Traffic/counts/AZ{:02}{year}.VOL".format(j)
-    df_count = pd.read_csv(fname)
+    monthyear = "{:02}".format(j) + year
+    fname = f"data/Traffic/counts/AZ{monthyear}.VOL"
+    traffic_files.append(fname)
 
+print("Counts of traffic stations will be read in from the following files:")
+print(traffic_files)
+```
 
-# Combining hourly counts into a sum over each day
-df_count['daily_volume'] = df_count[["Hour_{:02}".format(i) for i in range(24)]].sum(axis=1)
-df_count = df_count.drop(["Hour_{:02}".format(i) for i in range(24)], axis=1)
+```{python}
 
-df_per_station = df_count.groupby("Station_Id")['daily_volume']
+# As an example, here is traffic count data from a single month of a single year
+df_count = pd.read_csv('data/Traffic/counts/AZ1019.VOL')
+print(df_count.columns)
+print(df_count.info())
+
+# The following is an example of how we will combine hourly counts into a sum over each day
+
+df_volumes = df_count.copy()
+df_volumes['daily_volume'] = df_volumes[["Hour_{:02}".format(i) for i in range(24)]].sum(axis=1)
+df_volumes = df_volumes.drop(["Hour_{:02}".format(i) for i in range(24)], axis=1)
+
 
 
 ```
 
 The traffic data above is sourced from the Federal Highway Administration (FHWA) of the U.S. Department of Transportation (https://www.fhwa.dot.gov/policyinformation/tables/tmasdata/). It will serve as a metric for urbanization level of regions throughout Arizona. It is presumed that counties with higher traffic flow have greater urbanization than counties with low traffic flow. 
+
+The traffic data are sourced from two different file structures, counts data and station data. Counts 
 
 
 Make sure to load the data and use inline code for some of this information.)

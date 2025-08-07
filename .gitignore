@@ -4,3 +4,5 @@
 .Ruserdata
 
 /.quarto/
+test.txt
+_site/*

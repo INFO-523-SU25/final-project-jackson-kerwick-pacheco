@@ -4986,7 +4986,7 @@ memory usage: 152.5+ KB</code></pre>
 </section>
 <section id="dataset-2---weather-data-in-arizona" class="level3">
 <h3 class="anchored" data-anchor-id="dataset-2---weather-data-in-arizona">Dataset 2 - Weather Data in Arizona</h3>
-<div id="ba1305b2" class="cell" data-execution_count="3">
+<div id="847acf35" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># NOAA Data</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a></span>
 <span id="cb4-3"><a href="#cb4-3"></a><span class="co"># reading in data and</span></span>
@@ -5002,7 +5002,7 @@ memory usage: 152.5+ KB</code></pre>
 <span id="cb4-13"><a href="#cb4-13"></a><span class="co"># merging data together into one data frame</span></span>
 <span id="cb4-14"><a href="#cb4-14"></a>noaadata <span class="op">=</span> pd.concat(list_of_dfs, ignore_index <span class="op">=</span> <span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="bd5eb2e8" class="cell" data-execution_count="4">
+<div id="11b937d9" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># glance at NOAA climate data</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a></span>
 <span id="cb5-3"><a href="#cb5-3"></a><span class="co"># Print using shape property</span></span>
@@ -5017,7 +5017,7 @@ memory usage: 152.5+ KB</code></pre>
 <span id="cb5-12"><a href="#cb5-12"></a><span class="co"># Print summary of the data</span></span>
 <span id="cb5-13"><a href="#cb5-13"></a>noaadata.info()</span>
 <span id="cb5-14"><a href="#cb5-14"></a></span>
-<span id="cb5-15"><a href="#cb5-15"></a>noaadata.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-15"><a href="#cb5-15"></a>noaadata.tail()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Shape: (1261660, 37)
 Columns: [&#39;STATION&#39;, &#39;NAME&#39;, &#39;LATITUDE&#39;, &#39;LONGITUDE&#39;, &#39;ELEVATION&#39;, &#39;DATE&#39;, &#39;AWND&#39;, &#39;DAPR&#39;, &#39;DASF&#39;, &#39;EVAP&#39;, &#39;MDPR&#39;, &#39;MDSF&#39;, &#39;PGTM&#39;, &#39;PRCP&#39;, &#39;SNOW&#39;, &#39;SNWD&#39;, &#39;TAVG&#39;, &#39;TMAX&#39;, &#39;TMIN&#39;, &#39;TOBS&#39;, &#39;WDF2&#39;, &#39;WDF5&#39;, &#39;WESD&#39;, &#39;WESF&#39;, &#39;WSF2&#39;, &#39;WSF5&#39;, &#39;WT01&#39;, &#39;WT02&#39;, &#39;WT03&#39;, &#39;WT04&#39;, &#39;WT05&#39;, &#39;WT06&#39;, &#39;WT07&#39;, &#39;WT08&#39;, &#39;WT09&#39;, &#39;WT10&#39;, &#39;WT11&#39;]
@@ -5137,13 +5137,13 @@ memory usage: 356.2+ MB</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>US1AZPM0201</td>
-<td>TUCSON 5.3 WNW, AZ US</td>
-<td>32.24641</td>
-<td>-111.004593</td>
-<td>704.7</td>
-<td>2018-01-01</td>
+<td data-quarto-table-cell-role="th">1261655</td>
+<td>US1AZCN0176</td>
+<td>FLAGSTAFF 0.8 NE, AZ US</td>
+<td>35.197663</td>
+<td>-111.639325</td>
+<td>2141.2</td>
+<td>2023-12-27</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -5161,13 +5161,13 @@ memory usage: 356.2+ MB</code></pre>
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>US1AZPM0201</td>
-<td>TUCSON 5.3 WNW, AZ US</td>
-<td>32.24641</td>
-<td>-111.004593</td>
-<td>704.7</td>
-<td>2018-01-02</td>
+<td data-quarto-table-cell-role="th">1261656</td>
+<td>US1AZCN0176</td>
+<td>FLAGSTAFF 0.8 NE, AZ US</td>
+<td>35.197663</td>
+<td>-111.639325</td>
+<td>2141.2</td>
+<td>2023-12-28</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -5185,13 +5185,13 @@ memory usage: 356.2+ MB</code></pre>
 <td>NaN</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>US1AZPM0201</td>
-<td>TUCSON 5.3 WNW, AZ US</td>
-<td>32.24641</td>
-<td>-111.004593</td>
-<td>704.7</td>
-<td>2018-01-03</td>
+<td data-quarto-table-cell-role="th">1261657</td>
+<td>US1AZCN0176</td>
+<td>FLAGSTAFF 0.8 NE, AZ US</td>
+<td>35.197663</td>
+<td>-111.639325</td>
+<td>2141.2</td>
+<td>2023-12-29</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -5209,13 +5209,13 @@ memory usage: 356.2+ MB</code></pre>
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>US1AZPM0201</td>
-<td>TUCSON 5.3 WNW, AZ US</td>
-<td>32.24641</td>
-<td>-111.004593</td>
-<td>704.7</td>
-<td>2018-01-04</td>
+<td data-quarto-table-cell-role="th">1261658</td>
+<td>US1AZCN0176</td>
+<td>FLAGSTAFF 0.8 NE, AZ US</td>
+<td>35.197663</td>
+<td>-111.639325</td>
+<td>2141.2</td>
+<td>2023-12-30</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -5233,13 +5233,13 @@ memory usage: 356.2+ MB</code></pre>
 <td>NaN</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>US1AZPM0201</td>
-<td>TUCSON 5.3 WNW, AZ US</td>
-<td>32.24641</td>
-<td>-111.004593</td>
-<td>704.7</td>
-<td>2018-01-05</td>
+<td data-quarto-table-cell-role="th">1261659</td>
+<td>US1AZCN0176</td>
+<td>FLAGSTAFF 0.8 NE, AZ US</td>
+<td>35.197663</td>
+<td>-111.639325</td>
+<td>2141.2</td>
+<td>2023-12-31</td>
 <td>NaN</td>
 <td>NaN</td>
 <td>NaN</td>
@@ -5268,7 +5268,7 @@ memory usage: 356.2+ MB</code></pre>
 </section>
 <section id="dataset-3---traffic-data-in-arizona" class="level3">
 <h3 class="anchored" data-anchor-id="dataset-3---traffic-data-in-arizona">Dataset 3 - Traffic Data in Arizona</h3>
-<div id="c3e2e802" class="cell" data-execution_count="5">
+<div id="ebf397df" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># Traffic Station Data </span></span>
 <span id="cb7-2"><a href="#cb7-2"></a></span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="co"># Traffic data sourced from FHWA with aggregate station data over all </span></span>
@@ -5387,7 +5387,7 @@ Counts of traffic stations will be read in from the following files:
 [&#39;data/Traffic/counts/AZ0119.VOL&#39;, &#39;data/Traffic/counts/AZ0219.VOL&#39;, &#39;data/Traffic/counts/AZ0319.VOL&#39;, &#39;data/Traffic/counts/AZ0419.VOL&#39;, &#39;data/Traffic/counts/AZ0519.VOL&#39;, &#39;data/Traffic/counts/AZ0619.VOL&#39;, &#39;data/Traffic/counts/AZ0719.VOL&#39;, &#39;data/Traffic/counts/AZ0819.VOL&#39;, &#39;data/Traffic/counts/AZ0919.VOL&#39;, &#39;data/Traffic/counts/AZ1019.VOL&#39;, &#39;data/Traffic/counts/AZ1119.VOL&#39;, &#39;data/Traffic/counts/AZ1219.VOL&#39;, &#39;data/Traffic/counts/AZ0120.VOL&#39;, &#39;data/Traffic/counts/AZ0220.VOL&#39;, &#39;data/Traffic/counts/AZ0320.VOL&#39;, &#39;data/Traffic/counts/AZ0420.VOL&#39;, &#39;data/Traffic/counts/AZ0520.VOL&#39;, &#39;data/Traffic/counts/AZ0620.VOL&#39;, &#39;data/Traffic/counts/AZ0720.VOL&#39;, &#39;data/Traffic/counts/AZ0820.VOL&#39;, &#39;data/Traffic/counts/AZ0920.VOL&#39;, &#39;data/Traffic/counts/AZ1020.VOL&#39;, &#39;data/Traffic/counts/AZ1120.VOL&#39;, &#39;data/Traffic/counts/AZ1220.VOL&#39;, &#39;data/Traffic/counts/AZ0121.VOL&#39;, &#39;data/Traffic/counts/AZ0221.VOL&#39;, &#39;data/Traffic/counts/AZ0321.VOL&#39;, &#39;data/Traffic/counts/AZ0421.VOL&#39;, &#39;data/Traffic/counts/AZ0521.VOL&#39;, &#39;data/Traffic/counts/AZ0621.VOL&#39;, &#39;data/Traffic/counts/AZ0721.VOL&#39;, &#39;data/Traffic/counts/AZ0821.VOL&#39;, &#39;data/Traffic/counts/AZ0921.VOL&#39;, &#39;data/Traffic/counts/AZ1021.VOL&#39;, &#39;data/Traffic/counts/AZ1121.VOL&#39;, &#39;data/Traffic/counts/AZ1221.VOL&#39;, &#39;data/Traffic/counts/AZ0122.VOL&#39;, &#39;data/Traffic/counts/AZ0222.VOL&#39;, &#39;data/Traffic/counts/AZ0322.VOL&#39;, &#39;data/Traffic/counts/AZ0422.VOL&#39;, &#39;data/Traffic/counts/AZ0522.VOL&#39;, &#39;data/Traffic/counts/AZ0622.VOL&#39;, &#39;data/Traffic/counts/AZ0722.VOL&#39;, &#39;data/Traffic/counts/AZ0822.VOL&#39;, &#39;data/Traffic/counts/AZ0922.VOL&#39;, &#39;data/Traffic/counts/AZ1022.VOL&#39;, &#39;data/Traffic/counts/AZ1122.VOL&#39;, &#39;data/Traffic/counts/AZ1222.VOL&#39;]</code></pre>
 </div>
 </div>
-<div id="620b257d" class="cell" data-execution_count="6">
+<div id="07a38aa4" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># As an example, here is traffic count data from a single month of a single year</span></span>
 <span id="cb9-2"><a href="#cb9-2"></a>df_count <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/Traffic/counts/AZ1019.VOL&#39;</span>)</span>
 <span id="cb9-3"><a href="#cb9-3"></a><span class="bu">print</span>(df_count.columns)</span>
@@ -5769,7 +5769,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/INFO-523-SU25\.github\.io\/final-project-jackson-kerwick-pacheco\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
@@ -6232,7 +6232,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb11-102"><a href="#cb11-102"></a><span class="co"># Print summary of the data</span></span>
 <span id="cb11-103"><a href="#cb11-103"></a>noaadata.info()</span>
 <span id="cb11-104"><a href="#cb11-104"></a></span>
-<span id="cb11-105"><a href="#cb11-105"></a>noaadata.head()</span>
+<span id="cb11-105"><a href="#cb11-105"></a>noaadata.tail()</span>
 <span id="cb11-106"><a href="#cb11-106"></a></span>
 <span id="cb11-107"><a href="#cb11-107"></a><span class="in">```</span></span>
 <span id="cb11-108"><a href="#cb11-108"></a></span>

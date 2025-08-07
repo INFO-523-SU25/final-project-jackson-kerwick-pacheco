@@ -96,7 +96,7 @@ print("Data types:", noaadata.dtypes)
 # Print summary of the data
 noaadata.info()
 
-noaadata.head()
+noaadata.tail()
 
 ```
 

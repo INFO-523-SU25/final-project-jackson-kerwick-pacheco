@@ -1,8 +1,8 @@
 {
-  "hash": "249ee888bb644c76d7cafdac7430eca9",
+  "hash": "399e222633a36e90b08a218847fd1a53",
   "result": {
     "engine": "jupyter",
-    "markdown": "---\ntitle: \"Project Title\"\nsubtitle: \"INFO 523 - Final Project\"\nauthor: \n  - name: \"Vera Jackson, Molly Kerwick, Brooke Pacheco\"\n    affiliations:\n      - name: \"College of Information Science, University of Arizona\"\ndescription: \"Project description\"\nformat:\n   html:\n    code-tools: true\n    code-overflow: wrap\n    embed-resources: true\neditor: visual\nexecute:\n  warning: false\n  echo: false\njupyter: python3\n---\n\n\n\n\n## Abstract\n\nAdd project abstract here.\n\n",
+    "markdown": "---\ntitle: \"Urbanization and Environmental Quality in Arizona, USA\"\nsubtitle: \"INFO 523 - Final Project\"\nauthor: \n  - name: \"Vera Jackson, Molly Kerwick, Brooke Pacheco\"\n    affiliations:\n      - name: \"College of Information Science, University of Arizona\"\ndescription: \"Project description\"\nformat:\n   html:\n    code-tools: true\n    code-overflow: wrap\n    embed-resources: true\neditor: visual\nexecute:\n  warning: false\n  echo: false\njupyter: python3\n---\n\n\n\n\n## Abstract\n\nAdd project abstract here.\n\n",
     "supporting": [
       "index_files\\figure-html"
     ],

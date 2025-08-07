@@ -109,7 +109,7 @@ plt.show()
 
 ```
 
-This data from [NOAA National Centers for Environmental Information] (https://www.ncdc.noaa.gov/cdo-web/datasets) will serve as a measure of environmental quality. The dataset `noaadata` is a compilation of daily land surface observations within Arizona from 2018 to 2023. Some variables of importance includes latitude and longitude of station, temperatures, precipitation, and snowfall.
+This data from [NOAA National Centers for Environmental Information](https://www.ncdc.noaa.gov/cdo-web/datasets) will serve as a measure of environmental quality. The dataset `noaadata` is a compilation of daily land surface observations within Arizona from 2018 to 2023. Some variables of importance includes latitude and longitude of station, temperatures, precipitation, and snowfall.
 
 This data contains primarily numerical values, with the only categorical variables being the name of the station where weather data is collected, and date the data was collected.
 

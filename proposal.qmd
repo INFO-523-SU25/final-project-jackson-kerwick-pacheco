@@ -24,6 +24,8 @@ jupyter: python3
 #| message: false
 import numpy as np
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 import glob
 ```
 
@@ -96,7 +98,14 @@ print("Data types:", noaadata.dtypes)
 # Print summary of the data
 noaadata.info()
 
-noaadata.tail()
+noaadata.head()
+
+# scatterplot of select variables to test
+sns.scatterplot(data = noaadata, x = "PRCP", y = "AWND")
+plt.title("Example plot: Relationship between precipitation and wind speed")
+plt.xlabel(" Precipitation")
+plt.ylabel("Average Wind Speed")
+plt.show()
 
 ```
 

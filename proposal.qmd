@@ -32,11 +32,11 @@ import matplotlib.pyplot as plt
 from geodatasets import get_path
 ```
 
-# High Level Goal
+## High Level Goal
 
 The goal of our project is to analyze the relationship between urbanization and environmental quality across regions within Arizona, identifying patterns and anomalies in how urban growth impacts climate metrics such as storms, temperature, and rainfall. As we have seen with the uproar by the Tucson population regarding the proposed environmental impacts of the Project Blue data center, environmental quality is important to local populations. We hope to use this study to identify the regional relationship between urbanization and climate indicators. We will be using traffic count data as our urbanization metric, and National Oceanographic and Atmospheric Administration (NOAA) climate and storm event data as our environmental quality data. 
 
-# Research Questions
+## Research Questions
 1. Can we predict the environmental quality of a region based on urbanization indicators for that region? 
     - The reason we chose this question is that if we can accurately predict how urbanization affects climate, policymakers can proactively work to preserve or improve the environmental quality of that region.
 2. Are storm event data and traffic data successful environmental health and urbanization indicators, respectively? 
@@ -47,13 +47,36 @@ The goal of our project is to analyze the relationship between urbanization and 
     - If our hypothesis that high urbanization level leads to low environmental quality, we would expect to see similarities between metropolitan regions. Additionally, we might be able to identify regions with unknown similarities.
 
 
-# Proposed Procedure 
+## Proposed Procedure 
 
 This project will consist of 2 studies:
-Study 1 - A regional regression model of environmental quality features (storm events and climate data) as a function of our urbanization target feature (traffic volume).
-Study 2 - A PCA analysis of the state of Arizona comparing both climate data and traffic data to identify similar regions.
+- Study 1 - A regional regression model of environmental quality features (storm events and climate data) as a function of our urbanization target feature (traffic volume).
+- Study 2 - A PCA analysis of the state of Arizona comparing both climate data and traffic data to identify similar regions.
+
+### Temporal vs. Regional Geospatial Analysis
+
+When thinking of climate models, people are probably most familiar with a temporal frame of thinking. Meaning one region is compared to the same region at a different point of time. As our study is interested in how one region compares to another region, we have to change our mindset when approaching this problem. To compare regions, we plan to have a dataset that has climate, storm events, and traffic features where each instance is a different region. Since these measurements are dependent on time however, we will have add features that normalize the temporal aspect of our dataset. We will do this by engineering features that compare our primary dataset values to a dataset of averaged values for the same regions and features over a 5 year period. We have selected data from 2022 as our primary dataset, and we have selected the timeframe 2019-2023 to construct our averaged values.
+
 
 ## Engineered Features
+| Feature | Description |
+|---------|-------------|
+|max_temp_2022|maximum temperature for 2022
+max_temp_above_5yavg (maximum temperature for 2022 minus maximum temperature averaged 2019-2023)
+avg_temp_2022 (average temperature for 2022)
+avg_temp_above_5yavg (average temperature for 2022 minus average temperature averaged 2019-2023)
+rainfall_2022 (total inches of rainfall in 2022)
+rainfall_below_5yavg (inches of annual rainfall averaged 2019-2023 minus inches of annual rainfall in 2022)
+lowmagstorm_events_2022 (sum of low magnitude storm events in 2022)
+lowmagstorm_events_above_5yavg (sum of low magnitude storm events for 2022 minus sum of low magnitude storm events averaged 2019-2023)
+highmagstorm_events_2022 (sum of high magnitude storm events in 2022)
+highmagstorm_events_above_5yavg (sum of high magnitude storm events for 2022 minus sum of high magnitude storm events averaged 2019-2023)
+average_storm_mag_2022 (average storm event magnitude for 2022)
+For each region, we will engineer the following urbanization features:
+traffic_counts (total number of vehicles detected in 2022)
+traffic_counts_above_5yavg (traffic counts in 2022 minus traffic counts averaged 2019-2023)
+
+
 
 ## Datasets
 

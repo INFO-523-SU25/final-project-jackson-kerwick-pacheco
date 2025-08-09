@@ -50,8 +50,8 @@ The goal of our project is to analyze the relationship between urbanization and 
 ## Proposed Procedure 
 
 This project will consist of 2 studies:
-- Study 1 - A regional regression model of environmental quality features (storm events and climate data) as a function of our urbanization target feature (traffic volume).
-- Study 2 - A PCA analysis of the state of Arizona comparing both climate data and traffic data to identify similar regions.
+  - Study 1 - A regional regression model of environmental quality features (storm events and climate data) as a function of our urbanization target feature (traffic volume).
+  - Study 2 - A PCA analysis of the state of Arizona comparing both climate data and traffic data to identify similar regions.
 
 ### Temporal vs. Regional Geospatial Analysis
 
@@ -62,17 +62,17 @@ When thinking of climate models, people are probably most familiar with a tempor
 ### Climate Features
 | Feature | Description |
 |---------|-------------|
-|max_temp_2022|maximum temperature for 2022|
-|max_temp_above_5yavg|maximum temperature for 2022 minus maximum temperature averaged 2019-2023|
-|avg_temp_2022|average temperature for 2022|
-|avg_temp_above_5yavg|average temperature for 2022 minus average temperature averaged 2019-2023|
-|rainfall_2022|total inches of rainfall in 2022|
-|rainfall_below_5yavg|inches of annual rainfall averaged 2019-2023 minus inches of annual rainfall in 2022|
-|lowmagstorm_events_2022|sum of low magnitude storm events in 2022|
-|lowmagstorm_events_above_5yavg|sum of low magnitude storm events for 2022 minus sum of low magnitude storm events averaged 2019-2023|
-|highmagstorm_events_2022|sum of high magnitude storm events in 2022|
-|highmagstorm_events_above_5yavg|sum of high magnitude storm events for 2022 minus sum of high magnitude storm events averaged 2019-2023|
-|average_storm_mag_2022|average storm event magnitude for 2022|
+| max_temp_2022 | maximum temperature for 2022 |
+| max_temp_above_5yavg | maximum temperature for 2022 minus maximum temperature averaged 2019-2023 |
+| avg_temp_2022 | average temperature for 2022 |
+| avg_temp_above_5yavg | average temperature for 2022 minus average temperature averaged 2019-2023 |
+| rainfall_2022 | total inches of rainfall in 2022 |
+| rainfall_below_5yavg | inches of annual rainfall averaged 2019-2023 minus inches of annual rainfall in 2022 |
+| lowmagstorm_events_2022 | sum of low magnitude storm events in 2022 |
+| lowmagstorm_events_above_5yavg | sum of low magnitude storm events for 2022 minus sum of low magnitude storm events averaged 2019-2023 |
+| highmagstorm_events_2022 | sum of high magnitude storm events in 2022 |
+| highmagstorm_events_above_5yavg | sum of high magnitude storm events for 2022 minus sum of high magnitude storm events averaged 2019-2023 |
+| average_storm_mag_2022 | average storm event magnitude for 2022 |
 
 
 

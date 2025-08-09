@@ -6,4 +6,3 @@ geopandas
 matplotlib
 geodatasets
 seaborn
-glob

@@ -48,8 +48,8 @@ The goal of our project is to analyze the relationship between urbanization and 
 
 ## Proposed Procedure 
 This project will consist of 2 studies:
-    - Study 1 - A regional regression model of environmental quality features (storm events and climate data) as a function of our urbanization target feature (traffic volume).
-    - Study 2 - A PCA analysis of the state of Arizona comparing both climate data and traffic data to identify similar regions.
+    - Study 1: A regional regression model of environmental quality features (storm events and climate data) as a function of our urbanization target feature (traffic volume). We will do this with multivariate regression models, with a hypothesis that there is a negative linear relationship between urbanization and environmental quality. We will train a linear regression model and a quadratic regression model and compare the two.
+    - Study 2: A PCA analysis of the state of Arizona comparing both climate data and traffic data to identify similar regions.
 
 ### Temporal vs. Regional Geospatial Analysis
 
@@ -261,17 +261,3 @@ The traffic data are sourced from two different file structures, counts data and
 * The count data is nearly all numerical. Each row is a station location on a specific day of the given file month/year. Each row includes counts of passing vehicles at the listed station location for every hour of that day. We will engineer a feature variable aggregating total counts over a year at each station location. Variables of interest include the hourly counts (ex. Hour_05) and the station number.
 
 
-
-
-## Questions
-
-The two questions you want to answer.
-
-1. Can we predict environmental quality of a region based on urbanization indicators for that region?
-2. Are storm event data and traffic data successful environmental health and urbanization indicators, respectively?
-
-## Analysis plan
-
--   We will identify the relationship between traffic data, the metric for urbanization, and weather and storm data, the metrics for environmental quality. We will do this with multivariate regression models, with a hypothesis that there is a negative linear relationship between urbanization and environmental quality.
--   We will conduct a PCA of the data by region to compare urbanized and rural counties within the state of Arizona.
--   Time permitting, we will conduct a temporal analysis over a 5 year period to see how each region compares to itself in different years.

@@ -48,9 +48,7 @@ The goal of our project is to analyze the relationship between urbanization and 
 
 
 ## Proposed Procedure 
-
 This project will consist of 2 studies:
-
     - Study 1 - A regional regression model of environmental quality features (storm events and climate data) as a function of our urbanization target feature (traffic volume).
     - Study 2 - A PCA analysis of the state of Arizona comparing both climate data and traffic data to identify similar regions.
 

@@ -151,28 +151,27 @@ for year in np.arange(2019,2024):
 
 print("Geographic locations of each station are formatted as follows:")
 print(station_data[2019].columns)
-print(station_data[2019]['longitude'].unique())
+
+
+# Geopandas plots
 
 gdf = geopandas.GeoDataFrame(
-    station_data[2019], geometry=geopandas.points_from_xy(station_data[2019].longitude, station_data[2019].latitude), crs="EPSG:4326"
+    station_data[2023], geometry=geopandas.points_from_xy(station_data[2023].longitude, station_data[2023].latitude), crs="EPSG:4326"
 )
 
-
-
 world = geopandas.read_file(get_path("naturalearth.land"))
-
-# We restrict to South America.
-ax = world.clip([-120, 25, -100, 40]).plot(color="white", edgecolor="black")
-
+# We restrict to around Arizona.
+ax = world.clip([-120, 27, -103, 40]).plot(color="white", edgecolor="black")
+ax.set_title("Station Locations in 2023")
 # We can now plot our ``GeoDataFrame``.
-gdf.plot(ax=ax, color="red")
-
+gdf.plot(ax=ax, color="blue", alpha=0.5)
 plt.show()
 
 
-# Traffic counts at each station are in files. All station and traffic data
-# will be aggregated together into a dataframe where each row is a traffic
-# count for each year for each county 
+
+# Traffic Count Data:
+# All station and traffic data will be aggregated together into a 
+# dataframe where each row is a traffic count for each year for each county 
 
 # data conversion tool https://github.com/policyinfo/TMAS-Traffic-Volume-Data-Rearrangement-Tool/blob/main/Tool_Document.pdf
 

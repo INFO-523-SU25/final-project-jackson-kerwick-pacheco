@@ -27,6 +27,9 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import glob
+import geopandas
+import matplotlib.pyplot as plt
+from geodatasets import get_path
 ```
 
 The goal of our project is to analyze the relationship between urbanization and environmental quality across regions within Arizona, identifying patterns and anomalies in how urban growth impacts climate-related factors such as storms, temperature, and drought
@@ -139,6 +142,7 @@ for year in np.arange(2019,2024):
     df = pd.read_csv('data/Traffic/stations/AZ_2023 (TMAS).txt', sep='|')
 
   df = df.reset_index()
+  df[['latitude', 'longitude']] = df[['latitude', 'longitude']] * 1e-6
   station_data[year] = df
 
 
@@ -146,7 +150,9 @@ for year in np.arange(2019,2024):
 
 print("Geographic locations of each station are formatted as follows:")
 print(station_data[2019].columns)
-print(station_data[2019].info())
+print(station_data[2019]['longitude'].unique())
+
+
 
 
 # Traffic counts at each station are in files. All station and traffic data

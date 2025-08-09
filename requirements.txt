@@ -1,5 +1,7 @@
 jupyter
 nbformat
-
 pandas
 numpy
+geopandas
+matplotlib
+geodatasets

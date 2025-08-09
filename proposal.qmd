@@ -32,7 +32,28 @@ import matplotlib.pyplot as plt
 from geodatasets import get_path
 ```
 
-The goal of our project is to analyze the relationship between urbanization and environmental quality across regions within Arizona, identifying patterns and anomalies in how urban growth impacts climate-related factors such as storms, temperature, and drought
+# High Level Goal
+
+The goal of our project is to analyze the relationship between urbanization and environmental quality across regions within Arizona, identifying patterns and anomalies in how urban growth impacts climate metrics such as storms, temperature, and rainfall. As we have seen with the uproar by the Tucson population regarding the proposed environmental impacts of the Project Blue data center, environmental quality is important to local populations. We hope to use this study to identify the regional relationship between urbanization and climate indicators. We will be using traffic count data as our urbanization metric, and National Oceanographic and Atmospheric Administration (NOAA) climate and storm event data as our environmental quality data. 
+
+# Research Questions
+1. Can we predict the environmental quality of a region based on urbanization indicators for that region? 
+    - The reason we chose this question is that if we can accurately predict how urbanization affects climate, policymakers can proactively work to preserve or improve the environmental quality of that region.
+2. Are storm event data and traffic data successful environmental health and urbanization indicators, respectively? 
+    - The infrastructure for traffic monitoring is affordable to implement and already has a framework for deployment. If traffic volume is an indicator of environmental quality, we could use it to better study areas of climatological interest. 
+3. Is the relationship between urbanization level and climate indicators better described by a linear or quadratic model? 
+    - This will indicate how accurate our scope is compared to other environmental impact studies.
+4. Can PCA analysis be used to compare regions throughout Arizona based on traffic, climate, and storm event data?
+    - If our hypothesis that high urbanization level leads to low environmental quality, we would expect to see similarities between metropolitan regions. Additionally, we might be able to identify regions with unknown similarities.
+
+
+# Proposed Procedure 
+
+This project will consist of 2 studies:
+Study 1 - A regional regression model of environmental quality features (storm events and climate data) as a function of our urbanization target feature (traffic volume).
+Study 2 - A PCA analysis of the state of Arizona comparing both climate data and traffic data to identify similar regions.
+
+## Engineered Features
 
 ## Datasets
 

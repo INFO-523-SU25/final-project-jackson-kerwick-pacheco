@@ -5,3 +5,5 @@ numpy
 geopandas
 matplotlib
 geodatasets
+seaborn
+glob

@@ -28,7 +28,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import glob
 import geopandas
-import matplotlib.pyplot as plt
 from geodatasets import get_path
 ```
 

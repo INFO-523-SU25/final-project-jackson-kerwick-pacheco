@@ -6,3 +6,5 @@ geopandas
 matplotlib
 geodatasets
 seaborn
+shapely
+

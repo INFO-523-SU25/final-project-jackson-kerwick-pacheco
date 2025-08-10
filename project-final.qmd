@@ -1,6 +1,6 @@
 ---
 title: "Urbanization and Environmental Quality in Arizona, USA"
-subtitle: "Proposal"
+subtitle: "Project Final"
 author: 
   - name: "JKP (Vera Jackson, Molly Kerwick, Brooke Pacheco)"
     affiliations:
@@ -79,24 +79,24 @@ cell = gpd.GeoDataFrame(grid_cells, columns=['geometry'],
 # plt.scatter([-130, -132, -128, -139],[42, 31, 32, 47])
 # ax = plt.gca()
 # plt.autoscale(False)
-cell.plot(facecolor="none")
+ax = cell.plot(facecolor="none")
 # ax.axis("off")
-plt.show()
-
-cell = cell.reset_index()
 
 df_2022 = pd.read_csv('data/Traffic/stations/df_2022')
 
-df_2022['geometry'] = gpd.points_from_xy(df_2022.latitude, df_2022.longitude, crs="EPSG:4326")
+df_2022['geometry'] = gpd.points_from_xy(df_2022.longitude, df_2022.latitude, crs="EPSG:4326")
 
 gdf_2022 = gpd.GeoDataFrame(data=df_2022, geometry='geometry')
 
+gdf_2022.plot(aspect=1,ax=ax, color='red')
+plt.show()
 # gdf_2022.plot(aspect=1)
 gdf_2022_binned = gpd.sjoin(left_df=gdf_2022, right_df=cell, how='left')
 
 gdf_2022_binned
 
-
+# df_2022
+# cell
 
 
 

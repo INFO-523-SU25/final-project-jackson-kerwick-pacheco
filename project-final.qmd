@@ -49,26 +49,23 @@ import shapely
 
 # grid construction reference: https://james-brennan.github.io/posts/fast_gridding_geopandas/
 
-
-def grid_bin(df,proj='EPSG:4326'):
-  # take in df with latitude (ranging 31 to 37) and longitude (ranging -109 to -115) and return the dataframe with a new column that is the grid number
+def grid_bin(df, proj='EPSG:4326'):
+  # take in df with features "latitude" (ranging 31 to 37) and "longitude" (ranging -109 to -115) and return geodataframe with a new column that is the grid number
 
   # Create geometry feature of input df
-
   df['geometry'] = gpd.points_from_xy(df.longitude, df.latitude,
     crs=proj)
-  df = gpd.GeoDataFrame(data=df, geometry='geometry')
+  gdf = gpd.GeoDataFrame(data=df, geometry='geometry')
 
   # Initialize grid dataframe
-
   xmin = -114.5   # total area for the grid with ranging values
   ymin = 31.2     # describing latitude and longitude limits for AZ
   xmax = -109
   ymax = 37
 
-  num_x = 15  # how many cells in x direction
-  num_y = 20  # how many cells in y direction
-              # total cells is num_x*num_y (300 in our case)
+  num_x = 15  # how many cells in x direction minus 1
+  num_y = 20  # how many cells in y direction minus 1
+              # total cells is num_x*num_y (336 in our case)
 
   cell_size_x = (xmax-xmin)/num_x   # how many cells across and down
   cell_size_y = (ymax-ymin)/num_y
@@ -87,44 +84,25 @@ def grid_bin(df,proj='EPSG:4326'):
   grid = gpd.GeoDataFrame(grid_cells, columns=['geometry'], 
                                  crs=crs)
 
+  # print(grid.shape)   # axis 0 is the number of cells in the grid
+
   # Spatially join (sjoin) input df and grid
+  gdf_joined = gpd.sjoin(left_df=gdf, right_df=grid, how='left')
 
-  df_joined = gpd.sjoin(left_df=df, right_df=grid, how='left')
+  # Rename column to be more intuitive
+  gdf_joined['gridspace'] = gdf_joined['index_right']
+  gdf_joined = gdf_joined.drop(['index_right'], axis=1)
 
-  return df_joined
-
-
-
-
-
-
-# create the cells in a loop
+  return gdf_joined
 
 
-
-# plt.scatter([-130, -132, -128, -139],[42, 31, 32, 47])
-# ax = plt.gca()
-# plt.autoscale(False)
-# ax = cell.plot(facecolor="none")
-# ax.axis("off")
 
 df_2022 = pd.read_csv('data/Traffic/stations/df_2022')
 df_2022 = grid_bin(df_2022)
-df_2022.plot()
+df_2022['gridspace'].hist()
+plt.show()
 
-# gdf_2022
-
-
-# gdf_2022.plot(aspect=1,ax=ax, color='red')
-# plt.show()
-# # gdf_2022.plot(aspect=1)
-
-
-# gdf_2022_binned
-
-# df_2022
-# cell
-
+df_2022
 
 
 

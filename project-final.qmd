@@ -49,51 +49,78 @@ import shapely
 
 # grid construction reference: https://james-brennan.github.io/posts/fast_gridding_geopandas/
 
-# total area for the grid
-xmin = -115
-ymin = 31
-xmax = -109
-ymax = 37
 
-num_x = 15  # how many cells in x direction
-num_y = 20  # how many cells in y direction
-            # total cells is num_x*num_y (300 in our case)
+def grid_bin(df,proj='EPSG:4326'):
+  # take in df with latitude (ranging 31 to 37) and longitude (ranging -109 to -115) and return the dataframe with a new column that is the grid number
 
-cell_size_x = (xmax-xmin)/num_x
-cell_size_y = (ymax-ymin)/num_y
-# how many cells across and down
-# projection of the grid
-crs = "EPSG:4326"
-# create the cells in a loop
-grid_cells = []
-for x0 in np.arange(xmin, xmax+cell_size_x, cell_size_x ):
-    for y0 in np.arange(ymin, ymax+cell_size_y, cell_size_y):
-        # bounds
-        x1 = x0-cell_size_x
-        y1 = y0+cell_size_y
-        grid_cells.append( shapely.geometry.box(x0, y0, x1, y1)  )
-cell = gpd.GeoDataFrame(grid_cells, columns=['geometry'], 
+  # Create geometry feature of input df
+
+  df['geometry'] = gpd.points_from_xy(df.longitude, df.latitude,
+    crs=proj)
+  df = gpd.GeoDataFrame(data=df, geometry='geometry')
+
+  # Initialize grid dataframe
+
+  xmin = -114.5   # total area for the grid with ranging values
+  ymin = 31.2     # describing latitude and longitude limits for AZ
+  xmax = -109
+  ymax = 37
+
+  num_x = 15  # how many cells in x direction
+  num_y = 20  # how many cells in y direction
+              # total cells is num_x*num_y (300 in our case)
+
+  cell_size_x = (xmax-xmin)/num_x   # how many cells across and down
+  cell_size_y = (ymax-ymin)/num_y
+
+  # projection of the grid
+  crs = proj
+
+  grid_cells = []
+  for x0 in np.arange(xmin, xmax+cell_size_x, cell_size_x ):
+      for y0 in np.arange(ymin, ymax+cell_size_y, cell_size_y):
+          # bounds
+          x1 = x0-cell_size_x
+          y1 = y0+cell_size_y
+          grid_cells.append( shapely.geometry.box(x0, y0, x1, y1)  )
+
+  grid = gpd.GeoDataFrame(grid_cells, columns=['geometry'], 
                                  crs=crs)
+
+  # Spatially join (sjoin) input df and grid
+
+  df_joined = gpd.sjoin(left_df=df, right_df=grid, how='left')
+
+  return df_joined
+
+
+
+
+
+
+# create the cells in a loop
+
 
 
 # plt.scatter([-130, -132, -128, -139],[42, 31, 32, 47])
 # ax = plt.gca()
 # plt.autoscale(False)
-ax = cell.plot(facecolor="none")
+# ax = cell.plot(facecolor="none")
 # ax.axis("off")
 
 df_2022 = pd.read_csv('data/Traffic/stations/df_2022')
+df_2022 = grid_bin(df_2022)
+df_2022.plot()
 
-df_2022['geometry'] = gpd.points_from_xy(df_2022.longitude, df_2022.latitude, crs="EPSG:4326")
+# gdf_2022
 
-gdf_2022 = gpd.GeoDataFrame(data=df_2022, geometry='geometry')
 
-gdf_2022.plot(aspect=1,ax=ax, color='red')
-plt.show()
-# gdf_2022.plot(aspect=1)
-gdf_2022_binned = gpd.sjoin(left_df=gdf_2022, right_df=cell, how='left')
+# gdf_2022.plot(aspect=1,ax=ax, color='red')
+# plt.show()
+# # gdf_2022.plot(aspect=1)
 
-gdf_2022_binned
+
+# gdf_2022_binned
 
 # df_2022
 # cell

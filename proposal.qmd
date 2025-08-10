@@ -39,14 +39,18 @@ The goal of our project is to analyze the relationship between urbanization and 
 
 ## Research Questions
 
-1.  Can we predict the environmental quality of a region based on urbanization indicators for that region?
-    -   The reason we chose this question is that if we can accurately predict how urbanization affects climate, policymakers can proactively work to preserve or improve the environmental quality of that region.
-2.  Are storm event data and traffic data successful environmental health and urbanization indicators, respectively?
-    -   The infrastructure for traffic monitoring is affordable to implement and already has a framework for deployment. If traffic volume is an indicator of environmental quality, we could use it to better study areas of climatological interest.
-3.  Is the relationship between urbanization level and climate indicators better described by a linear or quadratic model?
-    -   This will indicate how accurate our scope is compared to other environmental impact studies.
-4.  Can PCA analysis be used to compare regions throughout Arizona based on traffic, climate, and storm event data?
-    -   If our hypothesis that high urbanization level leads to low environmental quality, we would expect to see similarities between metropolitan regions. Additionally, we might be able to identify regions with unknown similarities.
+1. **Can we predict the environmental quality of a region based on urbanization indicators for that region?**  
+   The reason we chose this question is that if we can accurately predict how urbanization affects climate, policymakers can proactively work to preserve or improve the environmental quality of that region.
+
+2. **Are storm event data and traffic data successful environmental health and urbanization indicators, respectively?**  
+   The infrastructure for traffic monitoring is affordable to implement and already has a framework for deployment. If traffic volume is an indicator of environmental quality, we could use it to better study areas of climatological interest.
+
+3. **Is the relationship between urbanization level and climate indicators better described by a linear or quadratic model?**  
+   This will indicate how accurate our scope is compared to other environmental impact studies.
+
+4. **Can PCA analysis be used to compare regions throughout Arizona based on traffic, climate, and storm event data?**  
+   If our hypothesis that high urbanization level leads to low environmental quality is correct, we would expect to see similarities between metropolitan regions. Additionally, we might be able to identify regions with unknown similarities.
+
 
 ## Proposed Procedure
 
@@ -58,7 +62,9 @@ This project will consist of 2 studies:
 
 ### Temporal vs. Regional Geospatial Analysis
 
-When thinking of climate models, people are probably most familiar with a temporal frame of thinking. Meaning one region is compared to the same region at a different point of time. As our study is interested in how one region compares to another region, we have to change our mindset when approaching this problem. To compare regions, we plan to have a dataset that has climate, storm events, and traffic features where each instance is a different region. Since these measurements are dependent on time however, we will have add features that normalize the temporal aspect of our dataset. We will do this by engineering features that compare our primary dataset values to a dataset of averaged values for the same regions and features over a 5 year period. We have selected data from 2022 as our primary dataset, and we have selected the timeframe 2019-2023 to construct our averaged values. Comparing storm patterns across regions provides valuable insights into climate health, as variations in storm frequency and intensity can indicate underlying changes in regional climate conditions. This approach enables us to analyze spatial differences in climate quality while accounting for temporal variability.
+When thinking of climate models, people are probably most familiar with a temporal frame of thinking. Meaning one region is compared to the same region at a different point in time. As our study is interested in how one region compares to another region, we have to change our mindset when approaching this problem. To compare regions, we plan to have a dataset that has climate, storm events, and traffic features where each instance is a different region.
+
+Since these measurements are dependent on time, however, we will have to add features that normalize the temporal aspect of our dataset. We will do this by engineering features that compare our primary dataset values to a dataset of averaged values for the same regions and features over a 5-year period. We have selected data from 2022 as our primary dataset, and we have selected the timeframe 2019-2023 to construct our averaged values. Comparing storm patterns across regions provides valuable insights into climate health, as variations in storm frequency and intensity can indicate underlying changes in regional climate conditions. This approach enables us to analyze spatial differences in climate quality while accounting for temporal variability.
 
 ## Engineered Features
 
@@ -90,9 +96,6 @@ When thinking of climate models, people are probably most familiar with a tempor
 ### Dataset 1 - Storm Data in Arizona
 
 ```{python}
-#| label: load-dataset
-#| message: false
-
 # Storm Events in Arizona
 
 # Path to your folder

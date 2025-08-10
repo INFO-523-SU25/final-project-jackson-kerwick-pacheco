@@ -1,1 +1,154 @@
+---
+title: "Urbanization and Environmental Quality in Arizona, USA"
+subtitle: "Proposal"
+author: 
+  - name: "JKP (Vera Jackson, Molly Kerwick, Brooke Pacheco)"
+    affiliations:
+      - name: "College of Information Science, University of Arizona"
+description: "Final Project for course INFO 523: Data Mining and Discovery"
+format:
+  html:
+    code-tools: true
+    code-overflow: wrap
+    code-line-numbers: true
+    embed-resources: true
+editor: visual
+code-annotations: hover
+execute:
+  warning: false
+  echo: false
+jupyter: python3
+---
 
+### Data Validation & Cleaning
+```{python}
+# Vera section
+
+
+
+
+
+
+# Molly section
+
+
+
+
+
+
+
+# Brooke section
+
+
+
+
+
+```
+
+### Exploratory Data Analysis (EDA)
+
+
+```{python}
+# Vera section
+
+
+
+
+
+
+# Molly section
+
+
+
+
+
+
+
+# Brooke section
+
+
+
+
+
+```
+
+### Dataset Integration
+
+
+```{python}
+# Vera section
+
+
+
+
+
+
+# Molly section
+
+
+
+
+
+
+
+# Brooke section
+
+
+
+
+
+```
+
+### Feature Engineering
+
+
+```{python}
+# Vera section
+
+
+
+
+
+
+# Molly section
+
+
+
+
+
+
+
+# Brooke section
+
+
+
+
+
+```
+
+### Regression Analysis Setup
+
+
+```{python}
+# Vera section
+
+
+
+
+
+
+# Molly section
+
+
+
+
+
+
+
+# Brooke section
+
+
+
+
+
+```

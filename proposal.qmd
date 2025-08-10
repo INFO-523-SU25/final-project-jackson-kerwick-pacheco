@@ -115,6 +115,23 @@ print("Shape:", df_all.shape)
 print("Years combined:", [os.path.basename(f) for f in csv_files])
 print(df_all.head())
 
+# Count frequency of each storm event type
+event_counts = df_all['EVENT_TYPE'].value_counts().reset_index()
+event_counts.columns = ['EVENT_TYPE', 'FREQUENCY']
+
+# Create scatter plot
+plt.figure(figsize=(10,6))
+plt.scatter(event_counts['EVENT_TYPE'], event_counts['FREQUENCY'], color='blue')
+
+# Add titles and labels
+plt.title('Frequency of Storm Event Types')
+plt.xlabel('Storm Event Type')
+plt.ylabel('Frequency')
+plt.xticks(rotation=45, ha='right')
+
+plt.tight_layout()
+plt.show()
+
 ```
 
 This dataset contains storm event records in Arizona, sourced from the NOAA Storm Events Database found https://www.ncdc.noaa.gov/stormevents/choosedates.jsp?statefips=4%2CARIZONA. It includes information about various weather events such as floods, tornadoes, and severe storms, along with details like location, date, event type, magnitude, fatalities, injuries, and property damage. It also includes metadata such as time zones, county information, and narrative descriptions of each event.

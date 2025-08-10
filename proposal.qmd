@@ -16,10 +16,11 @@ editor: visual
 code-annotations: hover
 execute:
   warning: false
+  echo: false
 jupyter: python3
 ---
 
-```{python, echo = FALSE}
+```{python}
 #| label: load-pkgs
 #| message: false
 import numpy as np
@@ -85,7 +86,7 @@ When thinking of climate models, people are probably most familiar with a tempor
 
 ### Dataset 1 - Storm Data in Arizona 
 
-```{python, echo = FALSE}
+```{python}
 #| label: load-dataset
 #| message: false
 
@@ -114,7 +115,7 @@ The dataset consists of a mix of numerical and categorical values, specifically,
 
 ### Dataset 2 - Weather Data in Arizona 
 
-```{python, echo = FALSE}
+```{python}
 
 # NOAA Data
 
@@ -132,7 +133,7 @@ for file in all_files:
 noaadata = pd.concat(list_of_dfs, ignore_index = True)
 ```
 
-```{python, echo = FALSE}
+```{python}
 
 # glance at NOAA climate data
 
@@ -165,7 +166,7 @@ This data contains primarily numerical values, with the only categorical variabl
 
 ### Dataset 3 - Traffic Data in Arizona 
 
-```{python, echo = FALSE}
+```{python}
 # Traffic Station Data 
 
 # Traffic data sourced from FHWA with aggregate station data over all 
@@ -235,7 +236,7 @@ print("Counts of traffic stations will be read in from the following files:")
 print(traffic_files)
 ```
 
-```{python, echo = FALSE}
+```{python}
 
 # As an example, here is traffic count data from a single month of a single year
 df_count = pd.read_csv('data/Traffic/counts/AZ1019.VOL')

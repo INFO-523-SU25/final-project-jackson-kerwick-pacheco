@@ -262,3 +262,34 @@ The traffic data are sourced from two different file structures, counts data and
 * The count data is nearly all numerical. Each row is a station location on a specific day of the given file month/year. Each row includes counts of passing vehicles at the listed station location for every hour of that day. We will engineer a feature variable aggregating total counts over a year at each station location. Variables of interest include the hourly counts (ex. Hour_05) and the station number.
 
 
+## Schedule 
+
+#### August 9
+- Final Proposal Due
+
+#### August 11
+- EDA 
+- new dataframes
+- compile resources
+
+#### August 13
+- feature engineering complete
+
+#### August 14
+- regression analysis
+
+#### August 16
+- regression models tuned
+
+#### August 17
+- maps made
+
+#### August 18
+- record presentation
+
+#### August 19
+- complete write-up
+
+#### August 20th, 11:59 pm
+- Writeup DUE
+- Presentation DUE

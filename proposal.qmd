@@ -34,34 +34,33 @@ from geodatasets import get_path
 
 ## High Level Goal
 
-The goal of our project is to analyze the relationship between urbanization and environmental quality across regions within Arizona, identifying patterns and anomalies in how urban growth impacts climate metrics such as storms, temperature, and rainfall. As we have seen with the uproar by the Tucson population regarding the proposed environmental impacts of the Project Blue data center, environmental quality is important to local populations. We hope to use this study to identify the regional relationship between urbanization and climate indicators. We will be using traffic count data as our urbanization metric, and National Oceanographic and Atmospheric Administration (NOAA) climate and storm event data as our environmental quality data. 
+The goal of our project is to analyze the relationship between urbanization and environmental quality across regions within Arizona, identifying patterns and anomalies in how urban growth impacts climate metrics such as storms, temperature, and rainfall. As we have seen with the uproar by the Tucson population regarding the proposed environmental impacts of the Project Blue data center, environmental quality is important to local populations. We hope to use this study to identify the regional relationship between urbanization and climate indicators. We will be using traffic count data as our urbanization metric, and National Oceanographic and Atmospheric Administration (NOAA) climate and storm event data as our environmental quality data.
 
 ## Research Questions
-1. Can we predict the environmental quality of a region based on urbanization indicators for that region? 
-    - The reason we chose this question is that if we can accurately predict how urbanization affects climate, policymakers can proactively work to preserve or improve the environmental quality of that region.
-2. Are storm event data and traffic data successful environmental health and urbanization indicators, respectively? 
-    - The infrastructure for traffic monitoring is affordable to implement and already has a framework for deployment. If traffic volume is an indicator of environmental quality, we could use it to better study areas of climatological interest. 
-3. Is the relationship between urbanization level and climate indicators better described by a linear or quadratic model? 
-    - This will indicate how accurate our scope is compared to other environmental impact studies.
-4. Can PCA analysis be used to compare regions throughout Arizona based on traffic, climate, and storm event data?
-    - If our hypothesis that high urbanization level leads to low environmental quality, we would expect to see similarities between metropolitan regions. Additionally, we might be able to identify regions with unknown similarities.
 
+1.  Can we predict the environmental quality of a region based on urbanization indicators for that region?
+    -   The reason we chose this question is that if we can accurately predict how urbanization affects climate, policymakers can proactively work to preserve or improve the environmental quality of that region.
+2.  Are storm event data and traffic data successful environmental health and urbanization indicators, respectively?
+    -   The infrastructure for traffic monitoring is affordable to implement and already has a framework for deployment. If traffic volume is an indicator of environmental quality, we could use it to better study areas of climatological interest.
+3.  Is the relationship between urbanization level and climate indicators better described by a linear or quadratic model?
+    -   This will indicate how accurate our scope is compared to other environmental impact studies.
+4.  Can PCA analysis be used to compare regions throughout Arizona based on traffic, climate, and storm event data?
+    -   If our hypothesis that high urbanization level leads to low environmental quality, we would expect to see similarities between metropolitan regions. Additionally, we might be able to identify regions with unknown similarities.
 
-## Proposed Procedure 
-This project will consist of 2 studies:
-* Study 1: A regional regression model of environmental quality features (storm events and climate data) as a function of our urbanization target feature (traffic volume). We will do this with multivariate regression models, with a hypothesis that there is a negative linear relationship between urbanization and environmental quality. We will train a linear regression model and a quadratic regression model and compare the two.
-* Study 2: A PCA analysis of the state of Arizona comparing both climate data and traffic data to identify similar regions.
+## Proposed Procedure
+
+This project will consist of 2 studies: \* Study 1: A regional regression model of environmental quality features (storm events and climate data) as a function of our urbanization target feature (traffic volume). We will do this with multivariate regression models, with a hypothesis that there is a negative linear relationship between urbanization and environmental quality. We will train a linear regression model and a quadratic regression model and compare the two. \* Study 2: A PCA analysis of the state of Arizona comparing both climate data and traffic data to identify similar regions.
 
 ### Temporal vs. Regional Geospatial Analysis
 
 When thinking of climate models, people are probably most familiar with a temporal frame of thinking. Meaning one region is compared to the same region at a different point of time. As our study is interested in how one region compares to another region, we have to change our mindset when approaching this problem. To compare regions, we plan to have a dataset that has climate, storm events, and traffic features where each instance is a different region. Since these measurements are dependent on time however, we will have add features that normalize the temporal aspect of our dataset. We will do this by engineering features that compare our primary dataset values to a dataset of averaged values for the same regions and features over a 5 year period. We have selected data from 2022 as our primary dataset, and we have selected the timeframe 2019-2023 to construct our averaged values.
 
-
 ## Engineered Features
 
 ### Climate Features
+
 | Feature | Description |
-|---------|-------------|
+|------------------------------|------------------------------------------|
 | max_temp_2022 | maximum temperature for 2022 |
 | max_temp_above_5yavg | maximum temperature for 2022 minus maximum temperature averaged 2019-2023 |
 | avg_temp_2022 | average temperature for 2022 |
@@ -74,16 +73,16 @@ When thinking of climate models, people are probably most familiar with a tempor
 | highmagstorm_events_above_5yavg | sum of high magnitude storm events for 2022 minus sum of high magnitude storm events averaged 2019-2023 |
 | average_storm_mag_2022 | average storm event magnitude for 2022 |
 
-### Urbanization Features 
-| Feature | Description |
-|---------|-------------|
-|traffic_counts|total number of vehicles detected in 2022|
-|traffic_counts_above_5yavg|traffic counts in 2022 minus traffic counts averaged 2019-2023|
+### Urbanization Features
 
+| Feature | Description |
+|------------------------------|------------------------------------------|
+| traffic_counts | total number of vehicles detected in 2022 |
+| traffic_counts_above_5yavg | traffic counts in 2022 minus traffic counts averaged 2019-2023 |
 
 ## Datasets
 
-### Dataset 1 - Storm Data in Arizona 
+### Dataset 1 - Storm Data in Arizona
 
 ```{python}
 #| label: load-dataset
@@ -112,7 +111,7 @@ This dataset contains storm event records in Arizona, sourced from the NOAA Stor
 
 The dataset consists of a mix of numerical and categorical values, specifically, 12 columns with integer types and 27 with object types. It was chosen for its relevance to climate and environmental analysis in Arizona. The data enables the exploration of temporal and spatial patterns in extreme weather events and supports investigations into trends related to climate change, urbanization, and risk assessment.
 
-### Dataset 2 - Weather Data in Arizona 
+### Dataset 2 - Weather Data in Arizona
 
 ```{python}
 
@@ -163,7 +162,7 @@ This data from [NOAA National Centers for Environmental Information](https://www
 
 This data contains primarily numerical values, with the only categorical variables being the name of the station where weather data is collected, and date the data was collected.
 
-### Dataset 3 - Traffic Data in Arizona 
+### Dataset 3 - Traffic Data in Arizona
 
 ```{python}
 # Traffic Station Data 
@@ -252,20 +251,19 @@ df_volumes = df_volumes.drop(["Hour_{:02}".format(i) for i in range(24)], axis=1
 
 ```
 
-The traffic data above is sourced from the Federal Highway Administration (FHWA) of the U.S. Department of Transportation (https://www.fhwa.dot.gov/policyinformation/tables/tmasdata/). It will serve as a metric for urbanization level of regions throughout Arizona. It is presumed that counties with higher traffic flow have greater urbanization than counties with low traffic flow. 
+The traffic data above is sourced from the Federal Highway Administration (FHWA) of the U.S. Department of Transportation (https://www.fhwa.dot.gov/policyinformation/tables/tmasdata/). It will serve as a metric for urbanization level of regions throughout Arizona. It is presumed that counties with higher traffic flow have greater urbanization than counties with low traffic flow.
 
-The traffic data are sourced from two different file structures, counts data and station data. 
+The traffic data are sourced from two different file structures, counts data and station data.
 
-* The station data contains information about sampling locations including latitude and longitude, number of lanes on road, and type of sensor. Our main variables of interest will be latitude (numerical), longitude (numerical), and county (categorical)
+-   The station data contains information about sampling locations including latitude and longitude, number of lanes on road, and type of sensor. Our main variables of interest will be latitude (numerical), longitude (numerical), and county (categorical)
 
-* The count data is nearly all numerical. Each row is a station location on a specific day of the given file month/year. Each row includes counts of passing vehicles at the listed station location for every hour of that day. We will engineer a feature variable aggregating total counts over a year at each station location. Variables of interest include the hourly counts (ex. Hour_05) and the station number.
+-   The count data is nearly all numerical. Each row is a station location on a specific day of the given file month/year. Each row includes counts of passing vehicles at the listed station location for every hour of that day. We will engineer a feature variable aggregating total counts over a year at each station location. Variables of interest include the hourly counts (ex. Hour_05) and the station number.
 
+## Schedule
 
-## Schedule 
-
-| Date       | Task | Details |
-|------------|------|---------|
-| **Aug 9**  | Final Proposal Submission | Submit this project proposal to meet course requirements and include peer edits. Ensure all datasets are identified and accessible. |
+| Date | Task | Details |
+|-------------------------------|------------------|-----------------------|
+| **Aug 9** | Final Proposal Submission | Submit this project proposal to meet course requirements and include peer edits. Ensure all datasets are identified and accessible. |
 | **Aug 10** | Data Validation & Cleaning | Verify all NOAA, storm event, and traffic datasets are complete and free of formatting issues. Handle missing data, unify column formats, and confirm geospatial coordinate accuracy. |
 | **Aug 11** | Exploratory Data Analysis (EDA) | Perform initial descriptive statistics and visualizations for each dataset (storm events, climate data, traffic counts). Identify trends, anomalies, and data distribution shapes. |
 | **Aug 12** | Dataset Integration | Merge storm, climate, and traffic data into a single regional dataset for 2022. Create temporal normalization dataset for 2019–2023 averages. |

@@ -30,6 +30,7 @@ import matplotlib.pyplot as plt
 import glob
 import geopandas
 from geodatasets import get_path
+import os
 ```
 
 ## High Level Goal
@@ -49,11 +50,15 @@ The goal of our project is to analyze the relationship between urbanization and 
 
 ## Proposed Procedure
 
-This project will consist of 2 studies: \* Study 1: A regional regression model of environmental quality features (storm events and climate data) as a function of our urbanization target feature (traffic volume). We will do this with multivariate regression models, with a hypothesis that there is a negative linear relationship between urbanization and environmental quality. We will train a linear regression model and a quadratic regression model and compare the two. \* Study 2: A PCA analysis of the state of Arizona comparing both climate data and traffic data to identify similar regions.
+This project will consist of 2 studies:
+
+* **Study 1:** A regional regression model of environmental quality features (storm events and climate data) as a function of our urbanization target feature (traffic volume). We will do this with multivariate regression models, with a hypothesis that there is a negative linear relationship between urbanization and environmental quality. We will train a linear regression model and a quadratic regression model and compare the two.
+
+* **Study 2:** A PCA analysis of the state of Arizona comparing both climate data and traffic data to identify similar regions.
 
 ### Temporal vs. Regional Geospatial Analysis
 
-When thinking of climate models, people are probably most familiar with a temporal frame of thinking. Meaning one region is compared to the same region at a different point of time. As our study is interested in how one region compares to another region, we have to change our mindset when approaching this problem. To compare regions, we plan to have a dataset that has climate, storm events, and traffic features where each instance is a different region. Since these measurements are dependent on time however, we will have add features that normalize the temporal aspect of our dataset. We will do this by engineering features that compare our primary dataset values to a dataset of averaged values for the same regions and features over a 5 year period. We have selected data from 2022 as our primary dataset, and we have selected the timeframe 2019-2023 to construct our averaged values.
+When thinking of climate models, people are probably most familiar with a temporal frame of thinking. Meaning one region is compared to the same region at a different point of time. As our study is interested in how one region compares to another region, we have to change our mindset when approaching this problem. To compare regions, we plan to have a dataset that has climate, storm events, and traffic features where each instance is a different region. Since these measurements are dependent on time however, we will have add features that normalize the temporal aspect of our dataset. We will do this by engineering features that compare our primary dataset values to a dataset of averaged values for the same regions and features over a 5 year period. We have selected data from 2022 as our primary dataset, and we have selected the timeframe 2019-2023 to construct our averaged values. Comparing storm patterns across regions provides valuable insights into climate health, as variations in storm frequency and intensity can indicate underlying changes in regional climate conditions. This approach enables us to analyze spatial differences in climate quality while accounting for temporal variability.
 
 ## Engineered Features
 
@@ -90,24 +95,29 @@ When thinking of climate models, people are probably most familiar with a tempor
 
 # Storm Events in Arizona
 
-# Load csv file
-df = pd.read_csv('data/StormEvents/storm_data_search_results.csv')
+# Path to your folder
+folder_path = "data/StormEvents/"
 
-# Print using shape property
-print("Shape:", df.shape)
+# Create a list of all matching files (2019–2023)
+csv_files = sorted(glob.glob(os.path.join(folder_path, "storm_data_AZ_*.csv")))
 
-# Print column names
-print("Columns:", df.columns.tolist())
+# Load and concatenate all CSVs
+df_list = []
+for file in csv_files:
+    df_year = pd.read_csv(file)
+    df_list.append(df_year)
 
-# Print data types of all of the columns
-print("Data types:", df.dtypes)
+# Merge into one dataframe
+df_all = pd.concat(df_list, ignore_index=True)
 
-# Print summary of the data
-df.info()
+# Check the result
+print("Shape:", df_all.shape)
+print("Years combined:", [os.path.basename(f) for f in csv_files])
+print(df_all.head())
 
 ```
 
-This dataset contains storm event records in Arizona, sourced from the NOAA Storm Events Database. It includes information about various weather events such as floods, tornadoes, and severe storms, along with details like location, date, event type, magnitude, fatalities, injuries, and property damage. It also includes metadata such as time zones, county information, and narrative descriptions of each event.
+This dataset contains storm event records in Arizona, sourced from the NOAA Storm Events Database found https://www.ncdc.noaa.gov/stormevents/choosedates.jsp?statefips=4%2CARIZONA. It includes information about various weather events such as floods, tornadoes, and severe storms, along with details like location, date, event type, magnitude, fatalities, injuries, and property damage. It also includes metadata such as time zones, county information, and narrative descriptions of each event.
 
 The dataset consists of a mix of numerical and categorical values, specifically, 12 columns with integer types and 27 with object types. It was chosen for its relevance to climate and environmental analysis in Arizona. The data enables the exploration of temporal and spatial patterns in extreme weather events and supports investigations into trends related to climate change, urbanization, and risk assessment.
 

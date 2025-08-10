@@ -63,7 +63,7 @@ cell_size_x = (xmax-xmin)/num_x
 cell_size_y = (ymax-ymin)/num_y
 # how many cells across and down
 # projection of the grid
-crs = "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
+crs = "EPSG:4326"
 # create the cells in a loop
 grid_cells = []
 for x0 in np.arange(xmin, xmax+cell_size_x, cell_size_x ):

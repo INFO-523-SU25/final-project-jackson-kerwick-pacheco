@@ -263,35 +263,6 @@ The traffic data are sourced from two different file structures, counts data and
 
 ## Schedule 
 
-#### August 11
-- EDA 
-- new dataframes
-- compile resources
-
-#### August 13
-- feature engineering complete
-
-#### August 14
-- regression analysis
-
-#### August 16
-- regression models tuned
-
-#### August 17
-- maps made
-
-#### August 18
-- record presentation
-
-#### August 19
-- complete write-up
-
-#### August 20th, 11:59 pm
-- Writeup DUE
-- Presentation DUE
-
-## Schedule
-
 | Date       | Task | Details |
 |------------|------|---------|
 | **Aug 9**  | Final Proposal Submission | Submit this project proposal to meet course requirements and include peer edits. Ensure all datasets are identified and accessible. |
@@ -300,7 +271,7 @@ The traffic data are sourced from two different file structures, counts data and
 | **Aug 12** | Dataset Integration | Merge storm, climate, and traffic data into a single regional dataset for 2022. Create temporal normalization dataset for 2019–2023 averages. |
 | **Aug 13** | Feature Engineering | Create engineered features outlined in the proposal (e.g., `max_temp_above_5yavg`, `traffic_counts_above_5yavg`). Ensure proper units and scaling for regression. |
 | **Aug 14** | Regression Analysis Setup | Split data into training/testing sets. Implement baseline linear and quadratic regression models to predict environmental quality from urbanization indicators. |
-| **Aug 15** | Model Tuning & Evaluation | Perform hyperparameter tuning for regression models. Compare linear vs. quadratic fits. Assess model performance using R², RMSE, and residual analysis. |
+| **Aug 15** | Model Tuning & Evaluation | Perform hyperparameter tuning for regression models. Compare linear vs. quadratic fits. Assess model performance. |
 | **Aug 16** | PCA & Regional Comparison | Run PCA on the combined dataset. Identify clusters of similar regions and interpret principal components in relation to urbanization and environmental quality. |
 | **Aug 17** | Visualization Development | Create regression plots, PCA scatterplots, and geospatial maps of Arizona showing urbanization and climate impact patterns. |
 | **Aug 18** | Presentation Recording | Develop and record project presentation, including visualizations and key findings. Ensure explanation of model results and their policy implications. |

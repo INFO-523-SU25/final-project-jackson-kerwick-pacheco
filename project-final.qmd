@@ -45,12 +45,13 @@ import shapely
 
 
 
-
-
 # Molly section
 
 # total area for the grid
-xmin, ymin, xmax, ymax= gdf.total_bounds
+xmin = -140
+ymin = 30
+xmax = -120
+ymax = 50
 # how many cells across and down
 n_cells=30
 cell_size = (xmax-xmin)/n_cells
@@ -64,10 +65,16 @@ for x0 in np.arange(xmin, xmax+cell_size, cell_size ):
         x1 = x0-cell_size
         y1 = y0+cell_size
         grid_cells.append( shapely.geometry.box(x0, y0, x1, y1)  )
-cell = geopandas.GeoDataFrame(grid_cells, columns=['geometry'], 
+cell = gpd.GeoDataFrame(grid_cells, columns=['geometry'], 
                                  crs=crs)
 
 
+plt.scatter([-130, -132, -128, -139],[42, 31, 32, 47])
+ax = plt.gca()
+plt.autoscale(False)
+cell.plot(ax=ax, facecolor="none", edgecolor='grey')
+ax.axis("off")
+plt.show()
 
 
 

@@ -21,7 +21,9 @@ jupyter: python3
 ---
 
 ```{python}
-# imports
+#| label: load-pkgs
+#| message: false
+
 # Vera
 # same as Molly's
 import seaborn as sns
@@ -45,9 +47,23 @@ import shapely
 ```{python}
 # Vera section
 
+# load data
+
+all_files = glob.glob("data/NOAA/" + "*.csv")
+
+list_of_dfs = []
+
+for file in all_files:
+  df = pd.read_csv(file)
+  list_of_dfs.append(df)
+
+# merging data together into one data frame
+noaa = pd.concat(list_of_dfs, ignore_index = True)
 
 
+```
 
+```{python}
 # Molly section
 
 # grid construction reference: https://james-brennan.github.io/posts/fast_gridding_geopandas/

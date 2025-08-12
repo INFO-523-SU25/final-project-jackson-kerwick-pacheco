@@ -1,6 +1,6 @@
 ---
 title: "Urbanization and Environmental Quality in Arizona, USA"
-subtitle: "Project Final"
+subtitle: "Project Final: Workspace"
 author: 
   - name: "JKP (Vera Jackson, Molly Kerwick, Brooke Pacheco)"
     affiliations:
@@ -23,7 +23,10 @@ jupyter: python3
 ```{python}
 # imports
 # Vera
-
+# same as Molly's
+import seaborn as sns
+import glob
+import os
 
 # Molly
 import geopandas as gpd
@@ -114,30 +117,23 @@ df_2022
 
 ```
 
+```{python}
+
+```
+
 ### Exploratory Data Analysis (EDA)
 
 ```{python}
 # Vera section
 
+```
 
-
-
-
-
+```{python}
 # Molly section
+```
 
-
-
-
-
-
-
+```{python}
 # Brooke section
-
-
-
-
-
 ```
 
 ### Dataset Integration

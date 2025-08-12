@@ -25,7 +25,7 @@ jupyter: python3
 #| message: false
 
 # Vera
-# same as Molly's
+# in addition to Molly's
 import seaborn as sns
 import glob
 import os

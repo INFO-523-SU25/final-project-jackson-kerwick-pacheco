@@ -60,6 +60,43 @@ for file in all_files:
 # merging data together into one data frame
 noaa = pd.concat(list_of_dfs, ignore_index = True)
 
+noaa.columns = noaa.columns.str.lower()
+
+noaa.head()
+
+noaa1 = grid_bin(noaa)
+noaa1['gridspace'].hist()
+plt.show()
+```
+
+```{python}
+# Vera
+
+# investigate missing values
+
+print("Missing values (NaN): \n" + str(noaa1.isnull().sum()))
+
+unique_stations = noaa1['station'].unique()
+
+station_count = noaa1['station'].value_counts()
+
+print("Stations: " + str(unique_stations))
+print("Station count: " + str(station_count))
+
+# group by station
+noaaNum = noaa1.select_dtypes(include = np.number)
+
+print(noaaNum)
+
+# For all values in the numerical column list from above
+for col in noaaNum:
+    noaa1[col] = noaa1[col].fillna(
+        noaa1.groupby('station')[col].transform('mean')
+    )
+
+print("Missing values NOW (NaN): \n" + str(noaa1.isnull().sum()))
+
+
 
 ```
 

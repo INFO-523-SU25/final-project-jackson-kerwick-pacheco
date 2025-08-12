@@ -19,6 +19,7 @@ execute:
   echo: false
 jupyter: python3
 ---
+
 ```{python}
 # imports
 # Vera
@@ -36,9 +37,8 @@ import shapely
 
 ```
 
-
-
 ### Data Validation & Cleaning
+
 ```{python}
 # Vera section
 
@@ -116,7 +116,6 @@ df_2022
 
 ### Exploratory Data Analysis (EDA)
 
-
 ```{python}
 # Vera section
 
@@ -142,7 +141,6 @@ df_2022
 ```
 
 ### Dataset Integration
-
 
 ```{python}
 # Vera section
@@ -170,7 +168,6 @@ df_2022
 
 ### Feature Engineering
 
-
 ```{python}
 # Vera section
 
@@ -196,7 +193,6 @@ df_2022
 ```
 
 ### Regression Analysis Setup
-
 
 ```{python}
 # Vera section

@@ -157,9 +157,25 @@ def grid_bin(df, proj='EPSG:4326'):
 
 # Group station data and counts data
 # Read in counts data
+def agg_traffic_counts(monthyear):
+  df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL")
+
+  # so we have common column for merging
+  df_month = df_month.rename(columns = {'Station_Id':'station_id'}) 
+
+  # sum hour counts to daily count
+  df_month['daily_volume'] = df_month[["Hour_{:02}".format(i) for i in range(24)]].sum(axis=1) 
+
+  df_month = df_month[['daily_volume','station_id']]
+  if df_month.isna().sum().sum() > 0: print(monthyear)
+
+  # create new column that is monthly sum per station
+  df_month = df_month.groupby('station_id', dropna=True)[['daily_volume']].sum() 
+
+  return df_month
+
+
 traffic_dfs = {}
-# hours = ["Hour_{:02}".format(x) for x in range(24)]
-# print(hours)
 
 for i in range(19, 24):   # for year of interest
   year = "{:02}".format(i)
@@ -173,13 +189,7 @@ for i in range(19, 24):   # for year of interest
     monthyear = "{:02}".format(j) + year
 
     # read in counts data
-    df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL")
-    df_month = df_month.rename(columns = {'Station_Id':'station_id'}) # so we have common column for merging
-    df_month['daily_volume'] = df_month[["Hour_{:02}".format(i) for i in range(24)]].sum(axis=1) # sum hour counts to daily count
-
-    df_month = df_month[['daily_volume','station_id']]
-    if df_month.isna().sum().sum() > 0: print(monthyear)
-    df_month = df_month.groupby('station_id', dropna=True)[['daily_volume']].sum() # monthly sum per station
+    df_month = agg_traffic_counts(monthyear)
 
     traffic_dfs[int(monthyear)] = df_month
     # df_volumes = df_volumes.drop(["Hour_{:02}".format(i) for i in range(24)], axis=1)
@@ -217,7 +227,10 @@ print(df_count.info())
 
 ```
 ```{python}
-traffic_dfs.keys()
+monthyear = '0223'
+df = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL")
+df
+
 
 ```
 

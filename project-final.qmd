@@ -156,38 +156,39 @@ def grid_bin(df, proj='EPSG:4326'):
 # Group station data and counts data
 # Read in counts data
 traffic_dfs = {}
-traffic_count_files = []
+# hours = ["Hour_{:02}".format(x) for x in range(24)]
+# print(hours)
 
 for i in range(19, 24):
   year = "{:02}".format(i)
   yearnum = int(f'20{year}')
   traffic_dfs[yearnum] = pd.read_csv(f'data/Traffic/stations/df_20{year}')
+  traffic_dfs[yearnum]['station_annual_count'] = 0
   for j in range(1,13):
     monthyear = "{:02}".format(j) + year
     fname = f"data/Traffic/counts/AZ{monthyear}.VOL"
-    # df_count = pd.read_csv(fname)
-    # df_count = df_count.rename(columns = {'Station_Id':'station_id'})
+    df_volumes = pd.read_csv(fname)
+    df_volumes = df_volumes.rename(columns = {'Station_Id':'station_id'})
+    print(df_volumes.head())
+    df_volumes['daily_volume'] = df_volumes[["Hour_{:02}".format(i) for i in range(24)]].sum(axis=1)
+    df_volumes = df_volumes.drop(["Hour_{:02}".format(i) for i in range(24)], axis=1)
+    df_volumes = df_volumes.groupby('station_id')['daily_volume'].sum()
 
-# test aggregating count data
+    traffic_dfs[yearnum]['station_annual_count'] += df_volumes['daily_volume']
+    
+    # test aggregating count data
+
 
 df_2023 = pd.read_csv('data/Traffic/stations/df_2023')
 
 # Ref: https://saturncloud.io/blog/how-to-sum-two-columns-in-a-pandas-dataframe/
-for j in range(1,2):
-  monthyear = "{:02}23".format(j)
-  fname = f"data/Traffic/counts/AZ{monthyear}.VOL"
-  df_count = pd.read_csv(fname)
-  df_count = df_count.rename(columns = {'Station_Id':'station_id'})
-  df_count['daily_volume'] = df_count[["Hour_{:02}".format(i) for i in range(24)]].sum(axis=1)
-  df_count = df_count.drop(["Hour_{:02}".format(i) for i in range(24)], axis=1)
 
-  df_count
-  # print(hour_list)
-  # print(df_count[hour_list])
-  print(df_count.head)
-  # df_count['daily_sum'] = df_count['Hour_00'] + df_count['Hour_01']
-  # df_count = df_count.groupby('station_id')['daily_sum'].sum()
-  # df_2023 = pd.merge(df_2023, df_count, how='left', on='station_id')
+
+df_count = pd.read_csv('data/Traffic/counts/AZ1019.VOL')
+print(df_count.columns)
+print(df_count.info())
+
+# The following is an example of how we will combine hourly counts into a sum over each day
 
 # df_2023
 
@@ -201,15 +202,14 @@ for j in range(1,2):
 # df_2022
 
 
-df_count = pd.read_csv('data/Traffic/counts/AZ1019.VOL')
-print(df_count.columns)
-print(df_count.info())
-
 # The following is an example of how we will combine hourly counts into a sum over each day
 
 
 ```
+```{python}
+traffic_dfs[2019]
 
+```
 
 
 ```{python}

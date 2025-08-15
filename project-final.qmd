@@ -165,7 +165,8 @@ for i in range(19, 24):
   for j in range(1,13):
     monthyear = "{:02}".format(j) + year
     fname = f"data/Traffic/counts/AZ{monthyear}.VOL"
-    traffic_count_files.append(fname)
+    # df_count = pd.read_csv(fname)
+    # df_count = df_count.rename(columns = {'Station_Id':'station_id'})
 
 
 # Make 5 year averages

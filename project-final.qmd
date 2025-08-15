@@ -173,18 +173,23 @@ for i in range(19, 24):
 df_2023 = pd.read_csv('data/Traffic/stations/df_2023')
 
 # Ref: https://saturncloud.io/blog/how-to-sum-two-columns-in-a-pandas-dataframe/
-for j in range(1,13):
+for j in range(1,2):
   monthyear = "{:02}23".format(j)
   fname = f"data/Traffic/counts/AZ{monthyear}.VOL"
   df_count = pd.read_csv(fname)
   df_count = df_count.rename(columns = {'Station_Id':'station_id'})
-  hour_list = ["Hour_{:02}".format(x) for x in range(24)]
-  print(hour_list)
-  df_count['daily_sum'] = df_count[hour_list].sum(axis=1)
-  df_count = df_count.groupby('station_id')['daily_sum'].sum()
-  df_2023 = pd.merge(df_2023, df_count, how='left', on='station_id')
+  df_count['daily_volume'] = df_count[["Hour_{:02}".format(i) for i in range(24)]].sum(axis=1)
+  df_count = df_count.drop(["Hour_{:02}".format(i) for i in range(24)], axis=1)
 
-df_2023
+  df_count
+  # print(hour_list)
+  # print(df_count[hour_list])
+  print(df_count.head)
+  # df_count['daily_sum'] = df_count['Hour_00'] + df_count['Hour_01']
+  # df_count = df_count.groupby('station_id')['daily_sum'].sum()
+  # df_2023 = pd.merge(df_2023, df_count, how='left', on='station_id')
+
+# df_2023
 
 # Make 5 year averages
 
@@ -195,6 +200,12 @@ df_2023
 
 # df_2022
 
+
+df_count = pd.read_csv('data/Traffic/counts/AZ1019.VOL')
+print(df_count.columns)
+print(df_count.info())
+
+# The following is an example of how we will combine hourly counts into a sum over each day
 
 
 ```

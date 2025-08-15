@@ -176,11 +176,14 @@ for i in range(19, 24):   # for year of interest
     df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL")
     df_month = df_month.rename(columns = {'Station_Id':'station_id'}) # so we have common column for merging
     df_month['daily_volume'] = df_month[["Hour_{:02}".format(i) for i in range(24)]].sum(axis=1) # sum hour counts to daily count
-    df_month = df_month.groupby('station_id')[['daily_volume']].sum() # monthly sum per station
 
+    df_month = df_month[['daily_volume','station_id']]
+    if df_month.isna().sum().sum() > 0: print(monthyear)
+    df_month = df_month.groupby('station_id', dropna=True)[['daily_volume']].sum() # monthly sum per station
+
+    traffic_dfs[int(monthyear)] = df_month
     # df_volumes = df_volumes.drop(["Hour_{:02}".format(i) for i in range(24)], axis=1)
 
-  traffic_dfs[yearnum] = df_year
     # traffic_dfs[yearnum]['station_annual_count'] += np.log(df_volumes['daily_volume'])
     
     # test aggregating count data
@@ -214,7 +217,7 @@ print(df_count.info())
 
 ```
 ```{python}
-df_month
+traffic_dfs.keys()
 
 ```
 

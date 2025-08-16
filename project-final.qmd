@@ -226,11 +226,18 @@ for i in range(19, 24):   # for year of interest
     monthyear = "{:02}".format(j) + year
 
     # read in counts data
-    df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL")
-    df_month = df_month.rename(columns = {'Station_Id':'station_id'}) # so we have common column for merging
-    df_month['daily_volume'] = df_month[["Hour_{:02}".format(i) for i in range(24)]].sum(axis=1) # sum hour counts to daily count
-    df_month = df_month.groupby('station_id')[['daily_volume']].sum() # monthly sum per station
 
+    # format of data changed in 2022 so we have to account for the delimiter changing
+    if (i < 22):
+      df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL")
+    else:
+      df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL", delimiter='|')
+
+    df_month.columns = [col.lower() for col in df_month.columns]
+    df_month[f'daily_volume_{monthyear}'] = df_month[["hour_{:02}".format(i) for i in range(24)]].sum(axis=1) # sum hour counts to daily count
+    df_month = df_month.groupby('station_id')[[f'daily_volume_{monthyear}']].sum() # monthly sum per station
+
+    df_year = pd.merge(df_year, df_month, how='left', on='station_id')
     # df_volumes = df_volumes.drop(["Hour_{:02}".format(i) for i in range(24)], axis=1)
 
   traffic_dfs[yearnum] = df_year
@@ -267,7 +274,7 @@ print(df_count.info())
 
 ```
 ```{python}
-df_month
+df_year
 
 ```
 

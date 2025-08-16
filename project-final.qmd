@@ -46,6 +46,58 @@ import shapely
 
 ### Data Validation & Cleaning
 
+#### gdf creation function
+```{python}
+#| label: gdf-function
+
+def grid_bin(df, proj='EPSG:4326'):
+  # take in df with features "latitude" (ranging 31 to 37) and "longitude" (ranging -109 to -115) and return geodataframe with a new column that is the grid number
+
+  # Create geometry feature of input df
+  df['geometry'] = gpd.points_from_xy(df.longitude, df.latitude,
+    crs=proj)
+  gdf = gpd.GeoDataFrame(data=df, geometry='geometry')
+
+  # Initialize grid dataframe
+  xmin = -114.5   # total area for the grid with ranging values
+  ymin = 31.2     # describing latitude and longitude limits for AZ
+  xmax = -109
+  ymax = 37
+
+  num_x = 15  # how many cells in x direction minus 1
+  num_y = 20  # how many cells in y direction minus 1
+              # total cells is num_x*num_y (336 in our case)
+
+  cell_size_x = (xmax-xmin)/num_x   # how many cells across and down
+  cell_size_y = (ymax-ymin)/num_y
+
+  # projection of the grid
+  crs = proj
+
+  grid_cells = []
+  for x0 in np.arange(xmin, xmax+cell_size_x, cell_size_x ):
+      for y0 in np.arange(ymin, ymax+cell_size_y, cell_size_y):
+          # bounds
+          x1 = x0-cell_size_x
+          y1 = y0+cell_size_y
+          grid_cells.append( shapely.geometry.box(x0, y0, x1, y1)  )
+
+  # print(grid_cells)
+  grid = gpd.GeoDataFrame(grid_cells, columns=['geometry'], 
+                                 crs=crs)
+
+  # print(grid.shape)   # axis 0 is the number of cells in the grid
+
+  # Spatially join (sjoin) input df and grid
+  gdf_joined = gpd.sjoin(left_df=gdf, right_df=grid, how='left')
+
+  # Rename column to be more intuitive
+  gdf_joined['gridspace'] = gdf_joined['index_right']
+  gdf_joined = gdf_joined.drop(['index_right'], axis=1)
+
+  return gdf_joined
+```
+
 #### Vera section
 
 ```{python}
@@ -71,7 +123,7 @@ noaa1 = noaa
 noaa1.info()
 
 # dropping columns that have too low non-null count (cannot extract valuable estimates from to fill null values)
-noaa1 = noaa1.drop(['DAPR', 'DASF', 'MDSF', 'PGTM', 'WDF2', 'WDF5', 'WESD', 'WESF', 'WT'], axis = 1)
+noaa1 = noaa1.drop(['DAPR', 'DASF', 'MDSF', 'PGTM', 'WDF2', 'WDF5', 'WESD', 'WESF'], axis = 1)
 
 
 
@@ -151,63 +203,82 @@ max_temp_2022 = noaa1[noaa1['YEAR'] == 2022].groupby('STATION')['TMAX'].max().re
 max_temp_5yavg = noaa1.groupby('STATION')['TMAX'].max().rename('max_temp_5yavg')
 
 
+#average temperature for 2022 per station
+avg_temp_2022 = noaa1[noaa1['YEAR'] == 2022].groupby('STATION')['TAVG'].mean().rename('avg_temp_2022')
 
+# average temperature for 5-years/station
+avg_temp_5yavg = noaa1.groupby('STATION')['TAVG'].mean().rename('avg_temp_5yavg')
+
+
+# total inches of rainfall in 2022
+rainfall_2022 = noaa1[noaa1['YEAR'] == 2022].groupby('STATION')['PRCP'].sum().rename('rainfall_2022')
+
+# total inches average for 5-year period
+rainfall_5yavg = rainfall_5yavg = noaa1.groupby('STATION')['PRCP'].sum().rename('rainfall_5yavg')
+
+# latitude per station
+latitude = noaa1.groupby('STATION')['LATITUDE'].first().rename('latitude')
+
+# longitude per station
+longitude = noaa1.groupby('STATION')['LONGITUDE'].first().rename('longitude')
+
+features_2022 = pd.concat([
+    max_temp_2022, max_temp_5yavg, 
+    avg_temp_2022, avg_temp_5yavg,
+    rainfall_2022, rainfall_5yavg,
+    latitude, longitude
+], axis=1).reset_index()
+
+# max temp above 5-year average
+features_2022['max_temp_above_5yavg'] = features_2022['max_temp_2022'] - features_2022['max_temp_5yavg']
+
+# average temperature for 2022 - average temperature
+features_2022['avg_temp_above_5yavg'] = features_2022['avg_temp_2022'] - features_2022['avg_temp_5yavg']
+
+# annual rainfall average minus annual rainfall in 2022
+features_2022['rainfall_below_5yavg'] = features_2022['rainfall_5yavg'] - features_2022['rainfall_2022']
+
+noaa_features = features_2022
+
+noaa_features
 ```
+
+```{python}
+# NOAA data
+
+# applying gdf function
+
+  
+# create grid_bin dataframes
+gdf_noaa = grid_bin(noaa_features)
+
+gdf_noaa
+#gdf_noaa = gdf_noaa.groupby('gridspace', as_index=False)[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'latitude', 'longitude']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
+
+
+# 5. Need to add geometry of gridspace to gdf_traffic
+
+# Plots of average locations within each grid space
+# gdf_traffic.plot.scatter(x='longitude', y='latitude')
+```
+
+```{python}
+gdf_noaa1 = gdf_noaa.groupby('gridspace', as_index=False)[['max_temp_2022', 'max_temp_above_5yavg', 'avg_temp_2022', 'avg_temp_above_5yavg', 'rainfall_2022', 'rainfall_below_5yavg', 'latitude', 'longitude']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
+
+gdf_noaa1
+
+# 5. Need to add geometry of gridspace to gdf_traffic
+
+# Plots of average locations within each grid space
+gdf_noaa1.plot.scatter(x='longitude', y='latitude')
+```
+```
+
 
 #### Molly section
 
 ```{python}
 # Molly section
-
-# grid construction reference: https://james-brennan.github.io/posts/fast_gridding_geopandas/
-
-def grid_bin(df, proj='EPSG:4326'):
-  # take in df with features "latitude" (ranging 31 to 37) and "longitude" (ranging -109 to -115) and return geodataframe with a new column that is the grid number
-
-  # Create geometry feature of input df
-  df['geometry'] = gpd.points_from_xy(df.longitude, df.latitude,
-    crs=proj)
-  gdf = gpd.GeoDataFrame(data=df, geometry='geometry')
-
-  # Initialize grid dataframe
-  xmin = -114.5   # total area for the grid with ranging values
-  ymin = 31.2     # describing latitude and longitude limits for AZ
-  xmax = -109
-  ymax = 37
-
-  num_x = 15  # how many cells in x direction minus 1
-  num_y = 20  # how many cells in y direction minus 1
-              # total cells is num_x*num_y (336 in our case)
-
-  cell_size_x = (xmax-xmin)/num_x   # how many cells across and down
-  cell_size_y = (ymax-ymin)/num_y
-
-  # projection of the grid
-  crs = proj
-
-  grid_cells = []
-  for x0 in np.arange(xmin, xmax+cell_size_x, cell_size_x ):
-      for y0 in np.arange(ymin, ymax+cell_size_y, cell_size_y):
-          # bounds
-          x1 = x0-cell_size_x
-          y1 = y0+cell_size_y
-          grid_cells.append( shapely.geometry.box(x0, y0, x1, y1)  )
-
-  # print(grid_cells)
-  grid = gpd.GeoDataFrame(grid_cells, columns=['geometry'], 
-                                 crs=crs)
-
-  # print(grid.shape)   # axis 0 is the number of cells in the grid
-
-  # Spatially join (sjoin) input df and grid
-  gdf_joined = gpd.sjoin(left_df=gdf, right_df=grid, how='left')
-
-  # Rename column to be more intuitive
-  gdf_joined['gridspace'] = gdf_joined['index_right']
-  gdf_joined = gdf_joined.drop(['index_right'], axis=1)
-
-  return gdf_joined
-
 
 # Engineering DataFrames of traffic data
 # going to store each year's dataframe in a dictionary {year: df}

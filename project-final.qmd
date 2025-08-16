@@ -50,6 +50,9 @@ import shapely
 ```{python}
 #| label: gdf-function
 
+# grid construction reference: https://james-brennan.github.io/posts/fast_gridding_geopandas/
+
+
 def grid_bin(df, proj='EPSG:4326'):
   # take in df with features "latitude" (ranging 31 to 37) and "longitude" (ranging -109 to -115) and return geodataframe with a new column that is the grid number
 
@@ -253,13 +256,6 @@ noaa_features
 gdf_noaa = grid_bin(noaa_features)
 
 gdf_noaa
-#gdf_noaa = gdf_noaa.groupby('gridspace', as_index=False)[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'latitude', 'longitude']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
-
-
-# 5. Need to add geometry of gridspace to gdf_traffic
-
-# Plots of average locations within each grid space
-# gdf_traffic.plot.scatter(x='longitude', y='latitude')
 ```
 
 ```{python}
@@ -271,9 +267,27 @@ gdf_noaa1
 
 # Plots of average locations within each grid space
 gdf_noaa1.plot.scatter(x='longitude', y='latitude')
-```
+
+
 ```
 
+```{python}
+import cartopy
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+
+# Create a Cartopy projection
+projection = ccrs.PlateCarree()
+
+# Create a figure and axis with Cartopy projection
+fig, ax = plt.subplots(figsize=(10, 8), subplot_kw={'projection': projection})
+
+# Add coastlines
+ax.coastlines(linewidth=0.5)
+
+# Add U.S. state borders
+ax.add_feature(cfeature.STATES, linestyle=':', edgecolor='black', linewidth=0.5)
+```
 
 #### Molly section
 

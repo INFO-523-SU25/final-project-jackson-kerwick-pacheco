@@ -46,6 +46,8 @@ import shapely
 
 ### Data Validation & Cleaning
 
+#### Vera section
+
 ```{python}
 # Vera section
 
@@ -135,6 +137,24 @@ axes[-1].set_xlabel("Date")
 fig.tight_layout()
 plt.show()
 ```
+
+```{python}
+# engineered features
+
+# extract year from date
+noaa1['YEAR'] = noaa1['DATE'].dt.year
+
+# maximum temperature for 2022/station
+max_temp_2022 = noaa1[noaa1['YEAR'] == 2022].groupby('STATION')['TMAX'].max().rename('max_temp_2022')
+
+# max temp in a 5-year average per station
+max_temp_5yavg = noaa1.groupby('STATION')['TMAX'].max().rename('max_temp_5yavg')
+
+
+
+```
+
+#### Molly section
 
 ```{python}
 # Molly section

@@ -30,6 +30,7 @@ jupyter: python3
 import seaborn as sns
 import glob
 import os
+from matplotlib.dates import date2num
 
 # Molly
 import geopandas as gpd
@@ -61,15 +62,17 @@ for file in all_files:
 # merging data together into one data frame
 noaa = pd.concat(list_of_dfs, ignore_index = True)
 
+# make copy
+noaa1 = noaa
+
 # dropping unnecessary data
+noaa1.info()
 
-noaa.columns = noaa.columns.str.lower()
+# dropping columns that have too low non-null count (cannot extract valuable estimates from to fill null values)
+noaa1 = noaa1.drop(['DAPR', 'DASF', 'MDSF', 'PGTM', 'WDF2', 'WDF5', 'WESD', 'WESF', 'WT'], axis = 1)
 
-noaa.head()
 
-noaa1 = grid_bin(noaa)
-noaa1['gridspace'].hist()
-plt.show()
+
 ```
 
 ```{python}
@@ -79,9 +82,11 @@ plt.show()
 
 print("Missing values (NaN): \n" + str(noaa1.isnull().sum()))
 
-unique_stations = noaa1['station'].unique()
+unique_stations = noaa1['STATION'].unique()
 
-station_count = noaa1['station'].value_counts()
+
+station_count = noaa1['STATION'].value_counts()
+
 
 print("Stations: " + str(unique_stations))
 print("Station count: " + str(station_count))
@@ -92,13 +97,43 @@ noaaNum = noaa1.select_dtypes(include = np.number)
 print(noaaNum)
 
 # For all values in the numerical column list from above
-for col in noaaNum:
+for col in noaaNum.columns:
     noaa1[col] = noaa1[col].fillna(
-        noaa1.groupby('station')[col].transform('mean')
+        noaa1.groupby('STATION')[col].transform('median')
     )
 
 print("Missing values NOW (NaN): \n" + str(noaa1.isnull().sum()))
+```
 
+```{python}
+# visualizations of all features
+
+# date is in correct time format
+noaa1['DATE'] = pd.to_datetime(noaa1['DATE'])
+
+# selecting variables to plot
+noaa1_scatter_eda = noaa1[['DATE', 'AWND', 'EVAP', 'PRCP', 'SNOW', 'SNWD', 'TAVG', 'TMAX', 'TMIN', 'TOBS', 'WSF2', 'WSF5']]
+
+# numeric columns
+num_cols = noaa1_scatter_eda.select_dtypes(include=np.number).columns
+
+# create stacked subplots
+fig, axes = plt.subplots(len(num_cols), 1, figsize=(12, 3 * len(num_cols)), sharex=True)
+
+# for loop to plot all figures into grid
+for i, col in enumerate(num_cols):
+    # Scatter plot
+    sns.scatterplot(
+        data=noaa1_scatter_eda, x="DATE", y=col,
+        ax=axes[i], s=5, alpha=0.5, color="blue", edgecolor=None)
+    
+    axes[i].set_ylabel(col)
+    axes[i].grid(True, linestyle='--', alpha=0.5)
+
+axes[-1].set_xlabel("Date")
+
+fig.tight_layout()
+plt.show()
 
 
 ```

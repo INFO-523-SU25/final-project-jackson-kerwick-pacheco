@@ -193,6 +193,7 @@ def grid_bin(df, proj='EPSG:4326'):
           y1 = y0+cell_size_y
           grid_cells.append( shapely.geometry.box(x0, y0, x1, y1)  )
 
+  # print(grid_cells)
   grid = gpd.GeoDataFrame(grid_cells, columns=['geometry'], 
                                  crs=crs)
 
@@ -210,7 +211,6 @@ def grid_bin(df, proj='EPSG:4326'):
 
 # Engineering DataFrames of traffic data
 # going to store each year's dataframe in a dictionary {year: df}
-traffic_dfs = {}
 
 df_traffic_5yavg = pd.DataFrame()
 
@@ -262,31 +262,9 @@ for i in range(19, 24):   # for year of interest
     df_traffic_5yavg = df_year.copy()
   df_traffic_5yavg[f'traffic_counts_{year}'] = df_year['traffic_counts']
 
-  # storing dfs in dictionary
-  # traffic_dfs[yearnum] = df_year
-
-
-df_2023 = pd.read_csv('data/Traffic/stations/df_2023')
 
 # Ref: https://saturncloud.io/blog/how-to-sum-two-columns-in-a-pandas-dataframe/
 
-
-df_count = pd.read_csv('data/Traffic/counts/AZ1019.VOL')
-print(df_count.columns)
-print(df_count.info())
-
-# The following is an example of how we will combine hourly counts into a sum over each day
-
-# df_2023
-
-# Make 5 year averages
-
-# df_2022 = pd.read_csv('data/Traffic/stations/df_2022')
-# df_2022 = grid_bin(df_2022)
-# df_2022['gridspace'].hist()
-# plt.show()
-
-# TODO:
 ####### 1. make 5 year avg df
 
 # remove column that was duplicate added during looping
@@ -315,9 +293,17 @@ df_traffic = df_traffic.drop('traffic_counts_5yavg', axis=1)
 # 3. grid_bin dataframes
 gdf_traffic = grid_bin(df_traffic)
 
+# 4. average values over gridspace
+gdf_traffic = grid_bin(df_traffic)
+
+gdf_traffic = gdf_traffic.groupby('gridspace', as_index=False)[['traffic_counts_2022', 'traffic_counts_above_5yavg']].mean()
+
+gdf_traffic
+
+# 5. Need to add geometry of gridspace to gdf_traffic
+
 ```
 ```{python}
-gdf_traffic
 
 ```
 

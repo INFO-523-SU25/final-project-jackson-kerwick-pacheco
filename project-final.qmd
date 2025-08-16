@@ -288,12 +288,19 @@ print(df_count.info())
 
 # TODO:
 # 1. make 5 year avg df
+df_traffic_5yavg = df_traffic_5yavg.drop('traffic_counts',axis=1)
 df_traffic_5yavg['traffic_counts_5yavg'] = df_traffic_5yavg[['traffic_counts_{:02}'.format(year) for year in range(19,24)]].mean(axis=1)
 
 # 2. make traffic_counts_above_5yavg feature
 df_traffic_2022 = df_traffic_5yavg.drop(['traffic_counts_{:02}'.format(year) for year in range(19,22)], axis=1)
 
 df_traffic_2022 = df_traffic_2022.drop('traffic_counts_23', axis=1)
+
+df_traffic_2022 = df_traffic_2022.rename({'traffic_counts_22': 'traffic_counts'}, axis=1)
+
+df_traffic_2022['traffic_counts_above_5yavg'] = df_traffic_2022['traffic_counts'] - df_traffic_2022['traffic_counts_5yavg']
+
+df_traffic_2022 = df_traffic_2022.drop('traffic_counts_5yavg', axis=1)
 
 
 # 3. grid_bin dataframes

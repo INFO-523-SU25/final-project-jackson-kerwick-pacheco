@@ -246,11 +246,11 @@ print(df_count.info())
 
 
 ```
+
 ```{python}
 df_month
 
 ```
-
 
 ```{python}
 

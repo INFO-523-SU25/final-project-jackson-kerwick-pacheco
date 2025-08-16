@@ -208,51 +208,56 @@ def grid_bin(df, proj='EPSG:4326'):
   return gdf_joined
 
 
-# Group station data and counts data
-# Read in counts data
+# Engineering DataFrames of traffic data
+# going to store each year's dataframe in a dictionary {year: df}
 traffic_dfs = {}
-# hours = ["Hour_{:02}".format(x) for x in range(24)]
-# print(hours)
 
 for i in range(19, 24):   # for year of interest
+  # format values for files/features
   year = "{:02}".format(i)
   yearnum = int(f'20{year}')
 
-  # read in station data
-  df_year = pd.read_csv(f'data/Traffic/stations/df_20{year}')   
-  df_year['station_annual_count'] = 0    # make new column of zeros
+  # read in station data for the year
+  df_year = pd.read_csv(f'data/Traffic/stations/df_20{year}')
 
+  # define data types for merging later
   df_year['station_id'] = df_year['station_id'].astype(str)
 
   for j in range(1,13):   # for month of interest
+    # format strings for files/features 
     monthyear = "{:02}".format(j) + year
+    month = "{:02}".format(j)
 
     # read in counts data
-
-    # format of data changed in 2022 so we have to account for the delimiter changing
+    # Note: the format of data changed in 2022 so we have to account for the delimiter changing
     if (i < 22):
       df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL")
     else:
       df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL", delimiter='|')
 
-    month = "{:02}".format(j)
+    # formatting so merging works later
     df_month.columns = [col.lower() for col in df_month.columns]
-    df_month[f'daily_volume_{month}'] = df_month[["hour_{:02}".format(i) for i in range(24)]].sum(axis=1) # sum hour counts to daily count
-    df_month = df_month.groupby('station_id', as_index=False)[[f'daily_volume_{month}']].sum() # monthly sum per station
 
+    # sum hour counts to daily count per day
+    df_month[f'daily_volume_{month}'] = df_month[["hour_{:02}".format(i) for i in range(24)]].sum(axis=1) 
+
+    # sum daily counts to monthly count per station
+    df_month = df_month.groupby('station_id', as_index=False)[[f'daily_volume_{month}']].sum()
+
+    # defining data types so merging later works
     df_month['station_id'] = df_month['station_id'].astype(str)
 
+    # adding each month's total count to an annual df
     df_year = pd.merge(df_year, df_month, how='left', on='station_id')
-    # df_volumes = df_volumes.drop(["Hour_{:02}".format(i) for i in range(24)], axis=1)
 
-  df_year['annual_count'] = df_year[["daily_volume_{:02}".format(i) for i in range(1,13)]].sum(axis=1)
+  # summing monthly counts so we have an annual count
+  df_year['traffic_counts'] = df_year[["daily_volume_{:02}".format(i) for i in range(1,13)]].sum(axis=1)
 
-  df_year = df_year.drop(["daily_volume_{:02}".format(i) for i in range(1,13)], axis=1)
+  # removing unused columns
+  df_year = df_year[['station_id','latitude','longitude', 'traffic_counts']]
 
+  # storing dfs in dictionary
   traffic_dfs[yearnum] = df_year
-    # traffic_dfs[yearnum]['station_annual_count'] += np.log(df_volumes['daily_volume'])
-    
-    # test aggregating count data
 
 
 df_2023 = pd.read_csv('data/Traffic/stations/df_2023')
@@ -275,15 +280,19 @@ print(df_count.info())
 # df_2022['gridspace'].hist()
 # plt.show()
 
-# df_2022
+# TODO:
+# 1. make 5 year avg df
 
 
-# The following is an example of how we will combine hourly counts into a sum over each day
+# 2. make traffic_counts_above_5yavg feature
+
+
+# 3. grid_bin dataframes
 
 
 ```
 ```{python}
-traffic_dfs[2019]
+traffic_dfs[2023]
 
 ```
 

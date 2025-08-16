@@ -212,6 +212,8 @@ def grid_bin(df, proj='EPSG:4326'):
 # going to store each year's dataframe in a dictionary {year: df}
 traffic_dfs = {}
 
+df_traffic_5yavg = pd.DataFrame()
+
 for i in range(19, 24):   # for year of interest
   # format values for files/features
   year = "{:02}".format(i)
@@ -282,6 +284,7 @@ print(df_count.info())
 
 # TODO:
 # 1. make 5 year avg df
+df_traffic_5yavg = 
 
 
 # 2. make traffic_counts_above_5yavg feature

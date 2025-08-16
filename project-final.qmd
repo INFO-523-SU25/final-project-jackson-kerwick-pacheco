@@ -296,7 +296,7 @@ gdf_traffic = grid_bin(df_traffic)
 # 4. average values over gridspace
 gdf_traffic = grid_bin(df_traffic)
 
-gdf_traffic = gdf_traffic.groupby('gridspace', as_index=False)[['traffic_counts_2022', 'traffic_counts_above_5yavg']].mean()
+gdf_traffic = gdf_traffic.groupby('gridspace', as_index=False)[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'latitude', 'longitude']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
 
 gdf_traffic
 
@@ -304,7 +304,8 @@ gdf_traffic
 
 ```
 ```{python}
-
+# Plots of average locations within each grid space
+# gdf_traffic.plot.scatter(x='longitude', y='latitude')
 ```
 
 #### Brooke section

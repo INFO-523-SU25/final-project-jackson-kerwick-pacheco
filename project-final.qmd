@@ -31,6 +31,12 @@ import seaborn as sns
 import glob
 import os
 from matplotlib.dates import date2num
+import geodatasets
+states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
+states = states.to_crs(gdf_noaa1.crs)
+arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
+
+
 
 # Molly
 import geopandas as gpd
@@ -274,23 +280,17 @@ gdf_noaa1 = gpd.GeoDataFrame(gdf_noaa1, geometry="geometry", crs=gdf_noaa.crs)
 
 ```
 
-```{python
-ax = gdf_noaa1.plot(column = 'max_temp_2022', figsize = (12, 8), cmap = 'viridis')
-plt.autoscale(False)
-world = geopandas.read_file(geopandas.datasets.get_path('naturalearth_lowres'))
-world.to_crs(cell.crs).plot(ax=ax, color='none', edgecolor='black')
-ax.axis('off')
-```
-
 ```{python}
-
-ax = gdf_noaa1.plot('geometry')
-ax = gdf.plot(markersize=.1, figsize=(12, 8), column='dob', cmap='jet')
+# example: plotting noaa data with arizona shapefile
+ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
+gdf_noaa1.plot(ax=ax, column="max_temp_2022", cmap="viridis", markersize=30, legend=True)
+plt.title("Max Temperature in 2022 Per Station")
+plt.xlabel('Latitude')
+plt.ylabel('Longitude')
 plt.autoscale(False)
-world = geopandas.read_file(geopandas.datasets.get_path('naturalearth_lowres'))
-world.to_crs(gdf.crs).plot(ax=ax, color='none', edgecolor='black')
-ax.axis('off')
+plt.show()
 ```
+
 
 #### Molly section
 

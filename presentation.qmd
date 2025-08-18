@@ -1,7 +1,7 @@
 ---
-title: "Project title"
+title: "Urbanization and Climate in Arizona, USA"
 subtitle: "INFO 523 - Summer 2025 - Final Project"
-author: "Author names"
+author: "Vera Jackson, Molly Kerwick, Brooke Pacheco"
 title-slide-attributes:
   data-background-image: images/az_traffic.webp
   data-background-size: stretch
@@ -22,8 +22,18 @@ execute:
 #| include: false
 
 # Load packages here
-import pandas as pd
 import seaborn as sns
+import glob
+import os
+from matplotlib.dates import date2num
+import geodatasets
+import geopandas as gpd
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import shapely
+from shapely.geometry import Point
+from sklearn.preprocessing import StandardScaler
 
 ```
 
@@ -51,33 +61,26 @@ mtcars['speed'] = mtcars['horsepower'] / mtcars['weight']
 penguins = sns.load_dataset('penguins').dropna()
 ```
 
-# Using Quarto for presentations
+## Topic and Research Question
 
-## Quarto
+-   Analyze the relationship between urbanization and climate across regions within Arizona, identifying patterns and anomalies in how urban growth impacts climate metrics such as storms, temperature, and rainfall.
 
--   The presentation is created using the Quarto CLI
+-   Identify the regional relationship between urbanization and climate indicators. The presentation is created using the Quarto CLI
 
--   `##` sets the start of a new slide
-
-## Layouts
+## Data
 
 You can use plain text
 
-::::: columns
+:::: columns
 ::: {.column width="40%"}
--   or bullet points[^1]
+-   Urbanization Metric: traffic count data
+-   Cliamte Metric: National Oceanographic and Atmospheric Administration (NOAA) climate and storm event data as our environmental quality data.
 :::
+::::
 
-::: {.column width="60%"}
-or in two columns
-:::
-:::::
+## Exploratory Data Analysis
 
-[^1]: And add footnotes
-
--   like
-
--   this
+## Data Mining
 
 ## Code
 

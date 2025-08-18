@@ -21,6 +21,7 @@ jupyter: python3
 ---
 
 ## Import Libraries
+
 ```{python}
 # Import Libraries 
 import seaborn as sns
@@ -40,6 +41,7 @@ from sklearn.preprocessing import StandardScaler
 ## Data Validation & Cleaning
 
 ### GDF Creation function
+
 ```{python}
 #| label: gdf-function
 
@@ -113,6 +115,7 @@ def grid_bin(df, proj='EPSG:4326', xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, n
 ```
 
 ### Load and Merge NOAA Files
+
 ```{python}
 # load data
 all_files = glob.glob("data/NOAA/" + "*.csv")
@@ -137,6 +140,7 @@ noaa1.info()
 ```
 
 ### NOAA - Remove Missing Values
+
 ```{python}
 # investigate missing values
 print("Missing values (NaN): \n" + str(noaa1.isnull().sum()))
@@ -161,6 +165,7 @@ print("Missing values NOW (NaN): \n" + str(noaa1.isnull().sum()))
 ```
 
 ### NOAA - Visualize Al of the Features
+
 ```{python}
 # Date is in correct time format
 noaa1['DATE'] = pd.to_datetime(noaa1['DATE'])
@@ -190,7 +195,8 @@ fig.tight_layout()
 plt.show()
 ```
 
-### NOAA - Engineered Features 
+### NOAA - Engineered Features
+
 ```{python}
 # Extract year from date
 noaa1['YEAR'] = noaa1['DATE'].dt.year
@@ -253,6 +259,7 @@ gdf_noaa
 ```
 
 ### Load Shapfile for Plotting
+
 ```{python}
 #| label: load-pkgs
 #| message: false
@@ -289,6 +296,7 @@ plt.show()
 ```
 
 ### Storm Data - Load File and Visualize Data
+
 ```{python}
 # Path to your folder
 folder_path = "data/StormEvents/"
@@ -333,6 +341,7 @@ storm_df.info()
 ```
 
 ### Storm Data - Data Prepocessing and Engineered Features
+
 ```{python}
 # Make sure dates and magnitude are correct type
 storm_df['BEGIN_DATE'] = pd.to_datetime(storm_df['BEGIN_DATE'])
@@ -387,6 +396,7 @@ storm_features_2022.info()
 ```
 
 ### GDF Plot to Visualize Data
+
 ```{python}
 # # Load US counties shapefile (example: from a local file or GeoPandas datasets)
 # counties = gpd.read_file('path_to_county_shapefile.shp')
@@ -538,6 +548,7 @@ gdf_traffic.info()
 ```
 
 ### Merge Datasets
+
 ```{python}
 import pandas as pd
 import geopandas as gpd
@@ -610,6 +621,7 @@ merged_df.isnull().sum()
 ```
 
 ### Handle Missing Data and Remove Outliers
+
 ```{python}
 # For numerical columns, fill nulls with mean
 numerical_cols = ['lowmagstorm_events_2022', 'lowmagstorm_5yavg', 'highmagstorm_events_2022',
@@ -634,6 +646,7 @@ for col in numeric_cols:
 ```
 
 ### Data Transformation - Feature Scaling
+
 ```{python}
 # Intilaize the scalar
 scaler = StandardScaler()
@@ -648,6 +661,7 @@ print(merged_df_scaled)
 ```
 
 ### Data Reduction
+
 ```{python}
 # Keep only numeric columns
 numeric_cols = merged_df_scaled.select_dtypes(include=[np.numbers]).columns
@@ -673,7 +687,6 @@ for i in range(loading_scores.shape[0]):
 for component, features in top_features.items():
   print(f"{component}: {features}")
 ```
-
 
 ### Exploratory Data Analysis (EDA)
 

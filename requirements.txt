@@ -1,10 +1,8 @@
-jupyter
-nbformat
-pandas
-numpy
-geopandas
+seaborn
 matplotlib
 geodatasets
-seaborn
+geopandas
+pandas
+numpy
 shapely
-
+scikit-learn

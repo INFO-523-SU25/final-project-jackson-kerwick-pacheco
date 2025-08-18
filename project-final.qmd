@@ -34,6 +34,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import shapely
 from shapely.geometry import Point
+from sklearn.preprocessing import StandardScaler
 ```
 
 ## Data Validation & Cleaning
@@ -605,7 +606,72 @@ print(merged_df.info())
 print(merged_df.head())
 print(merged_df.dtypes)
 
+merged_df.isnull().sum()
+```
 
+### Handle Missing Data and Remove Outliers
+```{python}
+# For numerical columns, fill nulls with mean
+numerical_cols = ['lowmagstorm_events_2022', 'lowmagstorm_5yavg', 'highmagstorm_events_2022',
+                  'highmagstorm_5yavg', 'average_storm_mag_2022', 'lowmagstorm_events_above_5yavg',
+                  'highmagstorm_events_above_5yavg', 'max_temp_above_5yavg', 'avg_temp_above_5yavg',
+                  'rainfall_below_5yavg', 'traffic_counts_2022', 'traffic_counts_above_5yavg']
+
+for col in numerical_cols:
+    merged_df[col].fillna(merged_df[col].mean(), inplace=True)
+
+# For categorical columns, fill nulls with mode
+merged_df['NAME'].fillna(df['NAME'].mode()[0], inplace=True)
+
+merged_df.isnull().sum()
+
+# Remove outliers - capping (winsorizing) imputation
+numeric_cols = merged_df.select_dtypes(include=[np.number]).columns
+for col in numeric_cols:
+  lower_limit = np.percentile(merged_df[col], 5)
+  upper_limit = np.percentile(merged_df[col], 95)
+
+```
+
+### Data Transformation - Feature Scaling
+```{python}
+# Intilaize the scalar
+scaler = StandardScaler()
+
+# Select numeric columns
+numeric_cols = merged_df.select_dtypes(include='number').columns
+
+# Fit and transform
+merged_df_scaled = merged_df.copy()
+merged_df_scaled[numeric_cols] = scalar.fit_transform(merged_df[numeric_cols])
+print(merged_df_scaled)
+```
+
+### Data Reduction
+```{python}
+# Keep only numeric columns
+numeric_cols = merged_df_scaled.select_dtypes(include=[np.numbers]).columns
+df_numeric = merged_df_scaled[numeric_cols]
+
+# Run PCA to get 95% variance
+pca = PCA(n_components=0.95)
+reduced_data = pca.fit_transform(df_numeric)
+
+# Loading scores
+loading_scores = pd.DataFrame(pca.components_, columns=numeric_cols)
+
+threshold = 0.5
+
+# Extract top feature
+top_features = {}
+for i in range(loading_scores.shape[0]):
+  component = f"Component {i+1}"
+  scores = loading_scores.iloc[i]
+  top_features_for_component = scores[abs(scores) > threshold].index.tolist()
+
+# Print results
+for component, features in top_features.items():
+  print(f"{component}: {features}")
 ```
 
 

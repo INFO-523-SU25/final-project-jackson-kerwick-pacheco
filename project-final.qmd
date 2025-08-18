@@ -33,6 +33,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import shapely
+from shapely.geometry import Point
 ```
 
 ## Data Validation & Cleaning
@@ -531,28 +532,82 @@ plt.show()
 gdf_traffic.plot('traffic_counts_above_5yavg')
 plt.show()
 
-
+gdf_traffic.info()
 
 ```
+
+### Merge Datasets
 ```{python}
+import pandas as pd
+import geopandas as gpd
+from shapely.geometry import Point
 
+# Load Arizona counties shapefile 
+# Using US Census counties shapefile 
+counties = gpd.read_file("data/tl_2024_us_county.shp")
+
+# Filter for Arizona only (FIPS code: '04')
+az_counties = counties[counties['STATEFP'] == '04'].copy()
+
+# Rename and clean
+az_counties['CZ_FIPS'] = az_counties['COUNTYFP'].astype(int)
+az_counties = az_counties[['CZ_FIPS', 'NAME', 'geometry']]
+
+# Convert NOAA and Traffic data to GeoDataFrames 
+noaa_gdf = gpd.GeoDataFrame(
+    noaa_features,
+    geometry=gpd.points_from_xy(noaa_features['longitude'], noaa_features['latitude']),
+    crs='EPSG:4326'
+)
+
+# Traffic
+traffic_gdf = gpd.GeoDataFrame(
+    df_traffic,
+    geometry=gpd.points_from_xy(df_traffic['longitude'], df_traffic['latitude']),
+    crs='EPSG:4326'
+)
+
+# Spatial join points to counties
+# NOAA -> county
+noaa_gdf = gpd.sjoin(noaa_gdf, az_counties, how='left', predicate='within')
+
+# Traffic -> county
+traffic_gdf = gpd.sjoin(traffic_gdf, az_counties, how='left', predicate='within')
+
+# Aggregate NOAA and Traffic features by county
+noaa_by_county = noaa_gdf.groupby('CZ_FIPS').agg({
+    'max_temp_above_5yavg': 'mean',
+    'avg_temp_above_5yavg': 'mean',
+    'rainfall_below_5yavg': 'mean'
+}).reset_index()
+
+# Traffic aggregation
+traffic_by_county = traffic_gdf.groupby('CZ_FIPS').agg({
+    'traffic_counts_2022': 'sum',
+    'traffic_counts_above_5yavg': 'mean'
+}).reset_index()
+
+# _________________Merge all dataframes on county FIPS_________________ 
+# Start with storm data
+merged_df = storm_features_2022.copy()
+
+# Merge with NOAA
+merged_df = pd.merge(merged_df, noaa_by_county, how='left', on='CZ_FIPS')
+
+# Merge with traffic
+merged_df = pd.merge(merged_df, traffic_by_county, how='left', on='CZ_FIPS')
+
+# Add county names for readability
+merged_df = pd.merge(merged_df, az_counties[['CZ_FIPS', 'NAME']], how='left', on='CZ_FIPS')
+
+# View final dataframe
+print(merged_df.info())
+print(merged_df.head())
+print(merged_df.dtypes)
 
 
 ```
 
-#### Brooke section
-
-```{python}
-
-
-
-
-
-```
-
-```{python}
-
-```
 
 ### Exploratory Data Analysis (EDA)
 
@@ -650,3 +705,5 @@ plt.show()
 # References
 
 grid construction reference: https://james-brennan.github.io/posts/fast_gridding_geopandas/
+
+https://saturncloud.io/blog/how-to-sum-two-columns-in-a-pandas-dataframe/

@@ -20,7 +20,7 @@ execute:
 jupyter: python3
 ---
 
-### Import Libraries
+## Import Libraries
 ```{python}
 # Import Libraries 
 import seaborn as sns
@@ -35,6 +35,85 @@ import matplotlib.pyplot as plt
 import shapely
 ```
 
+## Data Validation & Cleaning
+
+### GDF Creation function
+```{python}
+#| label: gdf-function
+
+#| label: gdf-function
+
+def get_grid(xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, num_x=15, num_y=20, proj='EPSG:4326'):
+    # Calculate width and height of each grid cell
+    cell_size_x = (xmax - xmin) / num_x
+    cell_size_y = (ymax - ymin) / num_y
+
+    # Define coordinate reference system (CRS) for the grid
+    crs = proj
+
+    # Initialize a list to hold grid cell geometries
+    grid_cells = []
+
+    # Create the grid by looping through x and y ranges
+    for x0 in np.arange(xmin, xmax + cell_size_x, cell_size_x):
+      for y0 in np.arange(ymin, ymax + cell_size_y, cell_size_y):
+          # Define opposite corner of the box (left and upper side)
+          x1 = x0 - cell_size_x
+          y1 = y0 + cell_size_y
+
+          # Create a rectangular polygon and add it to the list
+          grid_cells.append(shapely.geometry.box(x0, y0, x1, y1))
+
+    # Create a GeoDataFrame from the list of polygons with specified CRS
+    grid = gpd.GeoDataFrame(grid_cells, columns=['geometry'], crs=crs)
+
+    # Assign a unique ID to each grid cell
+    grid['gridspace'] = [i for i in range(336)]  # Assumes 336 cells
+
+    return grid
+
+
+def add_grid_geometry(df):
+  """
+  Given a DataFrame that already contains a 'gridspace' column,
+  add corresponding grid cell geometries by merging with the generated grid.
+  """
+  # Generate the grid
+  grid = get_grid()
+
+  # Merge input df with grid to attach geometry based on gridspace ID
+  df = pd.merge(df, grid, on='gridspace', how='left')
+
+  return df
+
+
+def grid_bin(df, proj='EPSG:4326', xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, num_x=15, num_y=20):
+  """
+  Assign a grid cell ('gridspace') to each point in the input DataFrame
+  based on its latitude and longitude.
+  """
+
+  # Create point geometries from latitude and longitude
+  df['geometry'] = gpd.points_from_xy(df.longitude, df.latitude, crs=proj)
+
+  # Convert the DataFrame into a GeoDataFrame
+  gdf = gpd.GeoDataFrame(data=df, geometry='geometry')
+
+  # Generate the spatial grid with given bounding box and cell count
+  grid = get_grid(xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax, num_x=num_x, num_y=num_y, proj=proj)
+
+  # Perform a spatial join to assign each point to a grid cell
+  gdf_joined = gpd.sjoin(left_df=gdf, right_df=grid, how='left')
+
+  # Rename the resulting 'index_right' column to 'gridspace' for clarity
+  gdf_joined['gridspace'] = gdf_joined['index_right']
+  gdf_joined = gdf_joined.drop(['index_right'], axis=1)
+
+  return gdf_joined
+```
+
+#### Vera section
+
 ### Load Shapfile for Plotting
 ```{python}
 #| label: load-pkgs
@@ -45,64 +124,6 @@ states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state
 states = states.to_crs(gdf_noaa1.crs)
 arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
 ```
-
-### Data Validation & Cleaning
-
-#### gdf creation function
-```{python}
-#| label: gdf-function
-
-# grid construction reference: https://james-brennan.github.io/posts/fast_gridding_geopandas/
-
-def get_grid(xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, num_x=15, num_y=20, proj='EPSG:4326'):
-  cell_size_x = (xmax-xmin)/num_x   # how many cells across and down
-  cell_size_y = (ymax-ymin)/num_y
-
-  # projection of the grid
-  crs = proj
-
-  grid_cells = []
-  for x0 in np.arange(xmin, xmax+cell_size_x, cell_size_x ):
-      for y0 in np.arange(ymin, ymax+cell_size_y, cell_size_y):
-          # bounds
-          x1 = x0-cell_size_x
-          y1 = y0+cell_size_y
-          grid_cells.append( shapely.geometry.box(x0, y0, x1, y1)  )
-
-  grid = gpd.GeoDataFrame(grid_cells, columns=['geometry'], 
-                                 crs=crs)
-  grid['gridspace'] = [i for i in range(336)]
-  return grid
-
-def add_grid_geometry(df):
-  # takes in df that has a gridspace column already defined, returns same df with a gridspace geometry column for mapping
-  grid = get_grid()
-  df = pd.merge(df, grid, on='gridspace', how='left')
-  return df
-
-
-def grid_bin(df, proj='EPSG:4326', xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, num_x=15, num_y=20):
-  # take in df with features "latitude" (ranging 31 to 37) and "longitude" (ranging -109 to -115) and return geodataframe with a new column that is the grid number
-
-  # Create geometry feature of input df
-  df['geometry'] = gpd.points_from_xy(df.longitude, df.latitude,
-    crs=proj)
-  gdf = gpd.GeoDataFrame(data=df, geometry='geometry')
-
-  # Initialize grid dataframe
-  grid = get_grid(xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax, num_x=num_x, num_y=num_y, proj=proj)
-  
-  # Spatially join (sjoin) input df and grid
-  gdf_joined = gpd.sjoin(left_df=gdf, right_df=grid, how='left')
-
-  # Rename column to be more intuitive
-  gdf_joined['gridspace'] = gdf_joined['index_right']
-  gdf_joined = gdf_joined.drop(['index_right'], axis=1)
-
-  return gdf_joined
-```
-
-#### Vera section
 
 ```{python}
 # Vera section
@@ -517,3 +538,7 @@ plt.show()
 
 
 ```
+
+# References
+
+grid construction reference: https://james-brennan.github.io/posts/fast_gridding_geopandas/

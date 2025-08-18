@@ -20,36 +20,30 @@ execute:
 jupyter: python3
 ---
 
+### Import Libraries
 ```{python}
-#| label: load-pkgs
-#| message: false
-# imports
-
-# US state and arizona shapefile for plotting
-states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
-states = states.to_crs(gdf_noaa1.crs)
-arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
-
-```
-```{python}
-# Vera
-# in addition to Molly's
+# Import Libraries 
 import seaborn as sns
 import glob
 import os
 from matplotlib.dates import date2num
 import geodatasets
-
-# Molly
 import geopandas as gpd
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import shapely
+```
 
-# Brooke
+### Load Shapfile for Plotting
+```{python}
+#| label: load-pkgs
+#| message: false
 
-
+# US state and arizona shapefile for plotting
+states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
+states = states.to_crs(gdf_noaa1.crs)
+arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
 ```
 
 ### Data Validation & Cleaning

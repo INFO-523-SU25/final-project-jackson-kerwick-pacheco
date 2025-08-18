@@ -30,7 +30,8 @@ states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state
 states = states.to_crs(gdf_noaa1.crs)
 arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
 
-
+```
+```{python}
 # Vera
 # in addition to Molly's
 import seaborn as sns
@@ -59,25 +60,7 @@ import shapely
 
 # grid construction reference: https://james-brennan.github.io/posts/fast_gridding_geopandas/
 
-
-def grid_bin(df, proj='EPSG:4326'):
-  # take in df with features "latitude" (ranging 31 to 37) and "longitude" (ranging -109 to -115) and return geodataframe with a new column that is the grid number
-
-  # Create geometry feature of input df
-  df['geometry'] = gpd.points_from_xy(df.longitude, df.latitude,
-    crs=proj)
-  gdf = gpd.GeoDataFrame(data=df, geometry='geometry')
-
-  # Initialize grid dataframe
-  xmin = -114.5   # total area for the grid with ranging values
-  ymin = 31.2     # describing latitude and longitude limits for AZ
-  xmax = -109
-  ymax = 37
-
-  num_x = 15  # how many cells in x direction minus 1
-  num_y = 20  # how many cells in y direction minus 1
-              # total cells is num_x*num_y (336 in our case)
-
+def get_grid(xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, num_x=15, num_y=20, proj='EPSG:4326'):
   cell_size_x = (xmax-xmin)/num_x   # how many cells across and down
   cell_size_y = (ymax-ymin)/num_y
 
@@ -92,12 +75,29 @@ def grid_bin(df, proj='EPSG:4326'):
           y1 = y0+cell_size_y
           grid_cells.append( shapely.geometry.box(x0, y0, x1, y1)  )
 
-  # print(grid_cells)
   grid = gpd.GeoDataFrame(grid_cells, columns=['geometry'], 
                                  crs=crs)
+  grid['gridspace'] = [i for i in range(336)]
+  return grid
 
-  # print(grid.shape)   # axis 0 is the number of cells in the grid
+def add_grid_geometry(df):
+  # takes in df that has a gridspace column already defined, returns same df with a gridspace geometry column for mapping
+  grid = get_grid()
+  df = pd.merge(df, grid, on='gridspace', how='left')
+  return df
 
+
+def grid_bin(df, proj='EPSG:4326', xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, num_x=15, num_y=20):
+  # take in df with features "latitude" (ranging 31 to 37) and "longitude" (ranging -109 to -115) and return geodataframe with a new column that is the grid number
+
+  # Create geometry feature of input df
+  df['geometry'] = gpd.points_from_xy(df.longitude, df.latitude,
+    crs=proj)
+  gdf = gpd.GeoDataFrame(data=df, geometry='geometry')
+
+  # Initialize grid dataframe
+  grid = get_grid(xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax, num_x=num_x, num_y=num_y, proj=proj)
+  
   # Spatially join (sjoin) input df and grid
   gdf_joined = gpd.sjoin(left_df=gdf, right_df=grid, how='left')
 
@@ -389,9 +389,11 @@ gdf_traffic = grid_bin(df_traffic)
 
 gdf_traffic = gdf_traffic.groupby('gridspace', as_index=False)[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'latitude', 'longitude']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
 
-gdf_traffic
 
 # 5. Need to add geometry of gridspace to gdf_traffic
+gdf_traffic = add_grid_geometry(gdf_traffic)
+
+gdf_traffic
 
 ```
 ```{python}

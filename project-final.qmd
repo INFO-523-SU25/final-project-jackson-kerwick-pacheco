@@ -41,8 +41,6 @@ import shapely
 ```{python}
 #| label: gdf-function
 
-#| label: gdf-function
-
 def get_grid(xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, num_x=15, num_y=20, proj='EPSG:4326'):
     # Calculate width and height of each grid cell
     cell_size_x = (xmax - xmin) / num_x
@@ -112,24 +110,9 @@ def grid_bin(df, proj='EPSG:4326', xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, n
   return gdf_joined
 ```
 
-#### Vera section
-
-### Load Shapfile for Plotting
+### Load and Merge NOAA Files
 ```{python}
-#| label: load-pkgs
-#| message: false
-
-# US state and arizona shapefile for plotting
-states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
-states = states.to_crs(gdf_noaa1.crs)
-arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
-```
-
-```{python}
-# Vera section
-
 # load data
-
 all_files = glob.glob("data/NOAA/" + "*.csv")
 
 list_of_dfs = []
@@ -144,28 +127,19 @@ noaa = pd.concat(list_of_dfs, ignore_index = True)
 # make copy
 noaa1 = noaa
 
-# dropping unnecessary data
-noaa1.info()
-
 # dropping columns that have too low non-null count (cannot extract valuable estimates from to fill null values)
 noaa1 = noaa1.drop(['DAPR', 'DASF', 'MDSF', 'PGTM', 'WDF2', 'WDF5', 'WESD', 'WESF'], axis = 1)
 
-
+noaa1.info()
 
 ```
 
+### NOAA - Remove Missing Values
 ```{python}
-# Vera
-
 # investigate missing values
-
 print("Missing values (NaN): \n" + str(noaa1.isnull().sum()))
-
 unique_stations = noaa1['STATION'].unique()
-
-
 station_count = noaa1['STATION'].value_counts()
-
 
 print("Stations: " + str(unique_stations))
 print("Station count: " + str(station_count))
@@ -184,19 +158,18 @@ for col in noaaNum.columns:
 print("Missing values NOW (NaN): \n" + str(noaa1.isnull().sum()))
 ```
 
+### NOAA - Visualize Al of the Features
 ```{python}
-# visualizations of all features
-
-# date is in correct time format
+# Date is in correct time format
 noaa1['DATE'] = pd.to_datetime(noaa1['DATE'])
 
-# selecting variables to plot
+# Selecting variables to plot
 noaa1_scatter_eda = noaa1[['DATE', 'AWND', 'EVAP', 'PRCP', 'SNOW', 'SNWD', 'TAVG', 'TMAX', 'TMIN', 'TOBS', 'WSF2', 'WSF5']]
 
-# numeric columns
+# Numeric columns
 num_cols = noaa1_scatter_eda.select_dtypes(include=np.number).columns
 
-# create stacked subplots
+# Create stacked subplots
 fig, axes = plt.subplots(len(num_cols), 1, figsize=(12, 3 * len(num_cols)), sharex=True)
 
 # for loop to plot all figures into grid
@@ -215,36 +188,33 @@ fig.tight_layout()
 plt.show()
 ```
 
+### NOAA - Engineered Features 
 ```{python}
-# engineered features
-
-# extract year from date
+# Extract year from date
 noaa1['YEAR'] = noaa1['DATE'].dt.year
 
-# maximum temperature for 2022/station
+# Maximum temperature for 2022/station
 max_temp_2022 = noaa1[noaa1['YEAR'] == 2022].groupby('STATION')['TMAX'].max().rename('max_temp_2022')
 
-# max temp in a 5-year average per station
+# Max temp in a 5-year average per station
 max_temp_5yavg = noaa1.groupby('STATION')['TMAX'].max().rename('max_temp_5yavg')
 
-
-#average temperature for 2022 per station
+# Average temperature for 2022 per station
 avg_temp_2022 = noaa1[noaa1['YEAR'] == 2022].groupby('STATION')['TAVG'].mean().rename('avg_temp_2022')
 
-# average temperature for 5-years/station
+# Average temperature for 5-years/station
 avg_temp_5yavg = noaa1.groupby('STATION')['TAVG'].mean().rename('avg_temp_5yavg')
 
-
-# total inches of rainfall in 2022
+# Total inches of rainfall in 2022
 rainfall_2022 = noaa1[noaa1['YEAR'] == 2022].groupby('STATION')['PRCP'].sum().rename('rainfall_2022')
 
-# total inches average for 5-year period
+# Total inches average for 5-year period
 rainfall_5yavg = rainfall_5yavg = noaa1.groupby('STATION')['PRCP'].sum().rename('rainfall_5yavg')
 
-# latitude per station
+# Latitude per station
 latitude = noaa1.groupby('STATION')['LATITUDE'].first().rename('latitude')
 
-# longitude per station
+# Longitude per station
 longitude = noaa1.groupby('STATION')['LONGITUDE'].first().rename('longitude')
 
 features_2022 = pd.concat([
@@ -254,18 +224,18 @@ features_2022 = pd.concat([
     latitude, longitude
 ], axis=1).reset_index()
 
-# max temp above 5-year average
+# Max temp above 5-year average
 features_2022['max_temp_above_5yavg'] = features_2022['max_temp_2022'] - features_2022['max_temp_5yavg']
 
-# average temperature for 2022 - average temperature
+# Average temperature for 2022 - average temperature
 features_2022['avg_temp_above_5yavg'] = features_2022['avg_temp_2022'] - features_2022['avg_temp_5yavg']
 
-# annual rainfall average minus annual rainfall in 2022
+# Annual rainfall average minus annual rainfall in 2022
 features_2022['rainfall_below_5yavg'] = features_2022['rainfall_5yavg'] - features_2022['rainfall_2022']
 
 noaa_features = features_2022
 
-noaa_features
+noaa_features.info()
 ```
 
 ```{python}
@@ -280,6 +250,17 @@ gdf_noaa = grid_bin(noaa_features)
 gdf_noaa
 ```
 
+### Load Shapfile for Plotting
+```{python}
+#| label: load-pkgs
+#| message: false
+
+# US state and arizona shapefile for plotting
+states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
+states = states.to_crs(gdf_noaa1.crs)
+arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
+```
+
 ```{python}
 gdf_noaa1 = gdf_noaa.groupby('gridspace', as_index=False)[['max_temp_2022', 'max_temp_above_5yavg', 'avg_temp_2022', 'avg_temp_above_5yavg', 'rainfall_2022', 'rainfall_below_5yavg', 'latitude', 'longitude']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
 
@@ -292,8 +273,6 @@ gdf_noaa1
 
 # convert back from df into gdf
 gdf_noaa1 = gpd.GeoDataFrame(gdf_noaa1, geometry="geometry", crs=gdf_noaa.crs)
-
-
 ```
 
 ```{python}
@@ -307,8 +286,102 @@ plt.autoscale(False)
 plt.show()
 ```
 
+### Storm Data - Load File and Visualize Data
+```{python}
+# Path to your folder
+folder_path = "data/StormEvents/"
 
+# Create a list of all matching files (2019–2023)
+csv_files = sorted(glob.glob(os.path.join(folder_path, "storm_data_AZ_*.csv")))
 
+# Load and concatenate all CSVs
+df_list = []
+for file in csv_files:
+    df_year = pd.read_csv(file)
+    df_list.append(df_year)
+
+# Merge into one dataframe
+df_all = pd.concat(df_list, ignore_index=True)
+
+# Check the result
+print("Shape:", df_all.shape)
+print("Years combined:", [os.path.basename(f) for f in csv_files])
+print(df_all.head())
+
+# Count frequency of each storm event type
+event_counts = df_all['EVENT_TYPE'].value_counts().reset_index()
+event_counts.columns = ['EVENT_TYPE', 'FREQUENCY']
+
+# Create scatter plot
+plt.figure(figsize=(10,6))
+plt.scatter(event_counts['EVENT_TYPE'], event_counts['FREQUENCY'], color='blue')
+
+# Add titles and labels
+plt.title('Frequency of Storm Event Types')
+plt.xlabel('Storm Event Type')
+plt.ylabel('Frequency')
+plt.xticks(rotation=45, ha='right')
+
+plt.tight_layout()
+plt.show()
+
+# Rename data frame
+storm_df = df_all
+storm_df.info()
+```
+
+### Storm Data - Data Prepocessing 
+```{python}
+# Make sure dates and magnitude are correct type
+storm_df['BEGIN_DATE'] = pd.to_datetime(storm_df['BEGIN_DATE'])
+storm_df['YEAR'] = storm_df['BEGIN_DATE'].dt.year
+storm_df['MAGNITUDE'] = pd.to_numeric(storm_df['MAGNITUDE'], errors='coerce')
+
+# Define threshold for low/high magnitude
+low_mag_threshold = 1.0
+
+# Filter for recent years
+recent_df = storm_df[storm_df['YEAR'].between(2019, 2023)]
+df_2022 = storm_df[storm_df['YEAR'] == 2022]
+
+# Group by county (using CZ_FIPS here)
+# Low magnitude storm events in 2022 per county
+lowmag_2022 = df_2022[df_2022['MAGNITUDE'] < low_mag_threshold].groupby('CZ_FIPS').size().rename('lowmagstorm_events_2022')
+
+# 5-year average low magnitude storms per county
+lowmag_5yavg = recent_df[recent_df['MAGNITUDE'] < low_mag_threshold].groupby(['YEAR', 'CZ_FIPS']).size().groupby('CZ_FIPS').mean().rename('lowmagstorm_5yavg')
+
+# High magnitude storm events in 2022 per county
+highmag_2022 = df_2022[df_2022['MAGNITUDE'] >= low_mag_threshold].groupby('CZ_FIPS').size().rename('highmagstorm_events_2022')
+
+# 5-year average high magnitude storms per county
+highmag_5yavg = recent_df[recent_df['MAGNITUDE'] >= low_mag_threshold].groupby(['YEAR', 'CZ_FIPS']).size().groupby('CZ_FIPS').mean().rename('highmagstorm_5yavg')
+
+# Average storm magnitude in 2022 per county
+avg_mag_2022 = df_2022.groupby('CZ_FIPS')['MAGNITUDE'].mean().rename('average_storm_mag_2022')
+
+# Combine all of the features
+storm_features_2022 = pd.concat([
+    lowmag_2022, lowmag_5yavg,
+    highmag_2022, highmag_5yavg,
+    avg_mag_2022
+], axis=1).reset_index()
+
+# Calculate how many low-magnitude storm events in 2022 exceeded the 5-year average
+# This is done by subtracting the 5-year average number of low-magnitude storms
+# from the actual count in 2022, per county.
+storm_features_2022['lowmagstorm_events_above_5yavg'] = (
+    storm_features_2022['lowmagstorm_events_2022'] - storm_features_2022['lowmagstorm_5yavg']
+)
+
+# Calculate how many high-magnitude storm events in 2022 exceeded the 5-year average
+# This is the difference between the 2022 count and the 5-year average for high-magnitude storms,
+# computed per county.
+storm_features_2022['highmagstorm_events_above_5yavg'] = (
+    storm_features_2022['highmagstorm_events_2022'] - storm_features_2022['highmagstorm_5yavg']
+)
+
+```
 
 #### Molly section
 

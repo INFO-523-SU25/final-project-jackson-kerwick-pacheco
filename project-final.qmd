@@ -393,12 +393,28 @@ gdf_traffic = gdf_traffic.groupby('gridspace', as_index=False)[['traffic_counts_
 # 5. Need to add geometry of gridspace to gdf_traffic
 gdf_traffic = add_grid_geometry(gdf_traffic)
 
-gdf_traffic
+# 6. Plot traffic data with grid geometry
+
+# US state and arizona shapefile for plotting
+states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
+states = states.to_crs('EPSG:4326')
+arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
+ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
+
+# gdf was reverted to df during process, so converting to gdf again
+gdf_traffic = gpd.GeoDataFrame(gdf_traffic)
+gdf_traffic.plot('traffic_counts_2022',ax=ax)
+plt.show()
+gdf_traffic.plot('traffic_counts_above_5yavg')
+plt.show()
+
+
 
 ```
 ```{python}
-# Plots of average locations within each grid space
-# gdf_traffic.plot.scatter(x='longitude', y='latitude')
+
+
+
 ```
 
 #### Brooke section

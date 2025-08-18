@@ -330,7 +330,7 @@ storm_df = df_all
 storm_df.info()
 ```
 
-### Storm Data - Data Prepocessing 
+### Storm Data - Data Prepocessing and Engineered Features
 ```{python}
 # Make sure dates and magnitude are correct type
 storm_df['BEGIN_DATE'] = pd.to_datetime(storm_df['BEGIN_DATE'])
@@ -381,6 +381,41 @@ storm_features_2022['highmagstorm_events_above_5yavg'] = (
     storm_features_2022['highmagstorm_events_2022'] - storm_features_2022['highmagstorm_5yavg']
 )
 
+storm_features_2022.info()
+```
+
+### GDF Plot to Visualize Data
+```{python}
+# # Load US counties shapefile (example: from a local file or GeoPandas datasets)
+# counties = gpd.read_file('path_to_county_shapefile.shp')
+
+# # Assign each storm event to a grid cell
+# storm_gdf = grid_bin(storm_features_2022, proj='EPSG:4326')
+
+# # Aggregate features by gridspace (mean or sum, depending on what makes sense)
+# agg_features = storm_gdf.groupby('gridspace').agg({
+#     'lowmagstorm_events_2022': 'sum',
+#     'lowmagstorm_5yavg': 'mean',
+#     'lowmagstorm_events_above_5yavg': 'mean',
+#     'highmagstorm_events_2022': 'sum',
+#     'highmagstorm_5yavg': 'mean',
+#     'highmagstorm_events_above_5yavg': 'mean',
+#     'average_storm_mag_2022': 'mean',
+#     'latitude': 'first',
+#     'longitude': 'first'
+# }).reset_index()
+
+# # Add geometry back to the aggregated data
+# agg_features = add_grid_geometry(agg_features)
+
+# # Plot, for example, low magnitude storm events above 5 year average
+# fig, ax = plt.subplots(figsize=(12, 8))
+# agg_features.plot(column='lowmagstorm_events_above_5yavg', 
+#                   cmap='Reds', linewidth=0.8, edgecolor='black', legend=True, ax=ax)
+
+# ax.set_title('Low Magnitude Storm Events Above 5-Year Average (2022) by Grid Cell')
+# ax.set_axis_off()
+# plt.show()
 ```
 
 #### Molly section

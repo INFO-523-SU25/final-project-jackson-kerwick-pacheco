@@ -265,7 +265,7 @@ gdf_noaa
 
 # US state and arizona shapefile for plotting
 states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
-states = states.to_crs(gdf_noaa1.crs)
+#states = states.to_crs(gdf_noaa1.crs)
 arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
 ```
 
@@ -659,7 +659,7 @@ numeric_cols = merged_df.select_dtypes(include='number').columns
 
 # Fit and transform
 merged_df_scaled = merged_df.copy()
-merged_df_scaled[numeric_cols] = scalar.fit_transform(merged_df[numeric_cols])
+merged_df_scaled[numeric_cols] = scaler.fit_transform(merged_df[numeric_cols])
 print(merged_df_scaled)
 ```
 

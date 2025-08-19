@@ -35,6 +35,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import shapely
 from shapely.geometry import Point
+from sklearn.model_selection import train_test_split, KFold, cross_validate, cross_val_score
 from sklearn.preprocessing import StandardScaler
 import numbers
 from sklearn.decomposition import PCA
@@ -45,7 +46,12 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.feature_selection import SelectKBest, f_classif, f_regression
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score, f1_score,
+    roc_auc_score, roc_curve, auc, make_scorer, mean_squared_error, r2_score
+)
 import statsmodels.api as sm
+from sklearn.linear_model import LogisticRegression, Ridge, Lasso
 ```
 
 ## Data Validation & Cleaning
@@ -669,9 +675,6 @@ env_above_below_5yavg = [
 
 ```{python}
 
-run_regression_models(env_above_below_5yavg, 'traffic_counts_above_5yavg')
-run_regression_models(env_2022, 'traffic_counts_2022')
-
 def run_regression_models(X_val, y_val):
   X = merged_df_scaled[X_val]  # Independent variable
   y = merged_df_scaled[y_val]  # Dependent variable
@@ -777,6 +780,9 @@ def run_regression_models(X_val, y_val):
   print(mse)
   print(rmse)
   print(r2)
+
+run_regression_models(env_above_below_5yavg, 'traffic_counts_above_5yavg')
+run_regression_models(env_2022, 'traffic_counts_2022')
 ```
 
 

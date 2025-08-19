@@ -202,6 +202,11 @@ noaa_features['rainfall_below_5yavg'] = noaa_features['rainfall_5yavg'] - noaa_f
 # create grid_bin dataframes
 gdf_noaa = grid_bin(noaa_features)
 
+gdf_noaa1 = gdf_noaa.groupby('gridspace', as_index=False)[['max_temp_2022', 'max_temp_above_5yavg', 'avg_temp_2022', 'avg_temp_above_5yavg', 'rainfall_2022', 'rainfall_below_5yavg', 'latitude', 'longitude']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
+
+gdf_noaa1 = add_grid_geometry(gdf_noaa1)
+
+
 
 ```
 
@@ -486,6 +491,31 @@ plt.show()
 
 Precipitation, Temperature, and Storm patterns throughout Arizona
 ```{python}
+# US state and arizona shapefile for plotting
+states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
+states = states.to_crs('EPSG:4326')
+arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
+sns.set_theme(style='white')
+
+
+gdf_noaa1 = gpd.GeoDataFrame(gdf_noaa1)
+#gdf_noaa1 = gdf_noaa1.set_crs("EPSG:4326", allow_override=True)
+# example: plotting noaa data with arizona shapefile
+ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
+gdf_noaa1.plot(column="avg_temp_2022", ax=ax, cmap="viridis", markersize=30, legend=True)
+plt.title("Average Temperature (2019-2023)")
+plt.xlabel('Latitude')
+plt.ylabel('Longitude')
+plt.autoscale(False)
+plt.show()
+
+ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
+gdf_noaa1.plot(column="rainfall_5yavg", ax=ax, cmap="viridis", markersize=30, legend=True)
+plt.title("Average Precipitation (2019-2023)")
+plt.xlabel('Latitude')
+plt.ylabel('Longitude')
+plt.autoscale(False)
+plt.show()
 ```
 
 ## Modeling
@@ -493,6 +523,7 @@ Precipitation, Temperature, and Storm patterns throughout Arizona
 ## Code
 
 ```{python}
+
 
 
 

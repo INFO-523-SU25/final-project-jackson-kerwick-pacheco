@@ -742,6 +742,8 @@ def run_regression_models(X_val, y_val):
 
   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
 
+  # _______________ OLS Regression _______________
+
   X_train_with_const = sm.add_constant(X_train)
   model = sm.OLS(y_train, X_train_with_const).fit()
   model_summary = model.summary2()
@@ -758,12 +760,17 @@ def run_regression_models(X_val, y_val):
   r2 = r2_score(y_test, y_pred) # r^2 on test set
 
   # Print test performance
-  print(f"MSE:  {mse:.4f}")
-  print(f"RMSE: {rmse:.4f}")
-  print(f"R²:   {r2:.4f}")
+
+  print("OLS Regression Model:")
+  print("\tMean-squared error:", mse)
+  print("\tRoot mean-squared error:", rmse)
+  print("\tR-squared value:", r2)
+  # print(f"MSE:  {mse:.4f}")
+  # print(f"RMSE: {rmse:.4f}")
+  # print(f"R²:   {r2:.4f}")
 
   # Define the alpha values to try
-  alpha_values = [0.01, 0.1, 1, 10, 100]
+  alpha_values = [0.01, 0.1, 1, 10, 100,1000,10000]
 
   # Initialize variables to store the best alpha and its corresponding MSE
   best_alpha = None
@@ -786,23 +793,7 @@ def run_regression_models(X_val, y_val):
         best_mse = mean_cv_mse
         best_alpha = alpha
 
-  print(f"Ridge best alpha selected: {best_alpha} with CV MSE: {best_mse}\n")
-
-  # _______________ Lasso Regression _______________
-  for alpha in alpha_values:
-    # Create Lasso regression with current alpha
-    lasso = Lasso(alpha=alpha, max_iter=10000)
-
-      # Perform cross-validation and get negative MSE scores
-    cv_scores = cross_val_score(lasso, X_train, y_train, cv=kf, scoring='neg_mean_squared_error')
-    mean_cv_mse = -np.mean(cv_scores)
-    
-    # Update best alpha if current mean CV MSE is lower
-    if mean_cv_mse < best_mse:
-        best_mse = mean_cv_mse
-        best_alpha = alpha
-
-  print(f"Lasso best alpha selected: {best_alpha} with CV MSE: {best_mse}\n")
+  print(f"\nRidge best alpha selected: {best_alpha} with CV MSE: {best_mse}")
 
   # _______________ Ridge Regression _______________
   # Initialize Ridge regression with the best alpha 
@@ -823,6 +814,23 @@ def run_regression_models(X_val, y_val):
   print("\tMean-squared error:", mse)
   print("\tRoot mean-squared error:", rmse)
   print("\tR-squared value:", r2)
+
+  # _______________ Lasso Regression _______________
+  for alpha in alpha_values:
+    # Create Lasso regression with current alpha
+    lasso = Lasso(alpha=alpha, max_iter=10000)
+
+      # Perform cross-validation and get negative MSE scores
+    cv_scores = cross_val_score(lasso, X_train, y_train, cv=kf, scoring='neg_mean_squared_error')
+    mean_cv_mse = -np.mean(cv_scores)
+    
+    # Update best alpha if current mean CV MSE is lower
+    if mean_cv_mse < best_mse:
+        best_mse = mean_cv_mse
+        best_alpha = alpha
+
+  print(f"\nLasso best alpha selected: {best_alpha} with CV MSE: {best_mse}")
+
   # _______________ Lasso Regression _______________
   # Initialize Lasso regression with the best alpha
   lasso_reg = Lasso(alpha=best_alpha, max_iter=10000)
@@ -843,11 +851,36 @@ def run_regression_models(X_val, y_val):
   print("\tRoot mean-squared error:", rmse)
   print("\tR-squared value:", r2)
 
+
+
+```
+```{python}
+print('Environmental Data (5 Year Averages)')
+print('Traffic Data (5 Year Averages)')
 run_regression_models(env_above_below_5yavg, 'traffic_counts_above_5yavg')
-run_regression_models(env_2022, 'traffic_counts_2022')
+
 ```
 
+```{python}
+print('Environmental Data (2022)')
+print('Traffic Data (2022)')
+run_regression_models(env_2022, 'traffic_counts_2022')
 
+```
+
+```{python}
+print('Environmental Data (2022)')
+print('Traffic Data (5 Year Averages)')
+run_regression_models(env_2022, 'traffic_counts_above_5yavg')
+
+```
+
+```{python}
+print('Environmental Data (5 Year Averages)')
+print('Traffic Data (2022)')
+run_regression_models(env_above_below_5yavg, 'traffic_counts_2022')
+
+```
 
 # References
 

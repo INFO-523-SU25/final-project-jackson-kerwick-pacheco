@@ -67,6 +67,8 @@ penguins = sns.load_dataset('penguins').dropna()
 
 -   Identify the regional relationship between urbanization and climate indicators. The presentation is created using the Quarto CLI
 
+- Can we predict climate based on traffic data?
+
 ## Data
 
 You can use plain text

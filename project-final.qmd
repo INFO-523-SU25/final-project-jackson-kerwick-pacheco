@@ -250,7 +250,6 @@ noaa_features.info()
 # NOAA data
 
 # applying gdf function
-
   
 # create grid_bin dataframes
 gdf_noaa = grid_bin(noaa_features)
@@ -688,72 +687,9 @@ for component, features in top_features.items():
   print(f"{component}: {features}")
 ```
 
-### Exploratory Data Analysis (EDA)
-
-```{python}
-# Vera section
-
-```
-
-```{python}
-# Molly section
-```
-
-```{python}
-# Brooke section
-```
-
-### Dataset Integration
-
-```{python}
-# Vera section
 
 
 
-
-
-
-# Molly section
-
-
-
-
-
-
-
-# Brooke section
-
-
-
-
-
-```
-
-### Feature Engineering
-
-```{python}
-# Vera section
-
-
-
-
-
-
-# Molly section
-
-
-
-
-
-
-
-# Brooke section
-
-
-
-
-
-```
 
 ### Regression Analysis Setup
 

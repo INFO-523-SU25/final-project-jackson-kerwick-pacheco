@@ -524,6 +524,14 @@ gdf_traffic = grid_bin(df_traffic)
 gdf_traffic = gdf_traffic.groupby('gridspace', as_index=False)[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'latitude', 'longitude', 'county_code']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
 
 
+gdf_traffic = gdf_traffic.rename(columns={'county_code': "fips_code"})
+# # Add County Info
+df_county = pd.DataFrame({"fips_code": [1,3,5,7,9,11,12,13,15,17,19,21,23,25,27],
+"county": ["Apache", "Cochise", "Coconino", "Gila", "Graham", "Greenlee", "La Paz", "Maricopa", "Mohave", "Navajo", "Pima", "Pinal", "Santa Cruz", "Yavapai", "Yuma"]})
+
+gdf_traffic = pd.merge(gdf_traffic, df_county, on='fips_code', how='left')
+
+
 # 5. Need to add geometry of gridspace to gdf_traffic
 gdf_traffic = add_grid_geometry(gdf_traffic)
 
@@ -547,7 +555,10 @@ gdf_traffic.info()
 ```
 
 ```{python}
-gdf_traffic['county_code'].hist()
+
+
+gdf_traffic
+
 ```
 
 ### Merge Datasets

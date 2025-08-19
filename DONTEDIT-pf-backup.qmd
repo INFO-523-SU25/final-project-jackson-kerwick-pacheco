@@ -17,6 +17,7 @@ code-annotations: hover
 execute:
   warning: false
   echo: false
+  enabled: false
 jupyter: python3
 ---
 
@@ -69,7 +70,7 @@ noaa1 = noaa
 noaa1.info()
 
 # dropping columns that have too low non-null count (cannot extract valuable estimates from to fill null values)
-noaa1 = noaa1.drop(['DAPR', 'DASF', 'MDSF', 'PGTM', 'WDF2', 'WDF5', 'WESD', 'WESF', 'WT'], axis = 1)
+noaa1 = noaa1.drop(['DAPR', 'DASF', 'MDSF', 'PGTM', 'WDF2', 'WDF5', 'WESD', 'WESF'], axis = 1)
 
 
 

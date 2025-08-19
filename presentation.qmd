@@ -5,7 +5,7 @@ author: "Vera Jackson, Molly Kerwick, Brooke Pacheco"
 title-slide-attributes:
   data-background-image: images/az_traffic.webp
   data-background-size: stretch
-  data-background-opacity: "0.7"
+  data-background-opacity: "0.3"
   data-slide-number: none
 format:
   revealjs:
@@ -20,7 +20,7 @@ execute:
 ```{python}
 #| label: load-packages
 #| include: false
-
+#|
 # Load packages here
 import seaborn as sns
 import glob
@@ -35,6 +35,82 @@ import shapely
 from shapely.geometry import Point
 from sklearn.preprocessing import StandardScaler
 
+
+# Load custom functions
+# gdf function
+
+def get_grid(xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, num_x=15, num_y=20, proj='EPSG:4326'):
+    # Calculate width and height of each grid cell
+    cell_size_x = (xmax - xmin) / num_x
+    cell_size_y = (ymax - ymin) / num_y
+
+    # Define coordinate reference system (CRS) for the grid
+    crs = proj
+
+    # Initialize a list to hold grid cell geometries
+    grid_cells = []
+
+    # Create the grid by looping through x and y ranges
+    for x0 in np.arange(xmin, xmax + cell_size_x, cell_size_x):
+      for y0 in np.arange(ymin, ymax + cell_size_y, cell_size_y):
+          # Define opposite corner of the box (left and upper side)
+          x1 = x0 - cell_size_x
+          y1 = y0 + cell_size_y
+
+          # Create a rectangular polygon and add it to the list
+          grid_cells.append(shapely.geometry.box(x0, y0, x1, y1))
+
+    # Create a GeoDataFrame from the list of polygons with specified CRS
+    grid = gpd.GeoDataFrame(grid_cells, columns=['geometry'], crs=crs)
+
+    # Assign a unique ID to each grid cell
+    grid['gridspace'] = [i for i in range(336)]  # Assumes 336 cells
+
+    return grid
+
+
+def add_grid_geometry(df):
+  """
+  Given a DataFrame that already contains a 'gridspace' column,
+  add corresponding grid cell geometries by merging with the generated grid.
+  """
+  # Generate the grid
+  grid = get_grid()
+
+  # Merge input df with grid to attach geometry based on gridspace ID
+  df = pd.merge(df, grid, on='gridspace', how='left')
+
+  return df
+
+
+def grid_bin(df, proj='EPSG:4326', xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, num_x=15, num_y=20):
+  """
+  Assign a grid cell ('gridspace') to each point in the input DataFrame
+  based on its latitude and longitude.
+  """
+
+  # Create point geometries from latitude and longitude
+  df['geometry'] = gpd.points_from_xy(df.longitude, df.latitude, crs=proj)
+
+  # Convert the DataFrame into a GeoDataFrame
+  gdf = gpd.GeoDataFrame(data=df, geometry='geometry')
+
+  # Generate the spatial grid with given bounding box and cell count
+  grid = get_grid(xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax, num_x=num_x, num_y=num_y, proj=proj)
+
+  # Perform a spatial join to assign each point to a grid cell
+  gdf_joined = gpd.sjoin(left_df=gdf, right_df=grid, how='left')
+
+  # Rename the resulting 'index_right' column to 'gridspace' for clarity
+  gdf_joined['gridspace'] = gdf_joined['index_right']
+  gdf_joined = gdf_joined.drop(['index_right'], axis=1)
+
+  return gdf_joined
+
+# US State and Arizona shapefile for plotting
+states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
+states = states.to_crs('EPSG:4326')
+arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
 ```
 
 ```{python}
@@ -52,13 +128,311 @@ plt.rcParams['figure.figsize'] = (6, 6 * 0.618)
 ```
 
 ```{python}
-#| label: load-data
+#| label: load-noaa-data
 #| include: false
-# Load data in Python
-mtcars = sns.load_dataset('mpg').dropna()  # mtcars dataset is similar to the mpg dataset from seaborn
-mtcars['speed'] = mtcars['horsepower'] / mtcars['weight']
 
-penguins = sns.load_dataset('penguins').dropna()
+# Load data in Python
+
+# NOAA Climate Data
+all_files = glob.glob("data/NOAA/" + "*.csv")
+
+list_of_dfs = []
+
+for file in all_files:
+  df = pd.read_csv(file)
+  list_of_dfs.append(df)
+
+noaa = pd.concat(list_of_dfs, ignore_index = True) # merging data together into one data frame
+
+noaa1 = noaa # make copy
+
+noaa1 = noaa1.drop(['DAPR', 'DASF', 'MDSF', 'PGTM', 'WDF2', 'WDF5', 'WESD', 'WESF'], axis = 1) # dropping columns that have too low non-null count (cannot extract valuable estimates from to fill null values)
+
+noaaNum = noaa1.select_dtypes(include = np.number)
+
+for col in noaaNum.columns: # filling na with median from station
+    noaa1[col] = noaa1[col].fillna(
+        noaa1.groupby('STATION')[col].transform('median')
+    )
+
+noaa1['DATE'] = pd.to_datetime(noaa1['DATE']) # make sure date in correct format
+
+noaa1['YEAR'] = noaa1['DATE'].dt.year # Extract year from date
+
+# Maximum temperature for 2022/station
+max_temp_2022 = noaa1[noaa1['YEAR'] == 2022].groupby('STATION')['TMAX'].max().rename('max_temp_2022')
+
+# Max temp in a 5-year average per station
+max_temp_5yavg = noaa1.groupby('STATION')['TMAX'].max().rename('max_temp_5yavg')
+
+# Average temperature for 2022 per station
+avg_temp_2022 = noaa1[noaa1['YEAR'] == 2022].groupby('STATION')['TAVG'].mean().rename('avg_temp_2022')
+
+# Average temperature for 5-years/station
+avg_temp_5yavg = noaa1.groupby('STATION')['TAVG'].mean().rename('avg_temp_5yavg')
+
+# Total inches of rainfall in 2022
+rainfall_2022 = noaa1[noaa1['YEAR'] == 2022].groupby('STATION')['PRCP'].sum().rename('rainfall_2022')
+
+# Total inches average for 5-year period
+rainfall_5yavg = rainfall_5yavg = noaa1.groupby('STATION')['PRCP'].sum().rename('rainfall_5yavg')
+
+# Latitude per station
+latitude = noaa1.groupby('STATION')['LATITUDE'].first().rename('latitude')
+
+# Longitude per station
+longitude = noaa1.groupby('STATION')['LONGITUDE'].first().rename('longitude')
+
+noaa_features = pd.concat([
+    max_temp_2022, max_temp_5yavg, 
+    avg_temp_2022, avg_temp_5yavg,
+    rainfall_2022, rainfall_5yavg,
+    latitude, longitude
+], axis=1).reset_index()
+
+# Max temp above 5-year average
+noaa_features['max_temp_above_5yavg'] = noaa_features['max_temp_2022'] - noaa_features['max_temp_5yavg']
+
+# Average temperature for 2022 - average temperature
+noaa_features['avg_temp_above_5yavg'] = noaa_features['avg_temp_2022'] - noaa_features['avg_temp_5yavg']
+
+# Annual rainfall average minus annual rainfall in 2022
+noaa_features['rainfall_below_5yavg'] = noaa_features['rainfall_5yavg'] - noaa_features['rainfall_2022']
+
+# create grid_bin dataframes
+gdf_noaa = grid_bin(noaa_features)
+
+
+```
+
+```{python}
+#| label: load-storm-data
+#| include: false
+
+# Traffic Data
+
+
+df_traffic_5yavg = pd.DataFrame()
+
+for i in range(19, 24):   # for year of interest
+  # format values for files/features
+  year = "{:02}".format(i)
+  yearnum = int(f'20{year}')
+
+  # read in station data for the year
+  df_year = pd.read_csv(f'data/Traffic/stations/df_20{year}')
+
+  # define data types for merging later
+  df_year['station_id'] = df_year['station_id'].astype(str)
+
+  for j in range(1,13):   # for month of interest
+    # format strings for files/features 
+    monthyear = "{:02}".format(j) + year
+    month = "{:02}".format(j)
+
+    # read in counts data
+    # Note: the format of data changed in 2022 so we have to account for the delimiter changing
+    if (i < 22):
+      df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL")
+    else:
+      df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL", delimiter='|')
+
+    # formatting so merging works later
+    df_month.columns = [col.lower() for col in df_month.columns]
+
+    # sum hour counts to daily count per day
+    df_month[f'daily_volume_{month}'] = df_month[["hour_{:02}".format(i) for i in range(24)]].sum(axis=1) 
+
+    # sum daily counts to monthly count per station
+    df_month = df_month.groupby('station_id', as_index=False)[[f'daily_volume_{month}']].sum()
+
+    # defining data types so merging later works
+    df_month['station_id'] = df_month['station_id'].astype(str)
+
+    # adding each month's total count to an annual df
+    df_year = pd.merge(df_year, df_month, how='left', on='station_id')
+
+  # summing monthly counts so we have an annual count
+  df_year['traffic_counts'] = df_year[["daily_volume_{:02}".format(i) for i in range(1,13)]].sum(axis=1)
+
+  # removing unused columns
+  df_year = df_year[['station_id','latitude','longitude', 'traffic_counts', 'county_code']]
+
+  if (year == '19'):
+    df_traffic_5yavg = df_year.copy()
+  df_traffic_5yavg[f'traffic_counts_{year}'] = df_year['traffic_counts']
+
+# remove column that was duplicate added during looping
+df_traffic_5yavg = df_traffic_5yavg.drop('traffic_counts',axis=1)
+
+# create average column from 2019-2023
+df_traffic_5yavg['traffic_counts_5yavg'] = df_traffic_5yavg[['traffic_counts_{:02}'.format(year) for year in range(19,24)]].mean(axis=1)
+
+####### 2. make traffic_counts_above_5yavg feature
+
+# remove data from years not of interest
+df_traffic_2022 = df_traffic_5yavg.drop(['traffic_counts_{:02}'.format(year) for year in range(19,22)], axis=1)
+
+df_traffic = df_traffic_2022.drop('traffic_counts_23', axis=1)
+
+# add counts above 5yavg feature
+df_traffic['traffic_counts_above_5yavg'] = df_traffic_2022['traffic_counts_22'] - df_traffic_2022['traffic_counts_5yavg']
+
+# rename for consistency with environmental df
+df_traffic = df_traffic.rename({'traffic_counts_22': 'traffic_counts_2022'}, axis=1)
+
+# remove intermediary 5yavg feature
+df_traffic = df_traffic.drop('traffic_counts_5yavg', axis=1)
+
+# 3. grid_bin dataframes
+gdf_traffic = grid_bin(df_traffic)
+
+# 4. average values over gridspace
+gdf_traffic = grid_bin(df_traffic)
+
+gdf_traffic = gdf_traffic.groupby('gridspace', as_index=False)[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'latitude', 'longitude', 'county_code']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
+
+
+gdf_traffic = gdf_traffic.rename(columns={'county_code': "fips_code"})
+# # Add County Info
+df_county = pd.DataFrame({"fips_code": [1,3,5,7,9,11,12,13,15,17,19,21,23,25,27],
+"county": ["Apache", "Cochise", "Coconino", "Gila", "Graham", "Greenlee", "La Paz", "Maricopa", "Mohave", "Navajo", "Pima", "Pinal", "Santa Cruz", "Yavapai", "Yuma"]})
+
+gdf_traffic = pd.merge(gdf_traffic, df_county, on='fips_code', how='left')
+
+# 5. Need to add geometry of gridspace to gdf_traffic
+gdf_traffic = add_grid_geometry(gdf_traffic)
+```
+
+```{python}
+#| label: load-traffic-data
+#| include: false
+
+# Storm Data
+
+folder_path = "data/StormEvents/" # Path to your folder
+
+csv_files = sorted(glob.glob(os.path.join(folder_path, "storm_data_AZ_*.csv"))) # Create a list of all matching files (2019–2023)
+
+df_list = [] # Load and concatenate all CSVs
+for file in csv_files:
+    df_year = pd.read_csv(file)
+    df_list.append(df_year)
+
+df_all = pd.concat(df_list, ignore_index=True) # Merge into one dataframe
+
+storm_df = df_all
+
+# Make sure dates and magnitude are correct type
+storm_df['BEGIN_DATE'] = pd.to_datetime(storm_df['BEGIN_DATE'])
+storm_df['YEAR'] = storm_df['BEGIN_DATE'].dt.year
+storm_df['MAGNITUDE'] = pd.to_numeric(storm_df['MAGNITUDE'], errors='coerce')
+
+# Define threshold for low/high magnitude
+low_mag_threshold = 1.0
+
+# Filter for recent years
+recent_df = storm_df[storm_df['YEAR'].between(2019, 2023)]
+df_2022 = storm_df[storm_df['YEAR'] == 2022]
+
+# Group by county (using CZ_FIPS here)
+# Low magnitude storm events in 2022 per county
+lowmag_2022 = df_2022[df_2022['MAGNITUDE'] < low_mag_threshold].groupby('CZ_FIPS').size().rename('lowmagstorm_events_2022')
+
+# 5-year average low magnitude storms per county
+lowmag_5yavg = recent_df[recent_df['MAGNITUDE'] < low_mag_threshold].groupby(['YEAR', 'CZ_FIPS']).size().groupby('CZ_FIPS').mean().rename('lowmagstorm_5yavg')
+
+# High magnitude storm events in 2022 per county
+highmag_2022 = df_2022[df_2022['MAGNITUDE'] >= low_mag_threshold].groupby('CZ_FIPS').size().rename('highmagstorm_events_2022')
+
+# 5-year average high magnitude storms per county
+highmag_5yavg = recent_df[recent_df['MAGNITUDE'] >= low_mag_threshold].groupby(['YEAR', 'CZ_FIPS']).size().groupby('CZ_FIPS').mean().rename('highmagstorm_5yavg')
+
+# Average storm magnitude in 2022 per county
+avg_mag_2022 = df_2022.groupby('CZ_FIPS')['MAGNITUDE'].mean().rename('average_storm_mag_2022')
+
+# Combine all of the features
+storm_features_2022 = pd.concat([
+    lowmag_2022, lowmag_5yavg,
+    highmag_2022, highmag_5yavg,
+    avg_mag_2022
+], axis=1).reset_index()
+
+# Calculate how many low-magnitude storm events in 2022 exceeded the 5-year average
+storm_features_2022['lowmagstorm_events_above_5yavg'] = (
+    storm_features_2022['lowmagstorm_events_2022'] - storm_features_2022['lowmagstorm_5yavg']
+)
+
+# Calculate how many high-magnitude storm events in 2022 exceeded the 5-year average
+storm_features_2022['highmagstorm_events_above_5yavg'] = (
+    storm_features_2022['highmagstorm_events_2022'] - storm_features_2022['highmagstorm_5yavg']
+)
+
+```
+
+```{python}
+#| label: merge-data
+#| include: false
+
+# merging data sets together
+
+# Load Arizona counties shapefile 
+# Using US Census counties shapefile 
+counties = gpd.read_file("data/tl_2024_us_county.shp")
+
+# Filter for Arizona only (FIPS code: '04')
+az_counties = counties[counties['STATEFP'] == '04'].copy()
+
+# Rename and clean
+az_counties['CZ_FIPS'] = az_counties['COUNTYFP'].astype(int)
+az_counties = az_counties[['CZ_FIPS', 'NAME', 'geometry']]
+
+# Convert NOAA and Traffic data to GeoDataFrames 
+noaa_gdf = gpd.GeoDataFrame(
+    noaa_features,
+    geometry=gpd.points_from_xy(noaa_features['longitude'], noaa_features['latitude']),
+    crs='EPSG:4326'
+)
+
+# Traffic
+traffic_gdf = gpd.GeoDataFrame(
+    df_traffic,
+    geometry=gpd.points_from_xy(df_traffic['longitude'], df_traffic['latitude']),
+    crs='EPSG:4326'
+)
+
+# Spatial join points to counties
+# NOAA -> county
+noaa_gdf = gpd.sjoin(noaa_gdf, az_counties, how='left', predicate='within')
+
+# Traffic -> county
+traffic_gdf = gpd.sjoin(traffic_gdf, az_counties, how='left', predicate='within')
+
+# Aggregate NOAA and Traffic features by county
+noaa_by_county = noaa_gdf.groupby('CZ_FIPS').agg({
+    'max_temp_above_5yavg': 'mean',
+    'avg_temp_above_5yavg': 'mean',
+    'rainfall_below_5yavg': 'mean'
+}).reset_index()
+
+# Traffic aggregation
+traffic_by_county = traffic_gdf.groupby('CZ_FIPS').agg({
+    'traffic_counts_2022': 'sum',
+    'traffic_counts_above_5yavg': 'mean'
+}).reset_index()
+
+# _________________Merge all dataframes on county FIPS_________________ 
+# Start with storm data
+merged_df = storm_features_2022.copy()
+
+# Merge with NOAA
+merged_df = pd.merge(merged_df, noaa_by_county, how='left', on='CZ_FIPS')
+
+# Merge with traffic
+merged_df = pd.merge(merged_df, traffic_by_county, how='left', on='CZ_FIPS')
+
+# Add county names for readability
+merged_df = pd.merge(merged_df, az_counties[['CZ_FIPS', 'NAME']], how='left', on='CZ_FIPS')
 ```
 
 ## Topic and Research Question
@@ -78,33 +452,22 @@ penguins = sns.load_dataset('penguins').dropna()
 
 ## Exploratory Data Analysis
 
+
+
 ## Modeling
 
 ## Code
 
 ```{python}
-from sklearn.linear_model import LinearRegression
-import statsmodels.api as sm
-import pandas as pd
 
-# Fit a linear regression model
-X = mtcars[['speed']]
-y = mtcars['mpg']
-model = LinearRegression().fit(X, y)
 
-# Summary of the model
-X2 = sm.add_constant(X)
-est = sm.OLS(y, X2)
-est2 = est.fit()
-print(est2.summary())
+
 ```
 
 ## Plots
 
 ```{python}
-penguins['species'] = penguins['species'].apply(lambda x: "Adelie" if x == "Adelie" else "Other")
-sns.scatterplot(data=penguins, x='flipper_length_mm', y='body_mass_g', hue='species')
-plt.show()
+
 ```
 
 ## Plot and text
@@ -120,9 +483,7 @@ plt.show()
 ```{python}
 #| warning: false
 #| fig.width: 5.5
-fig, ax = plt.subplots(figsize=(5.5, 5.5 * 0.618))
-sns.boxplot(data=penguins, x='bill_length_mm', y='species', hue='species', ax=ax)
-plt.show()
+
 ```
 :::
 :::::
@@ -134,7 +495,7 @@ plt.show()
 If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
 
 ```{python}
-penguins.head().to_html()
+
 ```
 
 ## Images

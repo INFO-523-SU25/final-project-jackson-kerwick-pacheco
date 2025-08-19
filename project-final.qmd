@@ -395,6 +395,12 @@ storm_features_2022['highmagstorm_events_above_5yavg'] = (
 storm_features_2022.info()
 ```
 
+
+```{python}
+storm_df[['STATE_ABBR', 'CZ_FIPS']]
+
+```
+
 ### GDF Plot to Visualize Data
 
 ```{python}
@@ -552,15 +558,22 @@ gdf_traffic.plot('traffic_counts_above_5yavg')
 plt.show()
 
 gdf_traffic.info()
-
 ```
 
+
+### Merge Traffic and NOAA Datasets on `gridspace`
 ```{python}
+gdf_traffic_premerge = gdf_traffic.drop(['latitude', 'longitude'], axis=1)
 
+# remove Point geometry to preserve gridspace geometry from traffic df
+gdf_noaa_premerge = gdf_noaa1.drop(['latitude', 'longitude', 'geometry'], axis=1)
 
-gdf_traffic
+# Merging removes gridspaces that are not in the left dataset (traffic)
+gdf_traffic_noaa = pd.merge(gdf_traffic_premerge, gdf_noaa_premerge, on='gridspace')
+gdf_traffic_noaa
 
 ```
+
 
 ### Merge Datasets
 

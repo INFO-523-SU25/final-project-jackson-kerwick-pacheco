@@ -137,6 +137,7 @@ noaa1 = noaa1.drop(['DAPR', 'DASF', 'MDSF', 'PGTM', 'WDF2', 'WDF5', 'WESD', 'WES
 
 noaa1.info()
 
+
 ```
 
 ### NOAA - Remove Missing Values

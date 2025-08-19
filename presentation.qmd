@@ -80,7 +80,7 @@ You can use plain text
 
 ## Exploratory Data Analysis
 
-## Data Mining
+## Modeling
 
 ## Code
 

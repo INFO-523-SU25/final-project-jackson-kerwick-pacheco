@@ -374,6 +374,9 @@ noaa_features.info()
 ### Load Shapfile for Plotting
 
 ```{python}
+# create grid_bin dataframes
+gdf_noaa = grid_bin(noaa_features)
+
 gdf_noaa1 = gdf_noaa.groupby('gridspace', as_index=False)[['max_temp_2022', 'max_temp_above_5yavg', 'avg_temp_2022', 'avg_temp_above_5yavg', 'rainfall_2022', 'rainfall_below_5yavg', 'latitude', 'longitude']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
 
 # need to get geometry points back
@@ -386,8 +389,7 @@ gdf_noaa1
 # convert back from df into gdf
 gdf_noaa1 = gpd.GeoDataFrame(gdf_noaa1, geometry="geometry", crs=gdf_noaa.crs)
 
-# create grid_bin dataframes
-gdf_noaa = grid_bin(noaa_features)
+
 
 # US state and arizona shapefile for plotting
 states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines

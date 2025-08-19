@@ -437,11 +437,11 @@ merged_df = pd.merge(merged_df, az_counties[['CZ_FIPS', 'NAME']], how='left', on
 
 ## Topic and Research Question
 
--   Analyze the relationship between urbanization and climate across regions within Arizona, identifying patterns and anomalies in how urban growth impacts climate metrics such as storms, temperature, and rainfall.
+- Traffic and car emissions are known to impact local air pollution and climate (Niemeier, et al. 2006)  
+- Precipitation and temperature changes are known indicators of climate change (EPA, 2024; Lindsey & Dahlman, 2025)
+- Can we observe the varying impact of traffic congestion on climate between counties in Arizona, USA?
+- Can we predict the impact of traffic congestion on climate?
 
--   Identify the regional relationship between urbanization and climate indicators. The presentation is created using the Quarto CLI
-
-- Can we predict climate based on traffic data?
 
 ## Data
 

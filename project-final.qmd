@@ -19,8 +19,32 @@ execute:
   echo: false
 jupyter: python3
 ---
+Minimum requirements:
 
-## Import Libraries
+
+    Introduction: The introduction provides a clear explanation of the question and the dataset used to answer the question, including a description of all relevant variables in the dataset. (3 points)
+
+## Introduction
+
+The goal of our project is to analyze the relationship between urbanization and environmental quality across regions within Arizona, identifying patterns and anomalies in how urban growth impacts climate metrics such as storms, temperature, and rainfall. As we have seen with the uproar by the Tucson population regarding the proposed environmental impacts of the Project Blue data center, environmental quality is important to local populations. We hope to use this study to identify the regional relationship between urbanization and climate indicators. We will be using traffic count data as our urbanization metric, and National Oceanographic and Atmospheric Administration (NOAA) climate and storm event data as our environmental quality data.
+
+To investigate this problem, we used three datasets: traffic data, climate data, and storm event data. The traffic data were sourced from the Federal Highway Administration (FHWA) and included station data and traffic count data. The traffic count data was seperated into files for each month. Each line was a single day of counts at a single traffic station. Picturing this in real life, a traffic station is a deployed
+
+Each dataset we used had a combination of geographic information and . A prominent part of this project was merging our various datasets 
+
+
+
+
+
+
+
+    Justification of approach: The chosen approach and data mining method(s) are clearly explained and justified. (3 points)
+    
+    Code: Code is correct, easy to read, properly formatted, and properly documented. (10 points)
+    
+    Mining Method: The data mining method(s) are appropriate, easy to read, and properly labeled. (10 points)
+    
+    Discussion: Discussion of results is clear and correct, and it has some depth without begin excessively long. (4 points)
 
 ```{python}
 # Import Libraries 
@@ -61,9 +85,12 @@ from sklearn.linear_model import LogisticRegression, Ridge, Lasso
 from scipy import stats
 ```
 
+## Geospatial Normalization
 
+Since our research question is about regional relationships, we had to combine our data regionally. Since each dataset had unique geographic qualities, it was not a straightforward process. Since latitude and longitude are specific and discrete, we were unable to merge on latitude and longitude pair points. In order to merge on specific points, it would mean that the traffic station, the climate measurement, and the storm identification would have had to occur at the exact same location. To account for this, we implemented geospatial normalization in the form of a gridspace.
 
-### Gridspace creation functions
+Our gridspace is a 2-dimensional grid overlayed on the state of Arizona that encompasses pre-defined ranges of latitude and longitude. So a traffic station and a climate measurement that are within the same latitude and longitude range will be grouped together in the corresponding gridspace. We manufactured a grid of 336 spaces that is 16 cells horizontally and 21 cells vertically. Each measurement within a gridspace was the mean of all corresponding values in that cell. For our regression analysis, our final DataFrame was structured such that each row corresponded to a gridspace and each column was a traffic, climate, or storm event value. An interesting problem that arose was with the storm event data which did not include latitude and longitude values. Since storms travel across regions, the dataset included a county variable and starting latitude and longitude values. We were able to merge the storm data into the traffic and climate datasets on the county value. 
+
 
 ```{python}
 #| label: gdf-function
@@ -137,8 +164,13 @@ def grid_bin(df, proj='EPSG:4326', xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, n
   return gdf_joined
 ```
 
+## Datasets
 
-## Data Validation & Cleaning
+### Traffic Data 
+
+Traffic congestion is a major source of air pollution in and around traffic areas (https://onlinepubs.trb.org/onlinepubs/sr/sr264.pdf). Consequently, high traffic congestion has been shown to have a negative health impact on drivers, pedestrians, and residents in areas near roadways. https://books.google.com/books?hl=en&lr=&id=b2G3k51rd0oC&oi=fnd&pg=PR1&ots=O94u9zCs4y&sig=v1JEfno-HjkbKf3im4iDQLJJUQ0#v=onepage&q&f=false, https://pmc.ncbi.nlm.nih.gov/articles/PMC4243514/
+We selected traffic data as our urbanization metric. Our hypothesis was that areas with higher traffic flow indicated areas of higher urbanization. We measured traffic volume as a value of gross counts in a given year. A potential issue in our approach is that gross counts alone are not an indicator of traffic congestion. Traffic congestion takes into account how long a car is on the road in a specific area, which is affected by gross count, number of lanes, and car speed. As Interstate-8, Interstate-10, and Interstate-40 are major shipping lanes that are represented in our data, they may be associated with high gross count but a low urbanization factor as trucks travel at high speed through rural areas. 
+
 
 ### Traffic Data - Feature Engineering and Visualization
 

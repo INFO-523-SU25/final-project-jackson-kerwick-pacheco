@@ -481,7 +481,7 @@ for i in range(19, 24):   # for year of interest
   df_year['traffic_counts'] = df_year[["daily_volume_{:02}".format(i) for i in range(1,13)]].sum(axis=1)
 
   # removing unused columns
-  df_year = df_year[['station_id','latitude','longitude', 'traffic_counts']]
+  df_year = df_year[['station_id','latitude','longitude', 'traffic_counts', 'county_code']]
 
   if (year == '19'):
     df_traffic_5yavg = df_year.copy()
@@ -521,7 +521,7 @@ gdf_traffic = grid_bin(df_traffic)
 # 4. average values over gridspace
 gdf_traffic = grid_bin(df_traffic)
 
-gdf_traffic = gdf_traffic.groupby('gridspace', as_index=False)[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'latitude', 'longitude']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
+gdf_traffic = gdf_traffic.groupby('gridspace', as_index=False)[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'latitude', 'longitude', 'county_code']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
 
 
 # 5. Need to add geometry of gridspace to gdf_traffic
@@ -544,6 +544,10 @@ plt.show()
 
 gdf_traffic.info()
 
+```
+
+```{python}
+gdf_traffic['county_code'].hist()
 ```
 
 ### Merge Datasets

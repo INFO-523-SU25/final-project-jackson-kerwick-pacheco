@@ -164,8 +164,10 @@ def grid_bin(df, proj='EPSG:4326', xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, n
   return gdf_joined
 ```
 
+## Datasets
 
-## Data Validation & Cleaning
+We selected traffic data as our urbanization metric
+
 
 ### Traffic Data - Feature Engineering and Visualization
 

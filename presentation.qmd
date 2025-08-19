@@ -128,7 +128,7 @@ plt.rcParams['figure.figsize'] = (6, 6 * 0.618)
 ```
 
 ```{python}
-#| label: load-data
+#| label: load-noaa-data
 #| include: false
 
 # Load data in Python
@@ -206,7 +206,7 @@ gdf_noaa = grid_bin(noaa_features)
 ```
 
 ```{python}
-#| label: load-data
+#| label: load-storm-data
 #| include: false
 
 # Traffic Data
@@ -305,7 +305,7 @@ gdf_traffic = add_grid_geometry(gdf_traffic)
 ```
 
 ```{python}
-#| label: load-data
+#| label: load-traffic-data
 #| include: false
 
 # Storm Data

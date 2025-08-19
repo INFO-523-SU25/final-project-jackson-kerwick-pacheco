@@ -376,68 +376,47 @@ storm_features_2022['highmagstorm_events_above_5yavg'] = (
 ```
 
 ```{python}
-#| label: merge-data
-#| include: false
+# merging traffic and noaa
+gdf_traffic_premerge = gdf_traffic.drop(['latitude', 'longitude'], axis=1)
 
-# merging data sets together
+# remove Point geometry to preserve gridspace geometry from traffic df
+gdf_noaa_premerge = gdf_noaa1.drop(['latitude', 'longitude', 'geometry'], axis=1)
 
-# Load Arizona counties shapefile 
-# Using US Census counties shapefile 
-counties = gpd.read_file("data/tl_2024_us_county.shp")
+# Merging removes gridspaces that are not in the left dataset (traffic)
+gdf_traffic_noaa = pd.merge(gdf_traffic_premerge, gdf_noaa_premerge, on='gridspace')
 
-# Filter for Arizona only (FIPS code: '04')
-az_counties = counties[counties['STATEFP'] == '04'].copy()
+gdf_traffic_noaa.head()
 
-# Rename and clean
-az_counties['CZ_FIPS'] = az_counties['COUNTYFP'].astype(int)
-az_counties = az_counties[['CZ_FIPS', 'NAME', 'geometry']]
+# merging storm and traffic/noaa
 
-# Convert NOAA and Traffic data to GeoDataFrames 
-noaa_gdf = gpd.GeoDataFrame(
-    noaa_features,
-    geometry=gpd.points_from_xy(noaa_features['longitude'], noaa_features['latitude']),
-    crs='EPSG:4326'
-)
+df_storm_premerge = storm_features_2022.rename({'CZ_FIPS': 'fips_code'}, axis=1)
+df_storm_premerge.columns
 
-# Traffic
-traffic_gdf = gpd.GeoDataFrame(
-    df_traffic,
-    geometry=gpd.points_from_xy(df_traffic['longitude'], df_traffic['latitude']),
-    crs='EPSG:4326'
-)
+merged_df = pd.merge(gdf_traffic_noaa, df_storm_premerge)
+merged_df.isnull().sum()
 
-# Spatial join points to counties
-# NOAA -> county
-noaa_gdf = gpd.sjoin(noaa_gdf, az_counties, how='left', predicate='within')
+# handle missing data/outliers
+# For numerical columns, fill nulls with mean
+numerical_cols = ['lowmagstorm_events_2022', 'lowmagstorm_5yavg', 'highmagstorm_events_2022',
+                  'highmagstorm_5yavg', 'average_storm_mag_2022', 'lowmagstorm_events_above_5yavg',
+                  'highmagstorm_events_above_5yavg', 'max_temp_above_5yavg', 'avg_temp_above_5yavg',
+                  'rainfall_below_5yavg', 'traffic_counts_2022', 'traffic_counts_above_5yavg', 'max_temp_2022', 'avg_temp_2022', 'rainfall_2022']
 
-# Traffic -> county
-traffic_gdf = gpd.sjoin(traffic_gdf, az_counties, how='left', predicate='within')
+for col in numerical_cols:
+    merged_df[col].fillna(merged_df[col].mean(), inplace=True)
 
-# Aggregate NOAA and Traffic features by county
-noaa_by_county = noaa_gdf.groupby('CZ_FIPS').agg({
-    'max_temp_above_5yavg': 'mean',
-    'avg_temp_above_5yavg': 'mean',
-    'rainfall_below_5yavg': 'mean'
-}).reset_index()
+print(merged_df.isnull().sum())
 
-# Traffic aggregation
-traffic_by_county = traffic_gdf.groupby('CZ_FIPS').agg({
-    'traffic_counts_2022': 'sum',
-    'traffic_counts_above_5yavg': 'mean'
-}).reset_index()
+# Remove outliers - capping (winsorizing) imputation
+numeric_cols = merged_df.select_dtypes(include=[np.number]).columns
+for col in numeric_cols:
+  lower_limit = np.percentile(merged_df[col], 5)
+  upper_limit = np.percentile(merged_df[col], 95)
 
-# _________________Merge all dataframes on county FIPS_________________ 
-# Start with storm data
-merged_df = storm_features_2022.copy()
+```
 
-# Merge with NOAA
-merged_df = pd.merge(merged_df, noaa_by_county, how='left', on='CZ_FIPS')
-
-# Merge with traffic
-merged_df = pd.merge(merged_df, traffic_by_county, how='left', on='CZ_FIPS')
-
-# Add county names for readability
-merged_df = pd.merge(merged_df, az_counties[['CZ_FIPS', 'NAME']], how='left', on='CZ_FIPS')
+```{python}
+# modeling
 ```
 
 ## Topic and Research Question
@@ -461,6 +440,10 @@ merged_df = pd.merge(merged_df, az_counties[['CZ_FIPS', 'NAME']], how='left', on
 ## Exploratory Data Analysis
 
 Traffic Distribution in Arizona
+
+:::: {.columns}
+
+::: {.column width="50%"}
 ```{python}
 # US state and arizona shapefile for plotting
 states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
@@ -471,25 +454,42 @@ ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
 
 # gdf was reverted to df during process, so converting to gdf again
 gdf_traffic = gpd.GeoDataFrame(gdf_traffic)
-gdf_traffic.plot('traffic_counts_2022', ax=ax, legend = True)
-plt.title("Traffic, 2022 (Arizona, USA)")
+gdf_traffic.plot('traffic_counts_2022', ax=ax, legend = True, legend_kwds={'label': "Traffic Count (1e7)", 
+                 'orientation': "vertical"})
+plt.title("Traffic in Arizona (2022)")
 plt.xlabel("Latitude")
 plt.ylabel("Longitude")
 plt.autoscale(False)
 plt.show()
 
+
+```
+:::
+::: {.column width="50%"}
+```{python}
+
+
+
 ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
-gdf_traffic.plot('traffic_counts_above_5yavg', ax=ax, legend = True)
-plt.title("Traffic Above the 5-Year Average, 2019-2023 (Arizona, USA)")
+gdf_traffic.plot('traffic_counts_above_5yavg', ax=ax, legend = True, legend_kwds={'label': "Traffic Count (1e7)", 
+                 'orientation': "vertical"})
+plt.title("Traffic Above the 5-Year Average in Arizona (2019-2023)")
 plt.xlabel("Latitude")
 plt.ylabel("Longitude")
 plt.autoscale(False)
 plt.show()
 ```
+:::
+
+::::
+
 
 ## Exploratory Data Analysis
 
 Precipitation, Temperature, and Storm patterns throughout Arizona
+
+::::: columns
+::: {.column width="50%"}
 ```{python}
 # US state and arizona shapefile for plotting
 states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
@@ -502,20 +502,34 @@ gdf_noaa1 = gpd.GeoDataFrame(gdf_noaa1)
 #gdf_noaa1 = gdf_noaa1.set_crs("EPSG:4326", allow_override=True)
 # example: plotting noaa data with arizona shapefile
 ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
-gdf_noaa1.plot(column="avg_temp_2022", ax=ax, cmap="viridis", markersize=30, legend=True)
-plt.title("Average Temperature (2019-2023)")
+gdf_noaa1.plot(column="max_temp_2022", ax=ax, cmap="viridis", markersize=30, legend=True, legend_kwds={'label': "Temperature (F)", 
+                 'orientation': "vertical"})
+plt.title("Average Temperature in Arizona (2022)")
 plt.xlabel('Latitude')
 plt.ylabel('Longitude')
 plt.autoscale(False)
 plt.show()
+```
+:::
 
+::: {.column width="50%"}
+
+```{python}
 ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
-gdf_noaa1.plot(column="rainfall_5yavg", ax=ax, cmap="viridis", markersize=30, legend=True)
-plt.title("Average Precipitation (2019-2023)")
+gdf_noaa1.plot(column="rainfall_2022", ax=ax, cmap="viridis", markersize=30, legend=True, legend_kwds={'label': "Average Precipitation (inches)", 
+                 'orientation': "vertical"})
+plt.title("Average Precipitation in Arizona (2022)")
 plt.xlabel('Latitude')
 plt.ylabel('Longitude')
 plt.autoscale(False)
 plt.show()
+```
+:::
+
+
+:::::
+
+
 ```
 
 ## Modeling

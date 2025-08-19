@@ -585,11 +585,12 @@ for col in numeric_cols:
 ```{python}
 # Test
 # applying log normalization to traffic counts for merged dataset
-# log_df = merged_df.copy()
-# log_df[['traffic_counts_2022', 'traffic_counts_above_5yavg']] = np.log(merged_df[['traffic_counts_2022', 'traffic_counts_above_5yavg']])
+log_df = merged_df.copy()
+log_df = np.log(log_df.select_dtypes(include=[np.number]))
+# log_df[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'avg_temp_2022']] = np.log(merged_df[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'avg_temp_2022']])
 # log_df = log_df.drop(['gridspace'], axis=1)
-# log_df.boxplot()
-# plt.xticks(rotation=45)
+log_df.boxplot()
+plt.xticks(rotation=45)
 
 ```
 
@@ -615,7 +616,6 @@ plt.show()
 
 # sns.pairplot(merged_df_scaled)
 
-gdf_noaa1['avg_temp_2022'].plot()
 ```
 
 

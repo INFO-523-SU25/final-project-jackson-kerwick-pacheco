@@ -670,43 +670,48 @@ env_above_below_5yavg = [
 #### 5 Year Average Data
 
 ```{python}
-X = merged_df_scaled[env_above_below_5yavg]  # Independent variable
-y = merged_df_scaled['traffic_counts_above_5yavg']  # Dependent variable
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
+run_regression_models(env_above_below_5yavg, 'traffic_counts_above_5yavg')
+run_regression_models(env_2022, 'traffic_counts_2022')
 
-X_train_with_const = sm.add_constant(X_train)
-model = sm.OLS(y_train, X_train_with_const).fit()
-model_summary = model.summary2()
-print(model_summary)
+def run_regression_models(X_val, y_val):
+  X = merged_df_scaled[X_val]  # Independent variable
+  y = merged_df_scaled[y_val]  # Dependent variable
 
-# Add constant to X_test
-X_test_const = sm.add_constant(X_test)
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
 
-# Predict using trained model
-y_pred = model.predict(X_test_const)
+  X_train_with_const = sm.add_constant(X_train)
+  model = sm.OLS(y_train, X_train_with_const).fit()
+  model_summary = model.summary2()
+  print(model_summary)
 
-mse = mean_squared_error(y_test, y_pred) # mean squared error
-rmse = np.sqrt(mse) # root mse
-r2 = r2_score(y_test, y_pred) # r^2 on test set
+  # Add constant to X_test
+  X_test_const = sm.add_constant(X_test)
 
-# Print test performance
-print(f"MSE:  {mse:.4f}")
-print(f"RMSE: {rmse:.4f}")
-print(f"R²:   {r2:.4f}")
+  # Predict using trained model
+  y_pred = model.predict(X_test_const)
 
-# Define the alpha values to try
-alpha_values = [0.01, 0.1, 1, 10, 100]
+  mse = mean_squared_error(y_test, y_pred) # mean squared error
+  rmse = np.sqrt(mse) # root mse
+  r2 = r2_score(y_test, y_pred) # r^2 on test set
 
-# Initialize variables to store the best alpha and its corresponding MSE
-best_alpha = None
-best_mse = np.inf
+  # Print test performance
+  print(f"MSE:  {mse:.4f}")
+  print(f"RMSE: {rmse:.4f}")
+  print(f"R²:   {r2:.4f}")
 
-# Cross-validation to select the best alpha
-kf = KFold(n_splits=5, shuffle=True, random_state=42)
+  # Define the alpha values to try
+  alpha_values = [0.01, 0.1, 1, 10, 100]
 
-# _______________ Ridge Regression _______________
-for alpha in alpha_values:
+  # Initialize variables to store the best alpha and its corresponding MSE
+  best_alpha = None
+  best_mse = np.inf
+
+  # Cross-validation to select the best alpha
+  kf = KFold(n_splits=5, shuffle=True, random_state=42)
+
+  # _______________ Ridge Regression _______________
+  for alpha in alpha_values:
     # Create Ridge regression model with current alpha
     ridge = Ridge(alpha=alpha)
 
@@ -719,10 +724,10 @@ for alpha in alpha_values:
         best_mse = mean_cv_mse
         best_alpha = alpha
 
-print(f"Ridge best alpha selected: {best_alpha} with CV MSE: {best_mse}\n")
+  print(f"Ridge best alpha selected: {best_alpha} with CV MSE: {best_mse}\n")
 
-# _______________ Lasso Regression _______________
-for alpha in alpha_values:
+  # _______________ Lasso Regression _______________
+  for alpha in alpha_values:
     # Create Lasso regression with current alpha
     lasso = Lasso(alpha=alpha, max_iter=10000)
 
@@ -735,45 +740,45 @@ for alpha in alpha_values:
         best_mse = mean_cv_mse
         best_alpha = alpha
 
-print(f"Lasso best alpha selected: {best_alpha} with CV MSE: {best_mse}\n")
+  print(f"Lasso best alpha selected: {best_alpha} with CV MSE: {best_mse}\n")
 
-# _______________ Ridge Regression _______________
-# Initialize Ridge regression with the best alpha 
-ridge_reg = Ridge(alpha=best_alpha)
+  # _______________ Ridge Regression _______________
+  # Initialize Ridge regression with the best alpha 
+  ridge_reg = Ridge(alpha=best_alpha)
 
-# Fit the Ridge model on the training data
-ridge_reg.fit(X_train, y_train)
+  # Fit the Ridge model on the training data
+  ridge_reg.fit(X_train, y_train)
 
-# Predict on the testing set
-y_pred = ridge_reg.predict(X_test)
+  # Predict on the testing set
+  y_pred = ridge_reg.predict(X_test)
 
-# Evaluate performance
-mse = mean_squared_error(y_test, y_pred)
-rmse = np.sqrt(mse)
-r2 = r2_score(y_test, y_pred)
+  # Evaluate performance
+  mse = mean_squared_error(y_test, y_pred)
+  rmse = np.sqrt(mse)
+  r2 = r2_score(y_test, y_pred)
 
-print(mse)
-print(rmse)
-print(r2)
+  print(mse)
+  print(rmse)
+  print(r2)
 
-# _______________ Lasso Regression _______________
-# Initialize Lasso regression with the best alpha
-lasso_reg = Lasso(alpha=best_alpha, max_iter=10000)
+  # _______________ Lasso Regression _______________
+  # Initialize Lasso regression with the best alpha
+  lasso_reg = Lasso(alpha=best_alpha, max_iter=10000)
 
-# Fit the Lasso model on the training data
-lasso_reg.fit(X_train, y_train)
+  # Fit the Lasso model on the training data
+  lasso_reg.fit(X_train, y_train)
 
-# Predict on the testing set
-y_pred = lasso_reg.predict(X_test)
+  # Predict on the testing set
+  y_pred = lasso_reg.predict(X_test)
 
-# Evaluate performance
-mse = mean_squared_error(y_test, y_pred)
-rmse = np.sqrt(mse)
-r2 = r2_score(y_test, y_pred)
+  # Evaluate performance
+  mse = mean_squared_error(y_test, y_pred)
+  rmse = np.sqrt(mse)
+  r2 = r2_score(y_test, y_pred)
 
-print(mse)
-print(rmse)
-print(r2)
+  print(mse)
+  print(rmse)
+  print(r2)
 ```
 
 

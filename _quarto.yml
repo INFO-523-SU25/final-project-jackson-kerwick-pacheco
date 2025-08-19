@@ -9,7 +9,7 @@ website:
         href: https://github.com/INFO-523-SU25/final-project-jackson-kerwick-pacheco
     left:
       - text: Project
-        href: index.qmd
+        href: project-final.qmd
       - text: Proposal
         href: proposal.qmd
       - text: Presentation

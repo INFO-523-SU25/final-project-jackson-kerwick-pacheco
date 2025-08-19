@@ -570,82 +570,95 @@ gdf_noaa_premerge = gdf_noaa1.drop(['latitude', 'longitude', 'geometry'], axis=1
 
 # Merging removes gridspaces that are not in the left dataset (traffic)
 gdf_traffic_noaa = pd.merge(gdf_traffic_premerge, gdf_noaa_premerge, on='gridspace')
-gdf_traffic_noaa
+
+
 
 ```
 
+### Merge Storm and Traffic/NOAA Dataset on `fips_code`
+
+```{python}
+
+df_storm_premerge = storm_features_2022.rename({'CZ_FIPS': 'fips_code'}, axis=1)
+df_storm_premerge.columns
+
+merged_df = pd.merge(gdf_traffic_noaa, df_storm_premerge)
+merged_df.isnull().sum()
+
+
+```
 
 ### Merge Datasets
 
 ```{python}
-import pandas as pd
-import geopandas as gpd
-from shapely.geometry import Point
+# import pandas as pd
+# import geopandas as gpd
+# from shapely.geometry import Point
 
-# Load Arizona counties shapefile 
-# Using US Census counties shapefile 
-counties = gpd.read_file("data/tl_2024_us_county.shp")
+# # Load Arizona counties shapefile 
+# # Using US Census counties shapefile 
+# counties = gpd.read_file("data/tl_2024_us_county.shp")
 
-# Filter for Arizona only (FIPS code: '04')
-az_counties = counties[counties['STATEFP'] == '04'].copy()
+# # Filter for Arizona only (FIPS code: '04')
+# az_counties = counties[counties['STATEFP'] == '04'].copy()
 
-# Rename and clean
-az_counties['CZ_FIPS'] = az_counties['COUNTYFP'].astype(int)
-az_counties = az_counties[['CZ_FIPS', 'NAME', 'geometry']]
+# # Rename and clean
+# az_counties['CZ_FIPS'] = az_counties['COUNTYFP'].astype(int)
+# az_counties = az_counties[['CZ_FIPS', 'NAME', 'geometry']]
 
 # Convert NOAA and Traffic data to GeoDataFrames 
-noaa_gdf = gpd.GeoDataFrame(
-    noaa_features,
-    geometry=gpd.points_from_xy(noaa_features['longitude'], noaa_features['latitude']),
-    crs='EPSG:4326'
-)
+# noaa_gdf = gpd.GeoDataFrame(
+#     noaa_features,
+#     geometry=gpd.points_from_xy(noaa_features['longitude'], noaa_features['latitude']),
+#     crs='EPSG:4326'
+# )
 
-# Traffic
-traffic_gdf = gpd.GeoDataFrame(
-    df_traffic,
-    geometry=gpd.points_from_xy(df_traffic['longitude'], df_traffic['latitude']),
-    crs='EPSG:4326'
-)
+# # Traffic
+# traffic_gdf = gpd.GeoDataFrame(
+#     df_traffic,
+#     geometry=gpd.points_from_xy(df_traffic['longitude'], df_traffic['latitude']),
+#     crs='EPSG:4326'
+# )
 
 # Spatial join points to counties
-# NOAA -> county
-noaa_gdf = gpd.sjoin(noaa_gdf, az_counties, how='left', predicate='within')
+# # NOAA -> county
+# noaa_gdf = gpd.sjoin(noaa_gdf, az_counties, how='left', predicate='within')
 
-# Traffic -> county
-traffic_gdf = gpd.sjoin(traffic_gdf, az_counties, how='left', predicate='within')
+# # Traffic -> county
+# traffic_gdf = gpd.sjoin(traffic_gdf, az_counties, how='left', predicate='within')
 
 # Aggregate NOAA and Traffic features by county
-noaa_by_county = noaa_gdf.groupby('CZ_FIPS').agg({
-    'max_temp_above_5yavg': 'mean',
-    'avg_temp_above_5yavg': 'mean',
-    'rainfall_below_5yavg': 'mean'
-}).reset_index()
+# noaa_by_county = noaa_gdf.groupby('CZ_FIPS').agg({
+#     'max_temp_above_5yavg': 'mean',
+#     'avg_temp_above_5yavg': 'mean',
+#     'rainfall_below_5yavg': 'mean'
+# }).reset_index()
 
 # Traffic aggregation
-traffic_by_county = traffic_gdf.groupby('CZ_FIPS').agg({
-    'traffic_counts_2022': 'sum',
-    'traffic_counts_above_5yavg': 'mean'
-}).reset_index()
+# traffic_by_county = traffic_gdf.groupby('CZ_FIPS').agg({
+#     'traffic_counts_2022': 'sum',
+#     'traffic_counts_above_5yavg': 'mean'
+# }).reset_index()
 
 # _________________Merge all dataframes on county FIPS_________________ 
 # Start with storm data
-merged_df = storm_features_2022.copy()
+# merged_df = storm_features_2022.copy()
 
-# Merge with NOAA
-merged_df = pd.merge(merged_df, noaa_by_county, how='left', on='CZ_FIPS')
+# # Merge with NOAA
+# merged_df = pd.merge(merged_df, noaa_by_county, how='left', on='CZ_FIPS')
 
-# Merge with traffic
-merged_df = pd.merge(merged_df, traffic_by_county, how='left', on='CZ_FIPS')
+# # Merge with traffic
+# merged_df = pd.merge(merged_df, traffic_by_county, how='left', on='CZ_FIPS')
 
-# Add county names for readability
-merged_df = pd.merge(merged_df, az_counties[['CZ_FIPS', 'NAME']], how='left', on='CZ_FIPS')
+# # Add county names for readability
+# merged_df = pd.merge(merged_df, az_counties[['CZ_FIPS', 'NAME']], how='left', on='CZ_FIPS')
 
-# View final dataframe
-print(merged_df.info())
-print(merged_df.head())
-print(merged_df.dtypes)
+# # View final dataframe
+# print(merged_df.info())
+# print(merged_df.head())
+# print(merged_df.dtypes)
 
-merged_df.isnull().sum()
+# merged_df.isnull().sum()
 ```
 
 ### Handle Missing Data and Remove Outliers
@@ -655,15 +668,17 @@ merged_df.isnull().sum()
 numerical_cols = ['lowmagstorm_events_2022', 'lowmagstorm_5yavg', 'highmagstorm_events_2022',
                   'highmagstorm_5yavg', 'average_storm_mag_2022', 'lowmagstorm_events_above_5yavg',
                   'highmagstorm_events_above_5yavg', 'max_temp_above_5yavg', 'avg_temp_above_5yavg',
-                  'rainfall_below_5yavg', 'traffic_counts_2022', 'traffic_counts_above_5yavg']
+                  'rainfall_below_5yavg', 'traffic_counts_2022', 'traffic_counts_above_5yavg', 'max_temp_2022',
+                  'avg_temp_2022', 'rainfall_2022']
 
 for col in numerical_cols:
     merged_df[col].fillna(merged_df[col].mean(), inplace=True)
 
 # For categorical columns, fill nulls with mode
-merged_df['NAME'].fillna(df['NAME'].mode()[0], inplace=True)
+# merged_df['NAME'].fillna(df['NAME'].mode()[0], inplace=True)
 
-merged_df.isnull().sum()
+
+print("Number of NaNs in merged dataset:", merged_df.isnull().sum())
 
 # Remove outliers - capping (winsorizing) imputation
 numeric_cols = merged_df.select_dtypes(include=[np.number]).columns
@@ -671,6 +686,8 @@ for col in numeric_cols:
   lower_limit = np.percentile(merged_df[col], 5)
   upper_limit = np.percentile(merged_df[col], 95)
 
+
+merged_df
 ```
 
 ### Data Transformation - Feature Scaling

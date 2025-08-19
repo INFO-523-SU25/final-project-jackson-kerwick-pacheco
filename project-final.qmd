@@ -649,11 +649,11 @@ for component, features in top_features.items():
 categorical_cols = merged_df_scaled.select_dtypes(include='object').columns
 merged_df_scaled = pd.get_dummies(merged_df_scaled, columns= categorical_cols, drop_first=True)
 
-# Convert all bool columns to int (0/1)
+# Convert all bool columns to int (0/1) 
 bool_cols = merged_df_scaled.select_dtypes(include='bool').columns
 merged_df_scaled[bool_cols] = merged_df_scaled[bool_cols].astype(int)
 
-merged_df_scaled.head()
+print(merged_df_scaled.head())
 print(merged_df_scaled.dtypes)
 ```
 

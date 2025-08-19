@@ -24,6 +24,8 @@ jupyter: python3
 
 ```{python}
 # Import Libraries 
+
+# Reading files and plotting
 import seaborn as sns
 import glob
 import os
@@ -35,6 +37,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import shapely
 from shapely.geometry import Point
+
+# Statistical modeling
 from sklearn.model_selection import train_test_split, KFold, cross_validate, cross_val_score
 from sklearn.preprocessing import StandardScaler
 import numbers
@@ -52,11 +56,12 @@ from sklearn.metrics import (
 )
 import statsmodels.api as sm
 from sklearn.linear_model import LogisticRegression, Ridge, Lasso
+from scipy import stats
 ```
 
-## Data Validation & Cleaning
 
-### GDF Creation function
+
+### Gridspace creation functions
 
 ```{python}
 #| label: gdf-function
@@ -129,6 +134,9 @@ def grid_bin(df, proj='EPSG:4326', xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, n
 
   return gdf_joined
 ```
+
+
+## Data Validation & Cleaning
 
 ### Traffic Data - Feature Engineering and Visualization
 
@@ -251,6 +259,9 @@ plt.show()
 
 gdf_traffic.info()
 ```
+
+## NOAA Data
+
 
 ### Load and Merge NOAA Files
 
@@ -570,6 +581,18 @@ for col in numeric_cols:
 
 ```
 
+
+```{python}
+# Test
+# applying log normalization to traffic counts for merged dataset
+# log_df = merged_df.copy()
+# log_df[['traffic_counts_2022', 'traffic_counts_above_5yavg']] = np.log(merged_df[['traffic_counts_2022', 'traffic_counts_above_5yavg']])
+# log_df = log_df.drop(['gridspace'], axis=1)
+# log_df.boxplot()
+# plt.xticks(rotation=45)
+
+```
+
 ### Data Transformation - Feature Scaling
 
 ```{python}
@@ -583,8 +606,68 @@ numeric_cols = merged_df.select_dtypes(include='number').columns
 merged_df_scaled = merged_df.copy()
 merged_df_scaled[numeric_cols] = scaler.fit_transform(merged_df[numeric_cols])
 
-print(merged_df_scaled)
+# print(merged_df_scaled)
+
+merged_df_scaled.boxplot()
+plt.xticks(rotation=60, fontsize=5)
+plt.title('Box and Whisker Plot of Engineered Features after StandardScaler')
+plt.show()
+
+# sns.pairplot(merged_df_scaled)
+
+gdf_noaa1['avg_temp_2022'].plot()
 ```
+
+
+
+### Visualizing Relationships for 5-year-average datasets and 2022 datasets
+
+```{python}
+# 2022 urbanization metrics
+urban_2022 = [
+    'traffic_counts_2022',
+    # 'gridspace'  # This seems static/spatial, so keep with 2022 data
+]
+
+# Urbanization metrics relative to 5-year average
+urban_above_5yavg = [
+    'traffic_counts_above_5yavg'
+]
+
+# 2022 environmental metrics
+env_2022 = [
+    'max_temp_2022',
+    'avg_temp_2022',
+    'rainfall_2022',
+    'lowmagstorm_events_2022',
+    'highmagstorm_events_2022',
+    'average_storm_mag_2022'
+]
+
+# Environmental metrics relative to 5-year average (anomalies)
+env_above_below_5yavg = [
+    'max_temp_above_5yavg',
+    'avg_temp_above_5yavg',
+    'rainfall_below_5yavg',  # This one is "below", but similar anomaly concept
+    'lowmagstorm_events_above_5yavg',
+    'highmagstorm_events_above_5yavg'
+]
+
+
+
+df_5yavg = merged_df_scaled[urban_above_5yavg + env_above_below_5yavg]
+df_2022 = merged_df_scaled[urban_2022 + env_2022]
+
+sns.pairplot(df_5yavg)
+plt.show()
+
+sns.pairplot(df_2022)
+plt.show()
+
+```
+
+
+
 
 ### Data Reduction
 
@@ -642,36 +725,14 @@ print(merged_df_scaled.dtypes)
 ### Linear Regression Models
 
 ```{python}
-# 2022 urbanization metrics
-urban_2022 = [
-    'traffic_counts_2022',
-    'gridspace'  # This seems static/spatial, so keep with 2022 data
-]
+# Zscore test removes all avg_temp_2022 data
+# df_test = merged_df_scaled[urban_above_5yavg]
 
-# Urbanization metrics relative to 5-year average
-urban_above_5yavg = [
-    'traffic_counts_above_5yavg'
-]
+# df_test[(np.abs(stats.zscore(df_test)) < 3).all(axis=1)].boxplot()
 
-# 2022 environmental metrics
-env_2022 = [
-    'max_temp_2022',
-    'avg_temp_2022',
-    'rainfall_2022',
-    'lowmagstorm_events_2022',
-    'highmagstorm_events_2022',
-    'average_storm_mag_2022'
-]
-
-# Environmental metrics relative to 5-year average (anomalies)
-env_above_below_5yavg = [
-    'max_temp_above_5yavg',
-    'avg_temp_above_5yavg',
-    'rainfall_below_5yavg',  # This one is "below", but similar anomaly concept
-    'lowmagstorm_events_above_5yavg',
-    'highmagstorm_events_above_5yavg'
-]
 ```
+
+
 
 ```{python}
 
@@ -684,7 +745,7 @@ def run_regression_models(X_val, y_val):
   X_train_with_const = sm.add_constant(X_train)
   model = sm.OLS(y_train, X_train_with_const).fit()
   model_summary = model.summary2()
-  print(model_summary)
+  # print(model_summary)
 
   # Add constant to X_test
   X_test_const = sm.add_constant(X_test)
@@ -758,10 +819,10 @@ def run_regression_models(X_val, y_val):
   rmse = np.sqrt(mse)
   r2 = r2_score(y_test, y_pred)
 
-  print(mse)
-  print(rmse)
-  print(r2)
-
+  print("Ridge Regression Model:")
+  print("\tMean-squared error:", mse)
+  print("\tRoot mean-squared error:", rmse)
+  print("\tR-squared value:", r2)
   # _______________ Lasso Regression _______________
   # Initialize Lasso regression with the best alpha
   lasso_reg = Lasso(alpha=best_alpha, max_iter=10000)
@@ -777,9 +838,10 @@ def run_regression_models(X_val, y_val):
   rmse = np.sqrt(mse)
   r2 = r2_score(y_test, y_pred)
 
-  print(mse)
-  print(rmse)
-  print(r2)
+  print("Lasso Regression Model:")
+  print("\tMean-squared error:", mse)
+  print("\tRoot mean-squared error:", rmse)
+  print("\tR-squared value:", r2)
 
 run_regression_models(env_above_below_5yavg, 'traffic_counts_above_5yavg')
 run_regression_models(env_2022, 'traffic_counts_2022')

@@ -38,6 +38,14 @@ from shapely.geometry import Point
 from sklearn.preprocessing import StandardScaler
 import numbers
 from sklearn.decomposition import PCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.feature_selection import SelectKBest, f_classif, f_regression
+from sklearn.model_selection import train_test_split
+import statsmodels.api as sm
 ```
 
 ## Data Validation & Cleaning
@@ -622,15 +630,150 @@ print(merged_df_scaled.head())
 print(merged_df_scaled.dtypes)
 ```
 
-### Regression Analysis Setup
+### Regression 
 
 ```{python}
+# 2022 urbanization metrics
+urban_2022 = [
+    'traffic_counts_2022',
+    'gridspace'  # This seems static/spatial, so keep with 2022 data
+]
 
+# Urbanization metrics relative to 5-year average
+urban_above_5yavg = [
+    'traffic_counts_above_5yavg'
+]
 
+# 2022 environmental metrics
+env_2022 = [
+    'max_temp_2022',
+    'avg_temp_2022',
+    'rainfall_2022',
+    'lowmagstorm_events_2022',
+    'highmagstorm_events_2022',
+    'average_storm_mag_2022'
+]
 
-
-
+# Environmental metrics relative to 5-year average (anomalies)
+env_above_below_5yavg = [
+    'max_temp_above_5yavg',
+    'avg_temp_above_5yavg',
+    'rainfall_below_5yavg',  # This one is "below", but similar anomaly concept
+    'lowmagstorm_events_above_5yavg',
+    'highmagstorm_events_above_5yavg'
+]
 ```
+
+#### 5 Year Average Data
+
+```{python}
+X = merged_df_scaled[env_above_below_5yavg]  # Independent variable
+y = merged_df_scaled['traffic_counts_above_5yavg']  # Dependent variable
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
+
+X_train_with_const = sm.add_constant(X_train)
+model = sm.OLS(y_train, X_train_with_const).fit()
+model_summary = model.summary2()
+print(model_summary)
+
+# Add constant to X_test
+X_test_const = sm.add_constant(X_test)
+
+# Predict using trained model
+y_pred = model.predict(X_test_const)
+
+mse = mean_squared_error(y_test, y_pred) # mean squared error
+rmse = np.sqrt(mse) # root mse
+r2 = r2_score(y_test, y_pred) # r^2 on test set
+
+# Print test performance
+print(f"MSE:  {mse:.4f}")
+print(f"RMSE: {rmse:.4f}")
+print(f"R²:   {r2:.4f}")
+
+# Define the alpha values to try
+alpha_values = [0.01, 0.1, 1, 10, 100]
+
+# Initialize variables to store the best alpha and its corresponding MSE
+best_alpha = None
+best_mse = np.inf
+
+# Cross-validation to select the best alpha
+kf = KFold(n_splits=5, shuffle=True, random_state=42)
+
+# _______________ Ridge Regression _______________
+for alpha in alpha_values:
+    # Create Ridge regression model with current alpha
+    ridge = Ridge(alpha=alpha)
+
+    # Perform cross-validation and get negative MSE scores
+    cv_scores = cross_val_score(ridge, X_train, y_train, cv=kf, scoring='neg_mean_squared_error')
+    mean_cv_mse = -np.mean(cv_scores)
+    
+    # Update best alpha if current mean CV MSE is lower
+    if mean_cv_mse < best_mse:
+        best_mse = mean_cv_mse
+        best_alpha = alpha
+
+print(f"Ridge best alpha selected: {best_alpha} with CV MSE: {best_mse}\n")
+
+# _______________ Lasso Regression _______________
+for alpha in alpha_values:
+    # Create Lasso regression with current alpha
+    lasso = Lasso(alpha=alpha, max_iter=10000)
+
+      # Perform cross-validation and get negative MSE scores
+    cv_scores = cross_val_score(lasso, X_train, y_train, cv=kf, scoring='neg_mean_squared_error')
+    mean_cv_mse = -np.mean(cv_scores)
+    
+    # Update best alpha if current mean CV MSE is lower
+    if mean_cv_mse < best_mse:
+        best_mse = mean_cv_mse
+        best_alpha = alpha
+
+print(f"Lasso best alpha selected: {best_alpha} with CV MSE: {best_mse}\n")
+
+# _______________ Ridge Regression _______________
+# Initialize Ridge regression with the best alpha 
+ridge_reg = Ridge(alpha=best_alpha)
+
+# Fit the Ridge model on the training data
+ridge_reg.fit(X_train, y_train)
+
+# Predict on the testing set
+y_pred = ridge_reg.predict(X_test)
+
+# Evaluate performance
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+r2 = r2_score(y_test, y_pred)
+
+print(mse)
+print(rmse)
+print(r2)
+
+# _______________ Lasso Regression _______________
+# Initialize Lasso regression with the best alpha
+lasso_reg = Lasso(alpha=best_alpha, max_iter=10000)
+
+# Fit the Lasso model on the training data
+lasso_reg.fit(X_train, y_train)
+
+# Predict on the testing set
+y_pred = lasso_reg.predict(X_test)
+
+# Evaluate performance
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+r2 = r2_score(y_test, y_pred)
+
+print(mse)
+print(rmse)
+print(r2)
+```
+
+
 
 # References
 

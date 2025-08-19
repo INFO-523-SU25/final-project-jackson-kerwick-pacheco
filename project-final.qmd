@@ -19,6 +19,29 @@ execute:
   echo: false
 jupyter: python3
 ---
+Minimum requirements:
+
+
+    Introduction: The introduction provides a clear explanation of the question and the dataset used to answer the question, including a description of all relevant variables in the dataset. (3 points)
+
+## Introduction
+
+The goal of our project is to analyze the relationship between urbanization and environmental quality across regions within Arizona, identifying patterns and anomalies in how urban growth impacts climate metrics such as storms, temperature, and rainfall. As we have seen with the uproar by the Tucson population regarding the proposed environmental impacts of the Project Blue data center, environmental quality is important to local populations. We hope to use this study to identify the regional relationship between urbanization and climate indicators. We will be using traffic count data as our urbanization metric, and National Oceanographic and Atmospheric Administration (NOAA) climate and storm event data as our environmental quality data.
+
+## Geospatial Analysis
+
+
+
+
+    Justification of approach: The chosen approach and data mining method(s) are clearly explained and justified. (3 points)
+    
+    Code: Code is correct, easy to read, properly formatted, and properly documented. (10 points)
+    
+    Mining Method: The data mining method(s) are appropriate, easy to read, and properly labeled. (10 points)
+    
+    Discussion: Discussion of results is clear and correct, and it has some depth without begin excessively long. (4 points)
+
+
 
 ## Import Libraries
 

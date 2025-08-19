@@ -438,7 +438,7 @@ merged_df = pd.merge(merged_df, az_counties[['CZ_FIPS', 'NAME']], how='left', on
 ## Topic and Research Question
 
 - Traffic and car emissions are known to impact local air pollution and climate (Niemeier, et al. 2006)  
-- Precipitation and temperature changes are known indicators of climate change (EPA, 2024; Lindsey & Dahlman, 2025)
+- Precipitation and temperature changes and an increase in storms are known indicators of climate change (Trenberth, 2007; EPA, 2024; Lindsey & Dahlman, 2025)
 - Can we observe the varying impact of traffic congestion on climate between counties in Arizona, USA?
 - Can we predict the impact of traffic congestion on climate?
 
@@ -447,7 +447,7 @@ merged_df = pd.merge(merged_df, az_counties[['CZ_FIPS', 'NAME']], how='left', on
 
 
 -   Urbanization Metric: traffic count data (USDT FHA)
--   Climate Metric: National Oceanographic and Atmospheric Administration (NOAA) climate and storm event data as our environmental quality data.
+-   Climate Metric: temperature, precipitation, and storm data (National Oceanographic and Atmospheric Administration (NOAA))
 
 
 ## Exploratory Data Analysis
@@ -527,3 +527,8 @@ Limitations:
 -   You are welcomed to use the default styling of the slides. In fact, that's what I expect majority of you will do. You will differentiate yourself with the content of your presentation.
 
 -   But some of you might want to play around with slide styling. Some solutions for this can be found at https://quarto.org/docs/presentations/revealjs.
+
+## Reference
+- Trenberth, K.E. (2008). The Impact of Climate Change and Variability
+on Heavy Precipitation,
+Floods and Droughts. Encyocyclopedia of Hydrological Sciences. 

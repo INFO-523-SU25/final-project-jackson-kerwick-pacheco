@@ -727,25 +727,6 @@ print(merged_df_scaled.dtypes)
 ### Linear Regression Models
 
 ```{python}
-# Zscore test removes all avg_temp_2022 data
-df_test = merged_df_scaled.select_dtypes(include = np.number)
-# print(df_test.head())
-# df_test[(np.abs(stats.zscore(df_test)) < 3).all(axis=1)]
-
-
-
-hfi_copy = df_test
-
-scaler = StandardScaler()
-hfi_copy = scaler.fit_transform(hfi_copy)
-
-hfi_copy.describe()
-
-```
-
-
-
-```{python}
 
 def run_regression_models(X_val, y_val):
   X = merged_df_scaled[X_val]  # Independent variable

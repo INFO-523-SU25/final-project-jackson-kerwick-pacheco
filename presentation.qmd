@@ -445,14 +445,48 @@ merged_df = pd.merge(merged_df, az_counties[['CZ_FIPS', 'NAME']], how='left', on
 
 ## Data
 
-
--   Urbanization Metric: traffic count data (USDT FHA)
+-   Urbanization Metric: traffic count data (USDT FHA) 
 -   Climate Metric: temperature, precipitation, and storm data (National Oceanographic and Atmospheric Administration (NOAA))
 
+## Set Up
+- The three datasets were loaded, missing values were replaced or rows were removed, and any additional features were engineered.
+- Function was created to transform lat/lon data into gridspace for grouping the data into grids.
+- Once merged on gridspace and county code, the numeric features were normalized and categorical variables encoded, and data was fitted and transformed via feature scaling.
 
 ## Exploratory Data Analysis
 
+Traffic Distribution in Arizona
+```{python}
+# US state and arizona shapefile for plotting
+states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
+states = states.to_crs('EPSG:4326')
+arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
+sns.set_theme(style='white')
+ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
 
+# gdf was reverted to df during process, so converting to gdf again
+gdf_traffic = gpd.GeoDataFrame(gdf_traffic)
+gdf_traffic.plot('traffic_counts_2022', ax=ax, legend = True)
+plt.title("Traffic, 2022 (Arizona, USA)")
+plt.xlabel("Latitude")
+plt.ylabel("Longitude")
+plt.autoscale(False)
+plt.show()
+
+ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
+gdf_traffic.plot('traffic_counts_above_5yavg', ax=ax, legend = True)
+plt.title("Traffic Above the 5-Year Average, 2019-2023 (Arizona, USA)")
+plt.xlabel("Latitude")
+plt.ylabel("Longitude")
+plt.autoscale(False)
+plt.show()
+```
+
+## Exploratory Data Analysis
+
+Precipitation, Temperature, and Storm patterns throughout Arizona
+```{python}
+```
 
 ## Modeling
 

@@ -26,7 +26,7 @@
         "jupyter: python3\n",
         "---"
       ],
-      "id": "c71c868e"
+      "id": "9e13f512"
     },
     {
       "cell_type": "code",
@@ -63,7 +63,7 @@
       "source": [
         "### Data Validation & Cleaning\n"
       ],
-      "id": "748c3ece"
+      "id": "de56dcac"
     },
     {
       "cell_type": "code",
@@ -91,9 +91,9 @@
         "noaa1.info()\n",
         "\n",
         "# dropping columns that have too low non-null count (cannot extract valuable estimates from to fill null values)\n",
-        "noaa1 = noaa1.drop(['DAPR', 'DASF', 'MDSF', 'PGTM', 'WDF2', 'WDF5', 'WESD', 'WESF'], axis = 1)\n"
+        "noaa1 = noaa1.drop(['DAPR', 'DASF', 'MDSF', 'PGTM', 'WDF2', 'WDF5', 'WESD', 'WESF', 'WT'], axis = 1)\n"
       ],
-      "id": "f27e1247",
+      "id": "6a715fa8",
       "execution_count": null,
       "outputs": []
     },
@@ -129,7 +129,7 @@
         "\n",
         "print(\"Missing values NOW (NaN): \\n\" + str(noaa1.isnull().sum()))"
       ],
-      "id": "6c82bcb0",
+      "id": "07e27b74",
       "execution_count": null,
       "outputs": []
     },
@@ -166,7 +166,7 @@
         "fig.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "68ab3e98",
+      "id": "261db525",
       "execution_count": null,
       "outputs": []
     },
@@ -281,7 +281,7 @@
         "\n",
         "# The following is an example of how we will combine hourly counts into a sum over each day\n"
       ],
-      "id": "70504fbf",
+      "id": "b4fdc896",
       "execution_count": null,
       "outputs": []
     },
@@ -291,7 +291,7 @@
       "source": [
         "df_month"
       ],
-      "id": "cbb46483",
+      "id": "c9f7acc6",
       "execution_count": null,
       "outputs": []
     },
@@ -301,7 +301,7 @@
       "source": [
         "# Brooke section\n"
       ],
-      "id": "f576cff0",
+      "id": "5c6e5165",
       "execution_count": null,
       "outputs": []
     },
@@ -311,7 +311,7 @@
       "source": [
         "### Exploratory Data Analysis (EDA)\n"
       ],
-      "id": "aa2a9bea"
+      "id": "579e14e7"
     },
     {
       "cell_type": "code",
@@ -319,7 +319,7 @@
       "source": [
         "# Vera section"
       ],
-      "id": "45ef490b",
+      "id": "8967c651",
       "execution_count": null,
       "outputs": []
     },
@@ -329,7 +329,7 @@
       "source": [
         "# Molly section"
       ],
-      "id": "072c7744",
+      "id": "31576649",
       "execution_count": null,
       "outputs": []
     },
@@ -339,7 +339,7 @@
       "source": [
         "# Brooke section"
       ],
-      "id": "72987a61",
+      "id": "e9452d48",
       "execution_count": null,
       "outputs": []
     },
@@ -349,7 +349,7 @@
       "source": [
         "### Dataset Integration\n"
       ],
-      "id": "8ac1cb52"
+      "id": "dd386566"
     },
     {
       "cell_type": "code",
@@ -372,7 +372,7 @@
         "\n",
         "# Brooke section\n"
       ],
-      "id": "b348f85a",
+      "id": "839c4245",
       "execution_count": null,
       "outputs": []
     },
@@ -382,7 +382,7 @@
       "source": [
         "### Feature Engineering\n"
       ],
-      "id": "637d0955"
+      "id": "8a24b1f4"
     },
     {
       "cell_type": "code",
@@ -405,7 +405,7 @@
         "\n",
         "# Brooke section\n"
       ],
-      "id": "c8f617db",
+      "id": "5592b703",
       "execution_count": null,
       "outputs": []
     },
@@ -415,7 +415,7 @@
       "source": [
         "### Regression Analysis Setup\n"
       ],
-      "id": "37bd01bf"
+      "id": "0dc41fc0"
     },
     {
       "cell_type": "code",
@@ -438,7 +438,7 @@
         "\n",
         "# Brooke section\n"
       ],
-      "id": "44666119",
+      "id": "b7f98df8",
       "execution_count": null,
       "outputs": []
     }

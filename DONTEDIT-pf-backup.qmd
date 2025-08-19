@@ -17,6 +17,7 @@ code-annotations: hover
 execute:
   warning: false
   echo: false
+  enabled: false
 jupyter: python3
 ---
 

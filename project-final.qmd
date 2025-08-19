@@ -633,7 +633,7 @@ print(merged_df_scaled.head())
 print(merged_df_scaled.dtypes)
 ```
 
-### Regression 
+### Linear Regression Models
 
 ```{python}
 # 2022 urbanization metrics
@@ -666,8 +666,6 @@ env_above_below_5yavg = [
     'highmagstorm_events_above_5yavg'
 ]
 ```
-
-#### 5 Year Average Data
 
 ```{python}
 

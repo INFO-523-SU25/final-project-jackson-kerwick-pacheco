@@ -10,8 +10,8 @@
 <link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.5.57">
 
-  <meta name="author" content="Author names">
-  <title>Urbanization and Environmental Quality in Arizona, USA – Project title</title>
+  <meta name="author" content="Vera Jackson, Molly Kerwick, Brooke Pacheco">
+  <title>Urbanization and Environmental Quality in Arizona, USA – Urbanization and Climate in Arizona, USA</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -325,83 +325,46 @@
   <div class="reveal">
     <div class="slides">
 
-<section id="title-slide" data-background-image="images/watercolour_sys02_img34_teacup-ocean.jpg" data-background-opacity="0.7" data-background-size="stretch" data-slide-number="none" class="quarto-title-block center">
-  <h1 class="title">Project title</h1>
+<section id="title-slide" data-background-image="images/az_traffic.webp" data-background-opacity="0.3" data-background-size="stretch" data-slide-number="none" class="quarto-title-block center">
+  <h1 class="title">Urbanization and Climate in Arizona, USA</h1>
   <p class="subtitle">INFO 523 - Summer 2025 - Final Project</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
 <div class="quarto-title-author-name">
-Author names 
+Vera Jackson, Molly Kerwick, Brooke Pacheco 
 </div>
 </div>
 </div>
 
 </section>
-<section>
-<section id="using-quarto-for-presentations" class="title-slide slide level1 center">
-<h1>Using Quarto for presentations</h1>
-
-</section>
-<section id="quarto" class="slide level2">
-<h2>Quarto</h2>
+<section id="topic-and-research-question" class="slide level2">
+<h2>Topic and Research Question</h2>
 <ul>
-<li><p>The presentation is created using the Quarto CLI</p></li>
-<li><p><code>##</code> sets the start of a new slide</p></li>
+<li><p>Analyze the relationship between urbanization and climate across regions within Arizona, identifying patterns and anomalies in how urban growth impacts climate metrics such as storms, temperature, and rainfall.</p></li>
+<li><p>Identify the regional relationship between urbanization and climate indicators. The presentation is created using the Quarto CLI</p></li>
+<li><p>Can we predict climate based on traffic data?</p></li>
 </ul>
 </section>
-<section id="layouts" class="slide level2">
-<h2>Layouts</h2>
-<p>You can use plain text</p>
-<div class="columns">
-<div class="column" style="width:40%;">
+<section id="data" class="slide level2">
+<h2>Data</h2>
 <ul>
-<li>or bullet points<sup>1</sup></li>
+<li>Urbanization Metric: traffic count data (USDT FHA)</li>
+<li>Climate Metric: National Oceanographic and Atmospheric Administration (NOAA) climate and storm event data as our environmental quality data.</li>
 </ul>
-</div><div class="column" style="width:60%;">
-<p>or in two columns</p>
-</div></div>
-<ul>
-<li><p>like</p></li>
-<li><p>this</p></li>
-</ul>
-<aside><ol class="aside-footnotes"><li id="fn1"><p>And add footnotes</p></li></ol></aside></section>
+</section>
+<section id="exploratory-data-analysis" class="slide level2">
+<h2>Exploratory Data Analysis</h2>
+</section>
+<section id="modeling" class="slide level2">
+<h2>Modeling</h2>
+</section>
 <section id="code" class="slide level2">
 <h2>Code</h2>
-<div id="d758bc6b" class="cell" data-execution_count="4">
-<div class="cell-output cell-output-stdout">
-<pre><code>                            OLS Regression Results                            
-==============================================================================
-Dep. Variable:                    mpg   R-squared:                       0.073
-Model:                            OLS   Adj. R-squared:                  0.070
-Method:                 Least Squares   F-statistic:                     30.59
-Date:                Thu, 07 Aug 2025   Prob (F-statistic):           5.84e-08
-Time:                        01:18:34   Log-Likelihood:                -1346.4
-No. Observations:                 392   AIC:                             2697.
-Df Residuals:                     390   BIC:                             2705.
-Df Model:                           1                                         
-Covariance Type:            nonrobust                                         
-==============================================================================
-                 coef    std err          t      P&gt;|t|      [0.025      0.975]
-------------------------------------------------------------------------------
-const         35.8015      2.266     15.800      0.000      31.347      40.257
-speed       -354.7055     64.129     -5.531      0.000    -480.788    -228.623
-==============================================================================
-Omnibus:                       27.687   Durbin-Watson:                   0.589
-Prob(Omnibus):                  0.000   Jarque-Bera (JB):               18.976
-Skew:                           0.420   Prob(JB):                     7.57e-05
-Kurtosis:                       2.323   Cond. No.                         169.
-==============================================================================
-
-Notes:
-[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.</code></pre>
-</div>
-</div>
 </section>
 <section id="plots" class="slide level2">
 <h2>Plots</h2>
-
-<img data-src="presentation_files/figure-revealjs/cell-6-output-1.png" class="r-stretch"></section>
+</section>
 <section id="plot-and-text" class="slide level2">
 <h2>Plot and text</h2>
 <div class="columns">
@@ -411,17 +374,9 @@ Notes:
 <li><p>goes here</p></li>
 </ul>
 </div><div class="column" style="width:50%;">
-<div id="aa0932b4" class="cell" data-fig.width="5.5" data-execution_count="6">
-<div class="cell-output cell-output-display">
-<div>
-<figure>
-<p><img data-src="presentation_files/figure-revealjs/cell-7-output-1.png"></p>
-</figure>
-</div>
-</div>
-</div>
+
 </div></div>
-</section></section>
+</section>
 <section>
 <section id="a-new-section" class="title-slide slide level1 center">
 <h1>A new section…</h1>
@@ -430,236 +385,6 @@ Notes:
 <section id="tables" class="slide level2">
 <h2>Tables</h2>
 <p>If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,</p>
-<div id="35e0416d" class="cell" data-execution_count="7">
-<div class="cell-output cell-output-display" data-execution_count="7">
-<table border="1" class="dataframe">
-
-<thead>
-
-<tr style="text-align: right;">
-
-<th>
-</th>
-
-<th>
-species
-</th>
-
-<th>
-island
-</th>
-
-<th>
-bill_length_mm
-</th>
-
-<th>
-bill_depth_mm
-</th>
-
-<th>
-flipper_length_mm
-</th>
-
-<th>
-body_mass_g
-</th>
-
-<th>
-sex
-</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<tr>
-
-<th>
-0
-</th>
-
-<td>
-Adelie
-</td>
-
-<td>
-Torgersen
-</td>
-
-<td>
-39.1
-</td>
-
-<td>
-18.7
-</td>
-
-<td>
-181.0
-</td>
-
-<td>
-3750.0
-</td>
-
-<td>
-Male
-</td>
-
-</tr>
-
-<tr>
-
-<th>
-1
-</th>
-
-<td>
-Adelie
-</td>
-
-<td>
-Torgersen
-</td>
-
-<td>
-39.5
-</td>
-
-<td>
-17.4
-</td>
-
-<td>
-186.0
-</td>
-
-<td>
-3800.0
-</td>
-
-<td>
-Female
-</td>
-
-</tr>
-
-<tr>
-
-<th>
-2
-</th>
-
-<td>
-Adelie
-</td>
-
-<td>
-Torgersen
-</td>
-
-<td>
-40.3
-</td>
-
-<td>
-18.0
-</td>
-
-<td>
-195.0
-</td>
-
-<td>
-3250.0
-</td>
-
-<td>
-Female
-</td>
-
-</tr>
-
-<tr>
-
-<th>
-4
-</th>
-
-<td>
-Adelie
-</td>
-
-<td>
-Torgersen
-</td>
-
-<td>
-36.7
-</td>
-
-<td>
-19.3
-</td>
-
-<td>
-193.0
-</td>
-
-<td>
-3450.0
-</td>
-
-<td>
-Female
-</td>
-
-</tr>
-
-<tr>
-
-<th>
-5
-</th>
-
-<td>
-Adelie
-</td>
-
-<td>
-Torgersen
-</td>
-
-<td>
-39.3
-</td>
-
-<td>
-20.6
-</td>
-
-<td>
-190.0
-</td>
-
-<td>
-3650.0
-</td>
-
-<td>
-Male
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-</div>
-</div>
 </section>
 <section id="images" class="slide level2">
 <h2>Images</h2>
@@ -696,7 +421,6 @@ Male
 </div>
 </div>
 </section></section>
-
     </div>
   </div>
 

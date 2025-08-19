@@ -71,14 +71,10 @@ penguins = sns.load_dataset('penguins').dropna()
 
 ## Data
 
-You can use plain text
 
-:::: columns
-::: {.column width="40%"}
--   Urbanization Metric: traffic count data
--   Cliamte Metric: National Oceanographic and Atmospheric Administration (NOAA) climate and storm event data as our environmental quality data.
-:::
-::::
+-   Urbanization Metric: traffic count data (USDT FHA)
+-   Climate Metric: National Oceanographic and Atmospheric Administration (NOAA) climate and storm event data as our environmental quality data.
+
 
 ## Exploratory Data Analysis
 

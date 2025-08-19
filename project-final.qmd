@@ -703,10 +703,6 @@ for component, features in top_features.items():
   print(f"{component}: {features}")
 ```
 
-
-
-
-
 ### Regression Analysis Setup
 
 ```{python}
@@ -738,3 +734,5 @@ for component, features in top_features.items():
 grid construction reference: https://james-brennan.github.io/posts/fast_gridding_geopandas/
 
 https://saturncloud.io/blog/how-to-sum-two-columns-in-a-pandas-dataframe/
+
+Storm Data: https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/ Traffic Data: https://www.fhwa.dot.gov/policyinformation/travel_monitoring/tvt.cfm Climate Data: https://www.ncdc.noaa.gov/cdo-web/search;jsessionid=2851FE4A6791F4BF429988727483E450

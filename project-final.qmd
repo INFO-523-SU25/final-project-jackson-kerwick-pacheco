@@ -114,6 +114,134 @@ def grid_bin(df, proj='EPSG:4326', xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, n
   return gdf_joined
 ```
 
+
+#### Molly section
+
+```{python}
+# Molly section
+
+# Engineering DataFrames of traffic data
+# going to store each year's dataframe in a dictionary {year: df}
+
+df_traffic_5yavg = pd.DataFrame()
+
+for i in range(19, 24):   # for year of interest
+  # format values for files/features
+  year = "{:02}".format(i)
+  yearnum = int(f'20{year}')
+
+  # read in station data for the year
+  df_year = pd.read_csv(f'data/Traffic/stations/df_20{year}')
+
+  # define data types for merging later
+  df_year['station_id'] = df_year['station_id'].astype(str)
+
+  for j in range(1,13):   # for month of interest
+    # format strings for files/features 
+    monthyear = "{:02}".format(j) + year
+    month = "{:02}".format(j)
+
+    # read in counts data
+    # Note: the format of data changed in 2022 so we have to account for the delimiter changing
+    if (i < 22):
+      df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL")
+    else:
+      df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL", delimiter='|')
+
+    # formatting so merging works later
+    df_month.columns = [col.lower() for col in df_month.columns]
+
+    # sum hour counts to daily count per day
+    df_month[f'daily_volume_{month}'] = df_month[["hour_{:02}".format(i) for i in range(24)]].sum(axis=1) 
+
+    # sum daily counts to monthly count per station
+    df_month = df_month.groupby('station_id', as_index=False)[[f'daily_volume_{month}']].sum()
+
+    # defining data types so merging later works
+    df_month['station_id'] = df_month['station_id'].astype(str)
+
+    # adding each month's total count to an annual df
+    df_year = pd.merge(df_year, df_month, how='left', on='station_id')
+
+  # summing monthly counts so we have an annual count
+  df_year['traffic_counts'] = df_year[["daily_volume_{:02}".format(i) for i in range(1,13)]].sum(axis=1)
+
+  # removing unused columns
+  df_year = df_year[['station_id','latitude','longitude', 'traffic_counts', 'county_code']]
+
+  if (year == '19'):
+    df_traffic_5yavg = df_year.copy()
+  df_traffic_5yavg[f'traffic_counts_{year}'] = df_year['traffic_counts']
+
+
+# Ref: https://saturncloud.io/blog/how-to-sum-two-columns-in-a-pandas-dataframe/
+
+####### 1. make 5 year avg df
+
+# remove column that was duplicate added during looping
+df_traffic_5yavg = df_traffic_5yavg.drop('traffic_counts',axis=1)
+
+# create average column from 2019-2023
+df_traffic_5yavg['traffic_counts_5yavg'] = df_traffic_5yavg[['traffic_counts_{:02}'.format(year) for year in range(19,24)]].mean(axis=1)
+
+####### 2. make traffic_counts_above_5yavg feature
+
+# remove data from years not of interest
+df_traffic_2022 = df_traffic_5yavg.drop(['traffic_counts_{:02}'.format(year) for year in range(19,22)], axis=1)
+
+df_traffic = df_traffic_2022.drop('traffic_counts_23', axis=1)
+
+# add counts above 5yavg feature
+df_traffic['traffic_counts_above_5yavg'] = df_traffic_2022['traffic_counts_22'] - df_traffic_2022['traffic_counts_5yavg']
+
+# rename for consistency with environmental df
+df_traffic = df_traffic.rename({'traffic_counts_22': 'traffic_counts_2022'}, axis=1)
+
+# remove intermediary 5yavg feature
+df_traffic = df_traffic.drop('traffic_counts_5yavg', axis=1)
+
+
+# 3. grid_bin dataframes
+gdf_traffic = grid_bin(df_traffic)
+
+# 4. average values over gridspace
+gdf_traffic = grid_bin(df_traffic)
+
+gdf_traffic = gdf_traffic.groupby('gridspace', as_index=False)[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'latitude', 'longitude', 'county_code']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
+
+
+gdf_traffic = gdf_traffic.rename(columns={'county_code': "fips_code"})
+# # Add County Info
+df_county = pd.DataFrame({"fips_code": [1,3,5,7,9,11,12,13,15,17,19,21,23,25,27],
+"county": ["Apache", "Cochise", "Coconino", "Gila", "Graham", "Greenlee", "La Paz", "Maricopa", "Mohave", "Navajo", "Pima", "Pinal", "Santa Cruz", "Yavapai", "Yuma"]})
+
+gdf_traffic = pd.merge(gdf_traffic, df_county, on='fips_code', how='left')
+
+
+# 5. Need to add geometry of gridspace to gdf_traffic
+gdf_traffic = add_grid_geometry(gdf_traffic)
+
+# 6. Plot traffic data with grid geometry
+
+# US state and arizona shapefile for plotting
+states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
+states = states.to_crs('EPSG:4326')
+arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
+ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
+
+# gdf was reverted to df during process, so converting to gdf again
+gdf_traffic = gpd.GeoDataFrame(gdf_traffic)
+gdf_traffic.plot('traffic_counts_2022',ax=ax)
+plt.show()
+gdf_traffic.plot('traffic_counts_above_5yavg')
+plt.show()
+
+gdf_traffic.info()
+```
+
+
+
+
 ### Load and Merge NOAA Files
 
 ```{python}
@@ -269,6 +397,9 @@ states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state
 #states = states.to_crs(gdf_noaa1.crs)
 arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
 ```
+
+
+### Grouping features based on `gridspace`
 
 ```{python}
 gdf_noaa1 = gdf_noaa.groupby('gridspace', as_index=False)[['max_temp_2022', 'max_temp_above_5yavg', 'avg_temp_2022', 'avg_temp_above_5yavg', 'rainfall_2022', 'rainfall_below_5yavg', 'latitude', 'longitude']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
@@ -436,130 +567,6 @@ storm_df[['STATE_ABBR', 'CZ_FIPS']]
 # plt.show()
 ```
 
-#### Molly section
-
-```{python}
-# Molly section
-
-# Engineering DataFrames of traffic data
-# going to store each year's dataframe in a dictionary {year: df}
-
-df_traffic_5yavg = pd.DataFrame()
-
-for i in range(19, 24):   # for year of interest
-  # format values for files/features
-  year = "{:02}".format(i)
-  yearnum = int(f'20{year}')
-
-  # read in station data for the year
-  df_year = pd.read_csv(f'data/Traffic/stations/df_20{year}')
-
-  # define data types for merging later
-  df_year['station_id'] = df_year['station_id'].astype(str)
-
-  for j in range(1,13):   # for month of interest
-    # format strings for files/features 
-    monthyear = "{:02}".format(j) + year
-    month = "{:02}".format(j)
-
-    # read in counts data
-    # Note: the format of data changed in 2022 so we have to account for the delimiter changing
-    if (i < 22):
-      df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL")
-    else:
-      df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL", delimiter='|')
-
-    # formatting so merging works later
-    df_month.columns = [col.lower() for col in df_month.columns]
-
-    # sum hour counts to daily count per day
-    df_month[f'daily_volume_{month}'] = df_month[["hour_{:02}".format(i) for i in range(24)]].sum(axis=1) 
-
-    # sum daily counts to monthly count per station
-    df_month = df_month.groupby('station_id', as_index=False)[[f'daily_volume_{month}']].sum()
-
-    # defining data types so merging later works
-    df_month['station_id'] = df_month['station_id'].astype(str)
-
-    # adding each month's total count to an annual df
-    df_year = pd.merge(df_year, df_month, how='left', on='station_id')
-
-  # summing monthly counts so we have an annual count
-  df_year['traffic_counts'] = df_year[["daily_volume_{:02}".format(i) for i in range(1,13)]].sum(axis=1)
-
-  # removing unused columns
-  df_year = df_year[['station_id','latitude','longitude', 'traffic_counts', 'county_code']]
-
-  if (year == '19'):
-    df_traffic_5yavg = df_year.copy()
-  df_traffic_5yavg[f'traffic_counts_{year}'] = df_year['traffic_counts']
-
-
-# Ref: https://saturncloud.io/blog/how-to-sum-two-columns-in-a-pandas-dataframe/
-
-####### 1. make 5 year avg df
-
-# remove column that was duplicate added during looping
-df_traffic_5yavg = df_traffic_5yavg.drop('traffic_counts',axis=1)
-
-# create average column from 2019-2023
-df_traffic_5yavg['traffic_counts_5yavg'] = df_traffic_5yavg[['traffic_counts_{:02}'.format(year) for year in range(19,24)]].mean(axis=1)
-
-####### 2. make traffic_counts_above_5yavg feature
-
-# remove data from years not of interest
-df_traffic_2022 = df_traffic_5yavg.drop(['traffic_counts_{:02}'.format(year) for year in range(19,22)], axis=1)
-
-df_traffic = df_traffic_2022.drop('traffic_counts_23', axis=1)
-
-# add counts above 5yavg feature
-df_traffic['traffic_counts_above_5yavg'] = df_traffic_2022['traffic_counts_22'] - df_traffic_2022['traffic_counts_5yavg']
-
-# rename for consistency with environmental df
-df_traffic = df_traffic.rename({'traffic_counts_22': 'traffic_counts_2022'}, axis=1)
-
-# remove intermediary 5yavg feature
-df_traffic = df_traffic.drop('traffic_counts_5yavg', axis=1)
-
-
-# 3. grid_bin dataframes
-gdf_traffic = grid_bin(df_traffic)
-
-# 4. average values over gridspace
-gdf_traffic = grid_bin(df_traffic)
-
-gdf_traffic = gdf_traffic.groupby('gridspace', as_index=False)[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'latitude', 'longitude', 'county_code']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
-
-
-gdf_traffic = gdf_traffic.rename(columns={'county_code': "fips_code"})
-# # Add County Info
-df_county = pd.DataFrame({"fips_code": [1,3,5,7,9,11,12,13,15,17,19,21,23,25,27],
-"county": ["Apache", "Cochise", "Coconino", "Gila", "Graham", "Greenlee", "La Paz", "Maricopa", "Mohave", "Navajo", "Pima", "Pinal", "Santa Cruz", "Yavapai", "Yuma"]})
-
-gdf_traffic = pd.merge(gdf_traffic, df_county, on='fips_code', how='left')
-
-
-# 5. Need to add geometry of gridspace to gdf_traffic
-gdf_traffic = add_grid_geometry(gdf_traffic)
-
-# 6. Plot traffic data with grid geometry
-
-# US state and arizona shapefile for plotting
-states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
-states = states.to_crs('EPSG:4326')
-arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
-ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
-
-# gdf was reverted to df during process, so converting to gdf again
-gdf_traffic = gpd.GeoDataFrame(gdf_traffic)
-gdf_traffic.plot('traffic_counts_2022',ax=ax)
-plt.show()
-gdf_traffic.plot('traffic_counts_above_5yavg')
-plt.show()
-
-gdf_traffic.info()
-```
-
 
 ### Merge Traffic and NOAA Datasets on `gridspace`
 ```{python}
@@ -571,7 +578,7 @@ gdf_noaa_premerge = gdf_noaa1.drop(['latitude', 'longitude', 'geometry'], axis=1
 # Merging removes gridspaces that are not in the left dataset (traffic)
 gdf_traffic_noaa = pd.merge(gdf_traffic_premerge, gdf_noaa_premerge, on='gridspace')
 
-
+gdf_traffic_noaa.head()
 
 ```
 
@@ -687,7 +694,6 @@ for col in numeric_cols:
   upper_limit = np.percentile(merged_df[col], 95)
 
 
-merged_df
 ```
 
 ### Data Transformation - Feature Scaling

@@ -23,7 +23,7 @@
         "  echo: false\n",
         "---"
       ],
-      "id": "12093d4b"
+      "id": "bf52497d"
     },
     {
       "cell_type": "code",
@@ -468,7 +468,7 @@
         "  lower_limit = np.percentile(merged_df[col], 5)\n",
         "  upper_limit = np.percentile(merged_df[col], 95)"
       ],
-      "id": "a3ba3fe5",
+      "id": "b9a3ded1",
       "execution_count": null,
       "outputs": []
     },
@@ -486,13 +486,10 @@
         "\n",
         "## Data\n",
         "\n",
-        "-   Urbanization Metric: traffic count data (USDT FHA) \n",
-        "-   Climate Metric: temperature, precipitation, and storm data (National Oceanographic and Atmospheric Administration (NOAA))\n",
+        "-   Urbanization Metric: traffic count data (USDOT Federal Highway Administration) \n",
+        "-   Climate Metric: temperature, precipitation, and storm data (National Oceanographic and Atmospheric Administration)\n",
+        "- Data was cleaned and merged for data analysis and modeling\n",
         "\n",
-        "## Set Up\n",
-        "- The three datasets were loaded, missing values were replaced or rows were removed, and any additional features were engineered.\n",
-        "- Function was created to transform lat/lon data into gridspace for grouping the data into grids.\n",
-        "- Once merged on gridspace and county code, the numeric features were normalized and categorical variables encoded, and data was fitted and transformed via feature scaling.\n",
         "\n",
         "## Exploratory Data Analysis\n",
         "\n",
@@ -502,7 +499,7 @@
         "\n",
         "::: {.column width=\"50%\"}\n"
       ],
-      "id": "f8eb38e0"
+      "id": "1cb2dab4"
     },
     {
       "cell_type": "code",
@@ -525,7 +522,7 @@
         "plt.autoscale(False)\n",
         "plt.show()\n"
       ],
-      "id": "6a3a4625",
+      "id": "a18a9309",
       "execution_count": null,
       "outputs": []
     },
@@ -536,7 +533,7 @@
         ":::\n",
         "::: {.column width=\"50%\"}\n"
       ],
-      "id": "36560ffe"
+      "id": "0963e232"
     },
     {
       "cell_type": "code",
@@ -551,7 +548,7 @@
         "plt.autoscale(False)\n",
         "plt.show()"
       ],
-      "id": "bbf95975",
+      "id": "61aa9757",
       "execution_count": null,
       "outputs": []
     },
@@ -571,7 +568,7 @@
         "::::: columns\n",
         "::: {.column width=\"50%\"}\n"
       ],
-      "id": "c8b19e3e"
+      "id": "c5103997"
     },
     {
       "cell_type": "code",
@@ -596,7 +593,7 @@
         "plt.autoscale(False)\n",
         "plt.show()"
       ],
-      "id": "31bb17c2",
+      "id": "7fabd9ac",
       "execution_count": null,
       "outputs": []
     },
@@ -608,7 +605,7 @@
         "\n",
         "::: {.column width=\"50%\"}\n"
       ],
-      "id": "4b8dc9b3"
+      "id": "2a47472a"
     },
     {
       "cell_type": "code",
@@ -623,7 +620,7 @@
         "plt.autoscale(False)\n",
         "plt.show()"
       ],
-      "id": "0cd56981",
+      "id": "041c1c16",
       "execution_count": null,
       "outputs": []
     },
@@ -639,7 +636,7 @@
         "\n",
         "## Log Normalization\n"
       ],
-      "id": "4236eb3a"
+      "id": "d69e6c6a"
     },
     {
       "cell_type": "code",
@@ -654,7 +651,7 @@
         "log_df.boxplot(figsize=(12,6))\n",
         "plt.xticks(rotation=45)"
       ],
-      "id": "2b057fa5",
+      "id": "ea11e19c",
       "execution_count": null,
       "outputs": []
     },
@@ -664,7 +661,7 @@
       "source": [
         "## Feature Scaling\n"
       ],
-      "id": "3f1705ca"
+      "id": "51ac0925"
     },
     {
       "cell_type": "code",
@@ -689,7 +686,7 @@
         "\n",
         "# sns.pairplot(merged_df_scaled)\n"
       ],
-      "id": "51a003ca",
+      "id": "ee334089",
       "execution_count": null,
       "outputs": []
     },
@@ -699,7 +696,7 @@
       "source": [
         "## Visualize Relationship for 5-year-average and 2022 datasets\n"
       ],
-      "id": "46fa5639"
+      "id": "35874217"
     },
     {
       "cell_type": "code",
@@ -747,7 +744,7 @@
         "plt.title(\"Relationships Between Data\")\n",
         "plt.show()"
       ],
-      "id": "95c95d44",
+      "id": "c020dc86",
       "execution_count": null,
       "outputs": []
     },
@@ -757,7 +754,7 @@
       "source": [
         "## Data Reduction\n"
       ],
-      "id": "237ef48d"
+      "id": "4dbbf765"
     },
     {
       "cell_type": "code",
@@ -795,7 +792,7 @@
         "for component, features in top_features.items():\n",
         "  print(f\"{component}: {features}\")"
       ],
-      "id": "e1f8a53b",
+      "id": "e418d127",
       "execution_count": null,
       "outputs": []
     },
@@ -805,7 +802,7 @@
       "source": [
         "## Label Encoding\n"
       ],
-      "id": "e93aee1d"
+      "id": "47463841"
     },
     {
       "cell_type": "code",
@@ -822,7 +819,7 @@
         "print(merged_df_scaled.head())\n",
         "print(merged_df_scaled.dtypes)"
       ],
-      "id": "1e1e6ef4",
+      "id": "75559396",
       "execution_count": null,
       "outputs": []
     },
@@ -832,7 +829,7 @@
       "source": [
         "## Linear Regression Model Results\n"
       ],
-      "id": "c33c7b8b"
+      "id": "484c6f7f"
     },
     {
       "cell_type": "code",
@@ -954,9 +951,18 @@
         "  print(\"\\tRoot mean-squared error:\", rmse)\n",
         "  print(\"\\tR-squared value:\", r2)"
       ],
-      "id": "d99a5d53",
+      "id": "22993d81",
       "execution_count": null,
       "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "::::: columns\n",
+        ":::{.column width=\"50%\"}\n"
+      ],
+      "id": "5e86ab05"
     },
     {
       "cell_type": "code",
@@ -965,14 +971,9 @@
         "print('Environmental Data (5 Year Averages)')\n",
         "print('Traffic Data (5 Year Averages)')\n",
         "run_regression_models(env_above_below_5yavg, 'traffic_counts_above_5yavg')\n",
-        "print(' ')\n",
-        "\n",
-        "print('Environmental Data (2022)')\n",
-        "print('Traffic Data (2022)')\n",
-        "run_regression_models(env_2022, 'traffic_counts_2022')\n",
         "print(' ')"
       ],
-      "id": "33eeaee5",
+      "id": "dd804981",
       "execution_count": null,
       "outputs": []
     },
@@ -980,9 +981,36 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-        "## Linear Regression Model Results (continued)\n"
+        ":::\n",
+        ":::{.column width=\"50%\"}\n"
       ],
-      "id": "2bcc9a8f"
+      "id": "34f32730"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "print('Environmental Data (2022)')\n",
+        "print('Traffic Data (2022)')\n",
+        "run_regression_models(env_2022, 'traffic_counts_2022')\n",
+        "print(' ')"
+      ],
+      "id": "7784c8ce",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        ":::\n",
+        ":::::\n",
+        "\n",
+        "## Linear Regression Model Results (continued)\n",
+        "::::: columns\n",
+        ":::{.column width=\"50%\"}\n"
+      ],
+      "id": "e4f63887"
     },
     {
       "cell_type": "code",
@@ -991,13 +1019,9 @@
         "print('Environmental Data (2022)')\n",
         "print('Traffic Data (5 Year Averages)')\n",
         "run_regression_models(env_2022, 'traffic_counts_above_5yavg')\n",
-        "print(' ')\n",
-        "\n",
-        "print('Environmental Data (5 Year Averages)')\n",
-        "print('Traffic Data (2022)')\n",
-        "run_regression_models(env_above_below_5yavg, 'traffic_counts_2022')"
+        "print(' ')"
       ],
-      "id": "d3d624ef",
+      "id": "039a9197",
       "execution_count": null,
       "outputs": []
     },
@@ -1005,9 +1029,33 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
+        ":::\n",
+        ":::{.column width=\"50%\"}\n"
+      ],
+      "id": "17770b89"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "print('Environmental Data (5 Year Averages)')\n",
+        "print('Traffic Data (2022)')\n",
+        "run_regression_models(env_above_below_5yavg, 'traffic_counts_2022')"
+      ],
+      "id": "5aa2fe4d",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        ":::\n",
+        ":::::\n",
+        "\n",
         "## Polynomial Regression Results\n"
       ],
-      "id": "dc38a747"
+      "id": "e7d18cd8"
     },
     {
       "cell_type": "code",
@@ -1058,7 +1106,7 @@
         "print('Traffic Data (2022)')\n",
         "poly_reg(env_above_below_5yavg, 'traffic_counts_2022', degree=2)\n"
       ],
-      "id": "382337b1",
+      "id": "b2f185e1",
       "execution_count": null,
       "outputs": []
     },
@@ -1087,7 +1135,7 @@
         "on Heavy Precipitation,\n",
         "Floods and Droughts. Encyocyclopedia of Hydrological Sciences. "
       ],
-      "id": "be7420bb"
+      "id": "1d48e4ba"
     }
   ],
   "metadata": {

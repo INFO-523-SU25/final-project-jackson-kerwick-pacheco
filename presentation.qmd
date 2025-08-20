@@ -447,13 +447,10 @@ for col in numeric_cols:
 
 ## Data
 
--   Urbanization Metric: traffic count data (USDT FHA) 
--   Climate Metric: temperature, precipitation, and storm data (National Oceanographic and Atmospheric Administration (NOAA))
+-   Urbanization Metric: traffic count data (USDOT Federal Highway Administration) 
+-   Climate Metric: temperature, precipitation, and storm data (National Oceanographic and Atmospheric Administration)
+- Data was cleaned and merged for data analysis and modeling
 
-## Set Up
-- The three datasets were loaded, missing values were replaced or rows were removed, and any additional features were engineered.
-- Function was created to transform lat/lon data into gridspace for grouping the data into grids.
-- Once merged on gridspace and county code, the numeric features were normalized and categorical variables encoded, and data was fitted and transformed via feature scaling.
 
 ## Exploratory Data Analysis
 
@@ -805,33 +802,47 @@ def run_regression_models(X_val, y_val):
 
 ```
 
+::::: columns
+:::{.column width="50%"}
 ```{python}
 print('Environmental Data (5 Year Averages)')
 print('Traffic Data (5 Year Averages)')
 run_regression_models(env_above_below_5yavg, 'traffic_counts_above_5yavg')
 print(' ')
-
+```
+:::
+:::{.column width="50%"}
+```{python}
 print('Environmental Data (2022)')
 print('Traffic Data (2022)')
 run_regression_models(env_2022, 'traffic_counts_2022')
 print(' ')
 ```
+:::
+:::::
 
 ## Linear Regression Model Results (continued)
-
+::::: columns
+:::{.column width="50%"}
 ```{python}
 
 print('Environmental Data (2022)')
 print('Traffic Data (5 Year Averages)')
 run_regression_models(env_2022, 'traffic_counts_above_5yavg')
 print(' ')
+```
 
+:::
+:::{.column width="50%"}
+
+```{python}
 print('Environmental Data (5 Year Averages)')
 print('Traffic Data (2022)')
 run_regression_models(env_above_below_5yavg, 'traffic_counts_2022')
 
 ```
-
+:::
+:::::
 
 ## Polynomial Regression Results
 ```{python}

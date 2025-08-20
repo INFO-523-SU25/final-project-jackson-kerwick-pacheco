@@ -279,14 +279,26 @@ states = states.to_crs('EPSG:4326')
 arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
 ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
 
+
 # gdf was reverted to df during process, so converting to gdf again
 gdf_traffic = gpd.GeoDataFrame(gdf_traffic)
-gdf_traffic.plot('traffic_counts_2022',ax=ax)
-plt.show()
-gdf_traffic.plot('traffic_counts_above_5yavg')
+gdf_traffic.plot('traffic_counts_2022', ax=ax, legend = True, legend_kwds={'label': "Traffic Count (1e7)", 
+                 'orientation': "vertical"})
+plt.title("Traffic in Arizona (2022)")
+plt.xlabel("Latitude")
+plt.ylabel("Longitude")
+plt.autoscale(False)
 plt.show()
 
-gdf_traffic.info()
+
+ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
+gdf_traffic.plot('traffic_counts_above_5yavg', ax=ax, legend = True, legend_kwds={'label': "Traffic Count (1e7)", 
+                 'orientation': "vertical"})
+plt.title("Traffic Above the 5-Year Average in Arizona (2019-2023)")
+plt.xlabel("Latitude")
+plt.ylabel("Longitude")
+plt.autoscale(False)
+plt.show()
 ```
 
 ## NOAA Data
@@ -451,8 +463,18 @@ arizona = states[states['NAME'] == 'Arizona'] # filter for arizona only
 
 # example: plotting noaa data with arizona shapefile
 ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
-gdf_noaa1.plot(ax=ax, column="max_temp_2022", cmap="viridis", markersize=30, legend=True)
-plt.title("Max Temperature in 2022 Per Station")
+gdf_noaa1.plot(column="max_temp_2022", ax=ax, cmap="viridis", markersize=30, legend=True, legend_kwds={'label': "Temperature (F)", 
+                 'orientation': "vertical"})
+plt.title("Average Temperature in Arizona (2022)")
+plt.xlabel('Latitude')
+plt.ylabel('Longitude')
+plt.autoscale(False)
+plt.show()
+
+ax = arizona.plot(figsize=(10, 8), color="white", edgecolor="black")
+gdf_noaa1.plot(column="rainfall_2022", ax=ax, cmap="viridis", markersize=30, legend=True, legend_kwds={'label': "Average Precipitation (inches)", 
+                 'orientation': "vertical"})
+plt.title("Average Precipitation in Arizona (2022)")
 plt.xlabel('Latitude')
 plt.ylabel('Longitude')
 plt.autoscale(False)

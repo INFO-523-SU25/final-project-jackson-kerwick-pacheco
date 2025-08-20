@@ -937,5 +937,6 @@ poly_reg(env_above_below_5yavg, 'traffic_counts_2022', degree=2)
 
 -   Combining datasets (only two at a time)
 -   Longer time period (more data points)
+- Integrity low with multiple public data resources
 
 **Thank you!**

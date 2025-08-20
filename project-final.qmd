@@ -307,6 +307,8 @@ plt.show()
 
 ## NOAA Data
 
+(needs description here)
+
 ### Load and Merge NOAA Files
 
 ```{python}
@@ -584,6 +586,17 @@ storm_features_2022['highmagstorm_events_above_5yavg'] = (
 
 storm_features_2022.info()
 ```
+
+## Geospatial Normalization
+
+The data were normalized geospatially during our merging process. Any data that had a station location that was within a given gridspace would be merged into that gridspace and assigned a gridspace number and a gridspace geometry. In cartography, geometries describe the shape of a region. Generally speaking, geometries include Points, Lines,and Polygons (https://geopandas.org/en/stable/docs/user_guide/data_structures.html). The traffic and NOAA station data include latitude and longitude information, which would be classified as a Point. The gridspace geometry however is a rectangle which would be considered a Polygon. We utilized the GeoPandas Spatial Join (`geopandas.sjoin()`) function to spatially join our data. Spatial joining works by joining GeoDataFrames on geometries that intersect. So traffic and climate data would be grouped together in the same gridspace if they fell within the same region. This form of normalization is helpful because it ensures all data share the same projection information and it assures the regions are the same size. 
+
+For our map, we used the 
+
+
+The NOAA data was assigned a gridspace and was merged with the traffic data on the gridspace. This merging preserved only gridspaces that had data from both the traffic dataset and NOAA dataset. The gridspaces represented in our data decreased from 336 initialized cells down to approximately 80.
+
+
 
 ### Merge Traffic and NOAA Datasets on `gridspace`
 

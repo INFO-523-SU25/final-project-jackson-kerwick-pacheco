@@ -567,9 +567,6 @@ plt.xticks(rotation=45, ha='right')
 plt.tight_layout()
 plt.show()
 
-# Rename data frame
-storm_df = df_all
-storm_df.info()
 ```
 
 

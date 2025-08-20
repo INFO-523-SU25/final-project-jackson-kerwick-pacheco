@@ -611,7 +611,7 @@ plt.show()
 
 ```
 
-## Visualize Relationships for 5-year-average datasets
+## Relationships for 5-year-average 
 
 ```{python}
 
@@ -654,7 +654,7 @@ sns.pairplot(df_5yavg)
 plt.show()
 ```
 
-## Visualize Relationships for 2022 datasets
+## Relationships for 2022 
 ```{python}
 sns.pairplot(df_2022)
 plt.title("Relationships Between Data")

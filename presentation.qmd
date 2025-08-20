@@ -835,7 +835,6 @@ def run_regression_models(X_val, y_val):
 print('Environmental Data (5 Year Averages)')
 print('Traffic Data (5 Year Averages)')
 run_regression_models(env_above_below_5yavg, 'traffic_counts_above_5yavg')
-print(' ')
 ```
 :::
 :::{.column width="50%"}
@@ -843,7 +842,6 @@ print(' ')
 print('Environmental Data (2022)')
 print('Traffic Data (2022)')
 run_regression_models(env_2022, 'traffic_counts_2022')
-print(' ')
 ```
 :::
 :::::
@@ -852,21 +850,16 @@ print(' ')
 ::::: columns
 :::{.column width="50%"}
 ```{python}
-
 print('Environmental Data (2022)')
 print('Traffic Data (5 Year Averages)')
 run_regression_models(env_2022, 'traffic_counts_above_5yavg')
-print(' ')
 ```
-
 :::
 :::{.column width="50%"}
-
 ```{python}
 print('Environmental Data (5 Year Averages)')
 print('Traffic Data (2022)')
 run_regression_models(env_above_below_5yavg, 'traffic_counts_2022')
-
 ```
 :::
 :::::

@@ -21,7 +21,7 @@ execute:
 #| label: load-packages
 #| include: false
 #|
-# Load packages here
+# Reading files and plotting
 import seaborn as sns
 import glob
 import os
@@ -33,7 +33,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 import shapely
 from shapely.geometry import Point
+
+# Statistical modeling
+from sklearn.model_selection import train_test_split, KFold, cross_validate, cross_val_score
 from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+import numbers
+from sklearn.decomposition import PCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.feature_selection import SelectKBest, f_classif, f_regression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score, f1_score,
+    roc_auc_score, roc_curve, auc, make_scorer, mean_squared_error, r2_score
+)
+import statsmodels.api as sm
+from sklearn.linear_model import LogisticRegression, Ridge, Lasso
+from scipy import stats
 
 
 # Load custom functions
@@ -390,7 +411,7 @@ gdf_traffic_noaa.head()
 # merging storm and traffic/noaa
 
 df_storm_premerge = storm_features_2022.rename({'CZ_FIPS': 'fips_code'}, axis=1)
-df_storm_premerge.columns
+
 
 merged_df = pd.merge(gdf_traffic_noaa, df_storm_premerge)
 merged_df.isnull().sum()
@@ -405,7 +426,6 @@ numerical_cols = ['lowmagstorm_events_2022', 'lowmagstorm_5yavg', 'highmagstorm_
 for col in numerical_cols:
     merged_df[col].fillna(merged_df[col].mean(), inplace=True)
 
-print(merged_df.isnull().sum())
 
 # Remove outliers - capping (winsorizing) imputation
 numeric_cols = merged_df.select_dtypes(include=[np.number]).columns
@@ -415,9 +435,7 @@ for col in numeric_cols:
 
 ```
 
-```{python}
-# modeling
-```
+
 
 ## Topic and Research Question
 
@@ -439,7 +457,7 @@ for col in numeric_cols:
 
 ## Exploratory Data Analysis
 
-Traffic Distribution in Arizona
+Traffic distribution in Arizona
 
 :::: {.columns}
 
@@ -486,7 +504,7 @@ plt.show()
 
 ## Exploratory Data Analysis
 
-Precipitation, Temperature, and Storm patterns throughout Arizona
+Temperature and precipitation patterns throughout Arizona
 
 ::::: columns
 ::: {.column width="50%"}
@@ -530,54 +548,360 @@ plt.show()
 :::::
 
 
+## Log Normalization
+
+```{python}
+# Test
+# applying log normalization to traffic counts for merged dataset
+log_df = merged_df.copy()
+log_df = np.log(log_df.select_dtypes(include=[np.number]))
+# log_df[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'avg_temp_2022']] = np.log(merged_df[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'avg_temp_2022']])
+# log_df = log_df.drop(['gridspace'], axis=1)
+log_df.boxplot(figsize=(12,6))
+plt.xticks(rotation=45)
 ```
 
-## Modeling
 
-## Code
+## Feature Scaling
+
+```{python}
+# Initialize the scaler
+scaler = StandardScaler()
+
+# Select numeric columns
+numeric_cols = merged_df.select_dtypes(include='number').columns
+
+# Fit and transform
+merged_df_scaled = merged_df.copy()
+merged_df_scaled[numeric_cols] = scaler.fit_transform(merged_df[numeric_cols])
+
+# print(merged_df_scaled)
+
+merged_df_scaled.boxplot(figsize=(8,6))
+plt.xticks(rotation=60, fontsize=5)
+plt.title('Box and Whisker Plot of Engineered Features after StandardScaler')
+plt.show()
+
+# sns.pairplot(merged_df_scaled)
+
+
+
+```
+
+## Visualize Relationship for 5-year-average and 2022 datasets
 
 ```{python}
 
+# 2022 urbanization metrics
+urban_2022 = [
+    'traffic_counts_2022',
+    # 'gridspace'  # This seems static/spatial, so keep with 2022 data
+]
+
+# Urbanization metrics relative to 5-year average
+urban_above_5yavg = [
+    'traffic_counts_above_5yavg'
+]
+
+# 2022 environmental metrics
+env_2022 = [
+    'max_temp_2022',
+    'avg_temp_2022',
+    'rainfall_2022',
+    'lowmagstorm_events_2022',
+    'highmagstorm_events_2022',
+    'average_storm_mag_2022'
+]
+
+# Environmental metrics relative to 5-year average (anomalies)
+env_above_below_5yavg = [
+    'max_temp_above_5yavg',
+    'avg_temp_above_5yavg',
+    'rainfall_below_5yavg',  # This one is "below", but similar anomaly concept
+    'lowmagstorm_events_above_5yavg',
+    'highmagstorm_events_above_5yavg'
+]
 
 
+
+df_5yavg = merged_df_scaled[urban_above_5yavg + env_above_below_5yavg]
+df_2022 = merged_df_scaled[urban_2022 + env_2022]
+
+sns.pairplot(df_5yavg)
+plt.show()
+
+sns.pairplot(df_2022)
+plt.title("Relationships Between Data")
+plt.show()
+```
+
+## Data Reduction
+```{python}
+# Keep only numeric columns
+numeric_cols = merged_df_scaled.select_dtypes(include='number').columns
+df_numeric = merged_df_scaled[numeric_cols]
+
+# Run PCA to get 95% variance
+pca = PCA(n_components=0.95)
+reduced_data = pca.fit_transform(df_numeric)
+
+# Loading scores
+loading_scores = pd.DataFrame(pca.components_, columns=numeric_cols)
+
+threshold = 0.3
+
+top_features = {}
+for i in range(loading_scores.shape[0]):
+    # Name the component (e.g., "Component 1", "Component 2", etc.)
+    component = f"Component {i+1}"
+    
+    # Get the loading scores for this principal component
+    scores = loading_scores.iloc[i]
+    
+    # Identify features with absolute loading scores above the threshold
+    top_features_for_component = scores[abs(scores) > threshold].index.tolist()
+    
+    # Store the top features for this component in the dictionary
+    top_features[component] = top_features_for_component
+
+
+# Print results
+for component, features in top_features.items():
+  print(f"{component}: {features}")
+```
+
+## Label Encoding
+```{python}
+# One hot encoding for catagorical variables with multiple categories
+categorical_cols = merged_df_scaled.select_dtypes(include='object').columns
+merged_df_scaled = pd.get_dummies(merged_df_scaled, columns= categorical_cols, drop_first=True)
+
+# Convert all bool columns to int (0/1) 
+bool_cols = merged_df_scaled.select_dtypes(include='bool').columns
+merged_df_scaled[bool_cols] = merged_df_scaled[bool_cols].astype(int)
+
+print(merged_df_scaled.head())
+print(merged_df_scaled.dtypes)
+```
+
+
+## Linear Regression Model Results
+```{python}
+# linear regression models
+def run_regression_models(X_val, y_val):
+  X = merged_df_scaled[X_val]  # Independent variable
+  y = merged_df_scaled[y_val]  # Dependent variable
+
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
+
+  # _______________ OLS Regression _______________
+
+  X_train_with_const = sm.add_constant(X_train)
+  model = sm.OLS(y_train, X_train_with_const).fit()
+  model_summary = model.summary2()
+  # print(model_summary)
+
+  # Add constant to X_test
+  X_test_const = sm.add_constant(X_test)
+
+  # Predict using trained model
+  y_pred = model.predict(X_test_const)
+
+  mse = mean_squared_error(y_test, y_pred) # mean squared error
+  rmse = np.sqrt(mse) # root mse
+  r2 = r2_score(y_test, y_pred) # r^2 on test set
+
+  # Print test performance
+
+  print("OLS Regression Model:")
+  print("\tMean-squared error:", mse)
+  print("\tRoot mean-squared error:", rmse)
+  print("\tR-squared value:", r2)
+  # print(f"MSE:  {mse:.4f}")
+  # print(f"RMSE: {rmse:.4f}")
+  # print(f"R²:   {r2:.4f}")
+
+  # Define the alpha values to try
+  alpha_values = [0.01, 0.1, 1, 10, 100,1000,10000]
+
+  # Initialize variables to store the best alpha and its corresponding MSE
+  best_alpha = None
+  best_mse = np.inf
+
+  # Cross-validation to select the best alpha
+  kf = KFold(n_splits=5, shuffle=True, random_state=42)
+
+  # _______________ Ridge Regression _______________
+  for alpha in alpha_values:
+    # Create Ridge regression model with current alpha
+    ridge = Ridge(alpha=alpha)
+
+    # Perform cross-validation and get negative MSE scores
+    cv_scores = cross_val_score(ridge, X_train, y_train, cv=kf, scoring='neg_mean_squared_error')
+    mean_cv_mse = -np.mean(cv_scores)
+    
+    # Update best alpha if current mean CV MSE is lower
+    if mean_cv_mse < best_mse:
+        best_mse = mean_cv_mse
+        best_alpha = alpha
+
+  print(f"\nRidge best alpha selected: {best_alpha} with CV MSE: {best_mse}")
+
+  # _______________ Ridge Regression _______________
+  # Initialize Ridge regression with the best alpha 
+  ridge_reg = Ridge(alpha=best_alpha)
+
+  # Fit the Ridge model on the training data
+  ridge_reg.fit(X_train, y_train)
+
+  # Predict on the testing set
+  y_pred = ridge_reg.predict(X_test)
+
+  # Evaluate performance
+  mse = mean_squared_error(y_test, y_pred)
+  rmse = np.sqrt(mse)
+  r2 = r2_score(y_test, y_pred)
+
+  print("Ridge Regression Model:")
+  print("\tMean-squared error:", mse)
+  print("\tRoot mean-squared error:", rmse)
+  print("\tR-squared value:", r2)
+
+  # _______________ Lasso Regression _______________
+  for alpha in alpha_values:
+    # Create Lasso regression with current alpha
+    lasso = Lasso(alpha=alpha, max_iter=10000)
+
+      # Perform cross-validation and get negative MSE scores
+    cv_scores = cross_val_score(lasso, X_train, y_train, cv=kf, scoring='neg_mean_squared_error')
+    mean_cv_mse = -np.mean(cv_scores)
+    
+    # Update best alpha if current mean CV MSE is lower
+    if mean_cv_mse < best_mse:
+        best_mse = mean_cv_mse
+        best_alpha = alpha
+
+  print(f"\nLasso best alpha selected: {best_alpha} with CV MSE: {best_mse}")
+
+  # _______________ Lasso Regression _______________
+  # Initialize Lasso regression with the best alpha
+  lasso_reg = Lasso(alpha=best_alpha, max_iter=10000)
+
+  # Fit the Lasso model on the training data
+  lasso_reg.fit(X_train, y_train)
+
+  # Predict on the testing set
+  y_pred = lasso_reg.predict(X_test)
+
+  # Evaluate performance
+  mse = mean_squared_error(y_test, y_pred)
+  rmse = np.sqrt(mse)
+  r2 = r2_score(y_test, y_pred)
+
+  print("Lasso Regression Model:")
+  print("\tMean-squared error:", mse)
+  print("\tRoot mean-squared error:", rmse)
+  print("\tR-squared value:", r2)
 
 ```
 
-## Plots
+```{python}
+print('Environmental Data (5 Year Averages)')
+print('Traffic Data (5 Year Averages)')
+run_regression_models(env_above_below_5yavg, 'traffic_counts_above_5yavg')
+print(' ')
+
+print('Environmental Data (2022)')
+print('Traffic Data (2022)')
+run_regression_models(env_2022, 'traffic_counts_2022')
+print(' ')
+```
+
+## Linear Regression Model Results (continued)
 
 ```{python}
 
+print('Environmental Data (2022)')
+print('Traffic Data (5 Year Averages)')
+run_regression_models(env_2022, 'traffic_counts_above_5yavg')
+print(' ')
+
+print('Environmental Data (5 Year Averages)')
+print('Traffic Data (2022)')
+run_regression_models(env_above_below_5yavg, 'traffic_counts_2022')
+
 ```
 
-## Plot and text
+
+## Polynomial Regression Results
+```{python}
+def poly_reg(X_val, y_val, degree=2):
+  X = merged_df_scaled[X_val].values
+  y = merged_df_scaled[y_val].values
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
+
+  # Transforming data for polynomial regression
+  poly_features = PolynomialFeatures(degree = degree)  # Adjust degree as necessary
+  X_train_poly = poly_features.fit_transform(X_train)
+  X_test_poly = poly_features.transform(X_test)
+
+  # Initialize the Linear Regression model
+  linear_reg = LinearRegression()
+
+  # Fit the model with polynomial features
+  linear_reg.fit(X_train_poly, y_train)
+
+  # Predict on the testing set
+  y_pred = linear_reg.predict(X_test_poly)
+
+  # Calculate and print the MSE and R-squared
+  mse_initial = mean_squared_error(y_test, y_pred)
+  r2_initial = r2_score(y_test, y_pred)
+  print(f'Mean Squared Error: {mse_initial}')
+  print(f'R-squared: {r2_initial}')
+
+print('Environmental Data (5 Year Averages)')
+print('Traffic Data (5 Year Averages)')
+poly_reg(env_above_below_5yavg, 'traffic_counts_above_5yavg', degree=2)
+print(' ')
+
+print('Environmental Data (2022)')
+print('Traffic Data (2022)')
+poly_reg(env_2022, 'traffic_counts_2022', degree=2)
+print(' ')
+
+print('Environmental Data (2022)')
+print('Traffic Data (5 Year Averages)')
+poly_reg(env_2022, 'traffic_counts_above_5yavg', degree=2)
+print(' ')
+
+
+print('Environmental Data (5 Year Averages)')
+print('Traffic Data (2022)')
+poly_reg(env_above_below_5yavg, 'traffic_counts_2022', degree=2)
+
+
+```
+
+
+
+## Conclusion
 
 ::::: columns
 ::: {.column width="50%"}
--   Some text
-
--   goes here
+- 
 :::
 
 ::: {.column width="50%"}
-```{python}
-#| warning: false
-#| fig.width: 5.5
-
-```
+Improvements
+- 
 :::
 :::::
 
 
+### Thank You!
 
-# Wrap up
-
-## Feeling adventurous?
-
--   You are welcomed to use the default styling of the slides. In fact, that's what I expect majority of you will do. You will differentiate yourself with the content of your presentation.
-
--   But some of you might want to play around with slide styling. Some solutions for this can be found at https://quarto.org/docs/presentations/revealjs.
-
-## Reference
+## References
 - Trenberth, K.E. (2008). The Impact of Climate Change and Variability
 on Heavy Precipitation,
 Floods and Droughts. Encyocyclopedia of Hydrological Sciences. 

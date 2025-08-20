@@ -23,7 +23,7 @@
         "  echo: false\n",
         "---"
       ],
-      "id": "a0ae9a21"
+      "id": "12093d4b"
     },
     {
       "cell_type": "code",
@@ -31,7 +31,7 @@
       "source": [
         "#| label: load-packages\n",
         "#| include: false\n",
-        "# Load packages here\n",
+        "# Reading files and plotting\n",
         "import seaborn as sns\n",
         "import glob\n",
         "import os\n",
@@ -43,7 +43,28 @@
         "import matplotlib.pyplot as plt\n",
         "import shapely\n",
         "from shapely.geometry import Point\n",
+        "\n",
+        "# Statistical modeling\n",
+        "from sklearn.model_selection import train_test_split, KFold, cross_validate, cross_val_score\n",
         "from sklearn.preprocessing import StandardScaler\n",
+        "from sklearn.linear_model import LinearRegression\n",
+        "from sklearn.preprocessing import PolynomialFeatures\n",
+        "import numbers\n",
+        "from sklearn.decomposition import PCA\n",
+        "from sklearn.discriminant_analysis import LinearDiscriminantAnalysis\n",
+        "from sklearn.neighbors import KNeighborsClassifier\n",
+        "from sklearn.naive_bayes import GaussianNB\n",
+        "from sklearn.tree import DecisionTreeClassifier, plot_tree\n",
+        "from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor\n",
+        "from sklearn.feature_selection import SelectKBest, f_classif, f_regression\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "from sklearn.metrics import (\n",
+        "    accuracy_score, precision_score, recall_score, f1_score,\n",
+        "    roc_auc_score, roc_curve, auc, make_scorer, mean_squared_error, r2_score\n",
+        ")\n",
+        "import statsmodels.api as sm\n",
+        "from sklearn.linear_model import LogisticRegression, Ridge, Lasso\n",
+        "from scipy import stats\n",
         "\n",
         "\n",
         "# Load custom functions\n",
@@ -425,7 +446,7 @@
         "# merging storm and traffic/noaa\n",
         "\n",
         "df_storm_premerge = storm_features_2022.rename({'CZ_FIPS': 'fips_code'}, axis=1)\n",
-        "df_storm_premerge.columns\n",
+        "\n",
         "\n",
         "merged_df = pd.merge(gdf_traffic_noaa, df_storm_premerge)\n",
         "merged_df.isnull().sum()\n",
@@ -440,7 +461,6 @@
         "for col in numerical_cols:\n",
         "    merged_df[col].fillna(merged_df[col].mean(), inplace=True)\n",
         "\n",
-        "print(merged_df.isnull().sum())\n",
         "\n",
         "# Remove outliers - capping (winsorizing) imputation\n",
         "numeric_cols = merged_df.select_dtypes(include=[np.number]).columns\n",
@@ -448,17 +468,7 @@
         "  lower_limit = np.percentile(merged_df[col], 5)\n",
         "  upper_limit = np.percentile(merged_df[col], 95)"
       ],
-      "id": "98b1f864",
-      "execution_count": null,
-      "outputs": []
-    },
-    {
-      "cell_type": "code",
-      "metadata": {},
-      "source": [
-        "# modeling"
-      ],
-      "id": "05f59fc7",
+      "id": "a3ba3fe5",
       "execution_count": null,
       "outputs": []
     },
@@ -486,13 +496,13 @@
         "\n",
         "## Exploratory Data Analysis\n",
         "\n",
-        "Traffic Distribution in Arizona\n",
+        "Traffic distribution in Arizona\n",
         "\n",
         ":::: {.columns}\n",
         "\n",
         "::: {.column width=\"50%\"}\n"
       ],
-      "id": "4b7f7ceb"
+      "id": "f8eb38e0"
     },
     {
       "cell_type": "code",
@@ -515,7 +525,7 @@
         "plt.autoscale(False)\n",
         "plt.show()\n"
       ],
-      "id": "4102c0cb",
+      "id": "6a3a4625",
       "execution_count": null,
       "outputs": []
     },
@@ -526,7 +536,7 @@
         ":::\n",
         "::: {.column width=\"50%\"}\n"
       ],
-      "id": "5701444c"
+      "id": "36560ffe"
     },
     {
       "cell_type": "code",
@@ -541,7 +551,7 @@
         "plt.autoscale(False)\n",
         "plt.show()"
       ],
-      "id": "cc0145c0",
+      "id": "bbf95975",
       "execution_count": null,
       "outputs": []
     },
@@ -556,12 +566,12 @@
         "\n",
         "## Exploratory Data Analysis\n",
         "\n",
-        "Precipitation, Temperature, and Storm patterns throughout Arizona\n",
+        "Temperature and precipitation patterns throughout Arizona\n",
         "\n",
         "::::: columns\n",
         "::: {.column width=\"50%\"}\n"
       ],
-      "id": "be6a00c0"
+      "id": "c8b19e3e"
     },
     {
       "cell_type": "code",
@@ -586,7 +596,7 @@
         "plt.autoscale(False)\n",
         "plt.show()"
       ],
-      "id": "76f54986",
+      "id": "31bb17c2",
       "execution_count": null,
       "outputs": []
     },
@@ -598,7 +608,7 @@
         "\n",
         "::: {.column width=\"50%\"}\n"
       ],
-      "id": "20e84a5a"
+      "id": "4b8dc9b3"
     },
     {
       "cell_type": "code",
@@ -613,7 +623,7 @@
         "plt.autoscale(False)\n",
         "plt.show()"
       ],
-      "id": "887034d7",
+      "id": "0cd56981",
       "execution_count": null,
       "outputs": []
     },
@@ -627,48 +637,24 @@
         ":::::\n",
         "\n",
         "\n",
-        "```\n",
-        "\n",
-        "## Modeling\n",
-        "\n",
-        "## Code"
+        "## Log Normalization\n"
       ],
-      "id": "79c79ecc"
-    },
-    {
-      "cell_type": "markdown",
-      "metadata": {},
-      "source": [
-        "## Plots\n"
-      ],
-      "id": "130b090c"
-    },
-    {
-      "cell_type": "markdown",
-      "metadata": {},
-      "source": [
-        "## Plot and text\n",
-        "\n",
-        "::::: columns\n",
-        "::: {.column width=\"50%\"}\n",
-        "-   Some text\n",
-        "\n",
-        "-   goes here\n",
-        ":::\n",
-        "\n",
-        "::: {.column width=\"50%\"}\n"
-      ],
-      "id": "12d87e8a"
+      "id": "4236eb3a"
     },
     {
       "cell_type": "code",
-      "metadata": {
-        "fig.width": 5.5
-      },
+      "metadata": {},
       "source": [
-        "#| warning: false\n"
+        "# Test\n",
+        "# applying log normalization to traffic counts for merged dataset\n",
+        "log_df = merged_df.copy()\n",
+        "log_df = np.log(log_df.select_dtypes(include=[np.number]))\n",
+        "# log_df[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'avg_temp_2022']] = np.log(merged_df[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'avg_temp_2022']])\n",
+        "# log_df = log_df.drop(['gridspace'], axis=1)\n",
+        "log_df.boxplot(figsize=(12,6))\n",
+        "plt.xticks(rotation=45)"
       ],
-      "id": "b9737b44",
+      "id": "2b057fa5",
       "execution_count": null,
       "outputs": []
     },
@@ -676,25 +662,432 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
+        "## Feature Scaling\n"
+      ],
+      "id": "3f1705ca"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Initialize the scaler\n",
+        "scaler = StandardScaler()\n",
+        "\n",
+        "# Select numeric columns\n",
+        "numeric_cols = merged_df.select_dtypes(include='number').columns\n",
+        "\n",
+        "# Fit and transform\n",
+        "merged_df_scaled = merged_df.copy()\n",
+        "merged_df_scaled[numeric_cols] = scaler.fit_transform(merged_df[numeric_cols])\n",
+        "\n",
+        "# print(merged_df_scaled)\n",
+        "\n",
+        "merged_df_scaled.boxplot(figsize=(8,6))\n",
+        "plt.xticks(rotation=60, fontsize=5)\n",
+        "plt.title('Box and Whisker Plot of Engineered Features after StandardScaler')\n",
+        "plt.show()\n",
+        "\n",
+        "# sns.pairplot(merged_df_scaled)\n"
+      ],
+      "id": "51a003ca",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Visualize Relationship for 5-year-average and 2022 datasets\n"
+      ],
+      "id": "46fa5639"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# 2022 urbanization metrics\n",
+        "urban_2022 = [\n",
+        "    'traffic_counts_2022',\n",
+        "    # 'gridspace'  # This seems static/spatial, so keep with 2022 data\n",
+        "]\n",
+        "\n",
+        "# Urbanization metrics relative to 5-year average\n",
+        "urban_above_5yavg = [\n",
+        "    'traffic_counts_above_5yavg'\n",
+        "]\n",
+        "\n",
+        "# 2022 environmental metrics\n",
+        "env_2022 = [\n",
+        "    'max_temp_2022',\n",
+        "    'avg_temp_2022',\n",
+        "    'rainfall_2022',\n",
+        "    'lowmagstorm_events_2022',\n",
+        "    'highmagstorm_events_2022',\n",
+        "    'average_storm_mag_2022'\n",
+        "]\n",
+        "\n",
+        "# Environmental metrics relative to 5-year average (anomalies)\n",
+        "env_above_below_5yavg = [\n",
+        "    'max_temp_above_5yavg',\n",
+        "    'avg_temp_above_5yavg',\n",
+        "    'rainfall_below_5yavg',  # This one is \"below\", but similar anomaly concept\n",
+        "    'lowmagstorm_events_above_5yavg',\n",
+        "    'highmagstorm_events_above_5yavg'\n",
+        "]\n",
+        "\n",
+        "\n",
+        "\n",
+        "df_5yavg = merged_df_scaled[urban_above_5yavg + env_above_below_5yavg]\n",
+        "df_2022 = merged_df_scaled[urban_2022 + env_2022]\n",
+        "\n",
+        "sns.pairplot(df_5yavg)\n",
+        "plt.show()\n",
+        "\n",
+        "sns.pairplot(df_2022)\n",
+        "plt.title(\"Relationships Between Data\")\n",
+        "plt.show()"
+      ],
+      "id": "95c95d44",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Data Reduction\n"
+      ],
+      "id": "237ef48d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Keep only numeric columns\n",
+        "numeric_cols = merged_df_scaled.select_dtypes(include='number').columns\n",
+        "df_numeric = merged_df_scaled[numeric_cols]\n",
+        "\n",
+        "# Run PCA to get 95% variance\n",
+        "pca = PCA(n_components=0.95)\n",
+        "reduced_data = pca.fit_transform(df_numeric)\n",
+        "\n",
+        "# Loading scores\n",
+        "loading_scores = pd.DataFrame(pca.components_, columns=numeric_cols)\n",
+        "\n",
+        "threshold = 0.3\n",
+        "\n",
+        "top_features = {}\n",
+        "for i in range(loading_scores.shape[0]):\n",
+        "    # Name the component (e.g., \"Component 1\", \"Component 2\", etc.)\n",
+        "    component = f\"Component {i+1}\"\n",
+        "    \n",
+        "    # Get the loading scores for this principal component\n",
+        "    scores = loading_scores.iloc[i]\n",
+        "    \n",
+        "    # Identify features with absolute loading scores above the threshold\n",
+        "    top_features_for_component = scores[abs(scores) > threshold].index.tolist()\n",
+        "    \n",
+        "    # Store the top features for this component in the dictionary\n",
+        "    top_features[component] = top_features_for_component\n",
+        "\n",
+        "\n",
+        "# Print results\n",
+        "for component, features in top_features.items():\n",
+        "  print(f\"{component}: {features}\")"
+      ],
+      "id": "e1f8a53b",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Label Encoding\n"
+      ],
+      "id": "e93aee1d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# One hot encoding for catagorical variables with multiple categories\n",
+        "categorical_cols = merged_df_scaled.select_dtypes(include='object').columns\n",
+        "merged_df_scaled = pd.get_dummies(merged_df_scaled, columns= categorical_cols, drop_first=True)\n",
+        "\n",
+        "# Convert all bool columns to int (0/1) \n",
+        "bool_cols = merged_df_scaled.select_dtypes(include='bool').columns\n",
+        "merged_df_scaled[bool_cols] = merged_df_scaled[bool_cols].astype(int)\n",
+        "\n",
+        "print(merged_df_scaled.head())\n",
+        "print(merged_df_scaled.dtypes)"
+      ],
+      "id": "1e1e6ef4",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Linear Regression Model Results\n"
+      ],
+      "id": "c33c7b8b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# linear regression models\n",
+        "def run_regression_models(X_val, y_val):\n",
+        "  X = merged_df_scaled[X_val]  # Independent variable\n",
+        "  y = merged_df_scaled[y_val]  # Dependent variable\n",
+        "\n",
+        "  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)\n",
+        "\n",
+        "  # _______________ OLS Regression _______________\n",
+        "\n",
+        "  X_train_with_const = sm.add_constant(X_train)\n",
+        "  model = sm.OLS(y_train, X_train_with_const).fit()\n",
+        "  model_summary = model.summary2()\n",
+        "  # print(model_summary)\n",
+        "\n",
+        "  # Add constant to X_test\n",
+        "  X_test_const = sm.add_constant(X_test)\n",
+        "\n",
+        "  # Predict using trained model\n",
+        "  y_pred = model.predict(X_test_const)\n",
+        "\n",
+        "  mse = mean_squared_error(y_test, y_pred) # mean squared error\n",
+        "  rmse = np.sqrt(mse) # root mse\n",
+        "  r2 = r2_score(y_test, y_pred) # r^2 on test set\n",
+        "\n",
+        "  # Print test performance\n",
+        "\n",
+        "  print(\"OLS Regression Model:\")\n",
+        "  print(\"\\tMean-squared error:\", mse)\n",
+        "  print(\"\\tRoot mean-squared error:\", rmse)\n",
+        "  print(\"\\tR-squared value:\", r2)\n",
+        "  # print(f\"MSE:  {mse:.4f}\")\n",
+        "  # print(f\"RMSE: {rmse:.4f}\")\n",
+        "  # print(f\"R²:   {r2:.4f}\")\n",
+        "\n",
+        "  # Define the alpha values to try\n",
+        "  alpha_values = [0.01, 0.1, 1, 10, 100,1000,10000]\n",
+        "\n",
+        "  # Initialize variables to store the best alpha and its corresponding MSE\n",
+        "  best_alpha = None\n",
+        "  best_mse = np.inf\n",
+        "\n",
+        "  # Cross-validation to select the best alpha\n",
+        "  kf = KFold(n_splits=5, shuffle=True, random_state=42)\n",
+        "\n",
+        "  # _______________ Ridge Regression _______________\n",
+        "  for alpha in alpha_values:\n",
+        "    # Create Ridge regression model with current alpha\n",
+        "    ridge = Ridge(alpha=alpha)\n",
+        "\n",
+        "    # Perform cross-validation and get negative MSE scores\n",
+        "    cv_scores = cross_val_score(ridge, X_train, y_train, cv=kf, scoring='neg_mean_squared_error')\n",
+        "    mean_cv_mse = -np.mean(cv_scores)\n",
+        "    \n",
+        "    # Update best alpha if current mean CV MSE is lower\n",
+        "    if mean_cv_mse < best_mse:\n",
+        "        best_mse = mean_cv_mse\n",
+        "        best_alpha = alpha\n",
+        "\n",
+        "  print(f\"\\nRidge best alpha selected: {best_alpha} with CV MSE: {best_mse}\")\n",
+        "\n",
+        "  # _______________ Ridge Regression _______________\n",
+        "  # Initialize Ridge regression with the best alpha \n",
+        "  ridge_reg = Ridge(alpha=best_alpha)\n",
+        "\n",
+        "  # Fit the Ridge model on the training data\n",
+        "  ridge_reg.fit(X_train, y_train)\n",
+        "\n",
+        "  # Predict on the testing set\n",
+        "  y_pred = ridge_reg.predict(X_test)\n",
+        "\n",
+        "  # Evaluate performance\n",
+        "  mse = mean_squared_error(y_test, y_pred)\n",
+        "  rmse = np.sqrt(mse)\n",
+        "  r2 = r2_score(y_test, y_pred)\n",
+        "\n",
+        "  print(\"Ridge Regression Model:\")\n",
+        "  print(\"\\tMean-squared error:\", mse)\n",
+        "  print(\"\\tRoot mean-squared error:\", rmse)\n",
+        "  print(\"\\tR-squared value:\", r2)\n",
+        "\n",
+        "  # _______________ Lasso Regression _______________\n",
+        "  for alpha in alpha_values:\n",
+        "    # Create Lasso regression with current alpha\n",
+        "    lasso = Lasso(alpha=alpha, max_iter=10000)\n",
+        "\n",
+        "      # Perform cross-validation and get negative MSE scores\n",
+        "    cv_scores = cross_val_score(lasso, X_train, y_train, cv=kf, scoring='neg_mean_squared_error')\n",
+        "    mean_cv_mse = -np.mean(cv_scores)\n",
+        "    \n",
+        "    # Update best alpha if current mean CV MSE is lower\n",
+        "    if mean_cv_mse < best_mse:\n",
+        "        best_mse = mean_cv_mse\n",
+        "        best_alpha = alpha\n",
+        "\n",
+        "  print(f\"\\nLasso best alpha selected: {best_alpha} with CV MSE: {best_mse}\")\n",
+        "\n",
+        "  # _______________ Lasso Regression _______________\n",
+        "  # Initialize Lasso regression with the best alpha\n",
+        "  lasso_reg = Lasso(alpha=best_alpha, max_iter=10000)\n",
+        "\n",
+        "  # Fit the Lasso model on the training data\n",
+        "  lasso_reg.fit(X_train, y_train)\n",
+        "\n",
+        "  # Predict on the testing set\n",
+        "  y_pred = lasso_reg.predict(X_test)\n",
+        "\n",
+        "  # Evaluate performance\n",
+        "  mse = mean_squared_error(y_test, y_pred)\n",
+        "  rmse = np.sqrt(mse)\n",
+        "  r2 = r2_score(y_test, y_pred)\n",
+        "\n",
+        "  print(\"Lasso Regression Model:\")\n",
+        "  print(\"\\tMean-squared error:\", mse)\n",
+        "  print(\"\\tRoot mean-squared error:\", rmse)\n",
+        "  print(\"\\tR-squared value:\", r2)"
+      ],
+      "id": "d99a5d53",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "print('Environmental Data (5 Year Averages)')\n",
+        "print('Traffic Data (5 Year Averages)')\n",
+        "run_regression_models(env_above_below_5yavg, 'traffic_counts_above_5yavg')\n",
+        "print(' ')\n",
+        "\n",
+        "print('Environmental Data (2022)')\n",
+        "print('Traffic Data (2022)')\n",
+        "run_regression_models(env_2022, 'traffic_counts_2022')\n",
+        "print(' ')"
+      ],
+      "id": "33eeaee5",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Linear Regression Model Results (continued)\n"
+      ],
+      "id": "2bcc9a8f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "print('Environmental Data (2022)')\n",
+        "print('Traffic Data (5 Year Averages)')\n",
+        "run_regression_models(env_2022, 'traffic_counts_above_5yavg')\n",
+        "print(' ')\n",
+        "\n",
+        "print('Environmental Data (5 Year Averages)')\n",
+        "print('Traffic Data (2022)')\n",
+        "run_regression_models(env_above_below_5yavg, 'traffic_counts_2022')"
+      ],
+      "id": "d3d624ef",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Polynomial Regression Results\n"
+      ],
+      "id": "dc38a747"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "def poly_reg(X_val, y_val, degree=2):\n",
+        "  X = merged_df_scaled[X_val].values\n",
+        "  y = merged_df_scaled[y_val].values\n",
+        "  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)\n",
+        "\n",
+        "  # Transforming data for polynomial regression\n",
+        "  poly_features = PolynomialFeatures(degree = degree)  # Adjust degree as necessary\n",
+        "  X_train_poly = poly_features.fit_transform(X_train)\n",
+        "  X_test_poly = poly_features.transform(X_test)\n",
+        "\n",
+        "  # Initialize the Linear Regression model\n",
+        "  linear_reg = LinearRegression()\n",
+        "\n",
+        "  # Fit the model with polynomial features\n",
+        "  linear_reg.fit(X_train_poly, y_train)\n",
+        "\n",
+        "  # Predict on the testing set\n",
+        "  y_pred = linear_reg.predict(X_test_poly)\n",
+        "\n",
+        "  # Calculate and print the MSE and R-squared\n",
+        "  mse_initial = mean_squared_error(y_test, y_pred)\n",
+        "  r2_initial = r2_score(y_test, y_pred)\n",
+        "  print(f'Mean Squared Error: {mse_initial}')\n",
+        "  print(f'R-squared: {r2_initial}')\n",
+        "\n",
+        "print('Environmental Data (5 Year Averages)')\n",
+        "print('Traffic Data (5 Year Averages)')\n",
+        "poly_reg(env_above_below_5yavg, 'traffic_counts_above_5yavg', degree=2)\n",
+        "print(' ')\n",
+        "\n",
+        "print('Environmental Data (2022)')\n",
+        "print('Traffic Data (2022)')\n",
+        "poly_reg(env_2022, 'traffic_counts_2022', degree=2)\n",
+        "print(' ')\n",
+        "\n",
+        "print('Environmental Data (2022)')\n",
+        "print('Traffic Data (5 Year Averages)')\n",
+        "poly_reg(env_2022, 'traffic_counts_above_5yavg', degree=2)\n",
+        "print(' ')\n",
+        "\n",
+        "\n",
+        "print('Environmental Data (5 Year Averages)')\n",
+        "print('Traffic Data (2022)')\n",
+        "poly_reg(env_above_below_5yavg, 'traffic_counts_2022', degree=2)\n"
+      ],
+      "id": "382337b1",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Conclusion\n",
+        "\n",
+        "::::: columns\n",
+        "::: {.column width=\"50%\"}\n",
+        "- \n",
+        ":::\n",
+        "\n",
+        "::: {.column width=\"50%\"}\n",
+        "Improvements\n",
+        "- \n",
         ":::\n",
         ":::::\n",
         "\n",
         "\n",
+        "### Thank You!\n",
         "\n",
-        "# Wrap up\n",
-        "\n",
-        "## Feeling adventurous?\n",
-        "\n",
-        "-   You are welcomed to use the default styling of the slides. In fact, that's what I expect majority of you will do. You will differentiate yourself with the content of your presentation.\n",
-        "\n",
-        "-   But some of you might want to play around with slide styling. Some solutions for this can be found at https://quarto.org/docs/presentations/revealjs.\n",
-        "\n",
-        "## Reference\n",
+        "## References\n",
         "- Trenberth, K.E. (2008). The Impact of Climate Change and Variability\n",
         "on Heavy Precipitation,\n",
         "Floods and Droughts. Encyocyclopedia of Hydrological Sciences. "
       ],
-      "id": "7940a4ea"
+      "id": "be7420bb"
     }
   ],
   "metadata": {

@@ -437,19 +437,22 @@ for col in numeric_cols:
 
 
 
-## Topic and Research Question
+## Topic
 
-- Traffic and car emissions are known to impact local air pollution and climate (Niemeier, et al. 2006)  
+- Traffic and car emissions contribute to local air pollution and climate (Niemeier, et al. 2006)  
 - Precipitation and temperature changes and an increase in storms are known indicators of climate change (Trenberth, 2007; EPA, 2024; Lindsey & Dahlman, 2025)
-- Can we observe the varying impact of traffic congestion on climate between counties in Arizona, USA?
+
+**Research Questions**
+
+- How does traffic congestion impact climate indicators in Arizona?
 - Can we predict the impact of traffic congestion on climate?
 
 
-## Data
+## Data Sources and Metrics
 
--   Urbanization Metric: traffic count data (USDOT Federal Highway Administration) 
--   Climate Metric: temperature, precipitation, and storm data (National Oceanographic and Atmospheric Administration)
-- Data was cleaned and merged for data analysis and modeling
+-   **Urbanization Metric:** Traffic count data (USDOT Federal Highway Administration) 
+-   **Climate Metrics:** Temperature, precipitation, and storm data (NOAA)
+- Data cleaned and merged for analysis and predictive modeling
 
 
 ## Exploratory Data Analysis
@@ -658,7 +661,7 @@ plt.title("Relationships Between Data")
 plt.show()
 ```
 
-## Data Reduction
+## Data Reduction 
 ```{python}
 # Keep only numeric columns
 numeric_cols = merged_df_scaled.select_dtypes(include='number').columns
@@ -920,21 +923,25 @@ poly_reg(env_above_below_5yavg, 'traffic_counts_2022', degree=2)
 
 ## Conclusion
 
-::::: columns
-::: {.column width="50%"}
-Model Results
-- 
-:::
 
-::: {.column width="50%"}
-Improvements
-- Combining datasets
-- More 
-:::
-:::::
+**Model Results**
+
+-   Overall low predictive power
+-   PCA demonstrates that extreme storm events and temperature have most significant interaction
+-   Linear Regression models show that the predictors are not explaning the outcome variable (negative R-squared values)
+-   Polynomial Regression also did not capture any meaningful relationships (negative R-squared values)
 
 
-### Thank You!
+
+## Improvements
+
+-   Combining datasets (only two at a time)
+-   Longer time period (more data points)
+
+**Thank you!**
+
+
+
 
 ## References
 - Trenberth, K.E. (2008). The Impact of Climate Change and Variability

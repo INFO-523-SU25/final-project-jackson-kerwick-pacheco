@@ -573,7 +573,6 @@ storm_df.info()
 ```
 
 
-## Log Normalization
 
 ```{python}
 # Test
@@ -582,8 +581,7 @@ log_df = merged_df.copy()
 log_df = np.log(log_df.select_dtypes(include=[np.number]))
 # log_df[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'avg_temp_2022']] = np.log(merged_df[['traffic_counts_2022', 'traffic_counts_above_5yavg', 'avg_temp_2022']])
 # log_df = log_df.drop(['gridspace'], axis=1)
-log_df.boxplot(figsize=(12,6))
-plt.xticks(rotation=45)
+
 ```
 
 
@@ -613,7 +611,7 @@ plt.show()
 
 ```
 
-## Visualize Relationship for 5-year-average and 2022 datasets
+## Visualize Relationships for 5-year-average datasets
 
 ```{python}
 
@@ -654,7 +652,10 @@ df_2022 = merged_df_scaled[urban_2022 + env_2022]
 
 sns.pairplot(df_5yavg)
 plt.show()
+```
 
+## Visualize Relationships for 2022 datasets
+```{python}
 sns.pairplot(df_2022)
 plt.title("Relationships Between Data")
 plt.show()
@@ -695,7 +696,7 @@ for component, features in top_features.items():
   print(f"{component}: {features}")
 ```
 
-## Label Encoding
+
 ```{python}
 # One hot encoding for catagorical variables with multiple categories
 categorical_cols = merged_df_scaled.select_dtypes(include='object').columns
@@ -705,8 +706,6 @@ merged_df_scaled = pd.get_dummies(merged_df_scaled, columns= categorical_cols, d
 bool_cols = merged_df_scaled.select_dtypes(include='bool').columns
 merged_df_scaled[bool_cols] = merged_df_scaled[bool_cols].astype(int)
 
-print(merged_df_scaled.head())
-print(merged_df_scaled.dtypes)
 ```
 
 
@@ -922,18 +921,18 @@ poly_reg(env_above_below_5yavg, 'traffic_counts_2022', degree=2)
 
 ```
 
-
-
 ## Conclusion
 
 ::::: columns
 ::: {.column width="50%"}
+Model Results
 - 
 :::
 
 ::: {.column width="50%"}
 Improvements
-- 
+- Combining datasets
+- More 
 :::
 :::::
 

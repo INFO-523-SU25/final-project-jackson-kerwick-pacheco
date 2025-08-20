@@ -939,11 +939,3 @@ poly_reg(env_above_below_5yavg, 'traffic_counts_2022', degree=2)
 -   Longer time period (more data points)
 
 **Thank you!**
-
-
-
-
-## References
-- Trenberth, K.E. (2008). The Impact of Climate Change and Variability
-on Heavy Precipitation,
-Floods and Droughts. Encyocyclopedia of Hydrological Sciences. 

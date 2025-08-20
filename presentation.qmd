@@ -544,6 +544,34 @@ plt.show()
 
 :::::
 
+## Exploratory Data Analysis
+
+Storm patterns in Arizona (2019-2023)
+
+```{python}
+
+# Count frequency of each storm event type
+event_counts = df_all['EVENT_TYPE'].value_counts().reset_index()
+event_counts.columns = ['EVENT_TYPE', 'FREQUENCY']
+
+# Create scatter plot
+plt.figure(figsize=(10,6))
+plt.scatter(event_counts['EVENT_TYPE'], event_counts['FREQUENCY'], color='blue')
+
+# Add titles and labels
+plt.title('Frequency of Storm Event Types')
+plt.xlabel('Storm Event Type')
+plt.ylabel('Frequency')
+plt.xticks(rotation=45, ha='right')
+
+plt.tight_layout()
+plt.show()
+
+# Rename data frame
+storm_df = df_all
+storm_df.info()
+```
+
 
 ## Log Normalization
 

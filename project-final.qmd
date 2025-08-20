@@ -594,7 +594,7 @@ The data were normalized geospatially during our merging process. Any data that 
 For our map, we used the 
 
 
-The NOAA data was assigned a gridspace and was merged with the traffic data on the gridspace. This merging preserved only gridspaces that had data from both the traffic dataset and NOAA dataset. The gridspaces represented in our data decreased from 336 initialized cells down to approximately 80.
+The NOAA data was assigned a gridspace and was merged with the traffic data on the gridspace. This merging preserved only gridspaces that had data from both the traffic dataset and NOAA dataset. The gridspaces represented in our data decreased from 336 initialized cells down to approximately (use .shape function).
 
 
 

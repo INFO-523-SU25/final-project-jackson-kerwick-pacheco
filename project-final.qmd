@@ -30,7 +30,7 @@ Introduction: The introduction provides a clear explanation of the question and 
 
 The goal of our project is to analyze the relationship between urbanization and environmental quality across regions within Arizona, identifying patterns and anomalies in how urban growth impacts climate metrics such as storms, temperature, and rainfall. As we have seen with the uproar by the Tucson population regarding the proposed environmental impacts of the Project Blue data center, environmental quality is important to local populations. We hope to use this study to identify the regional relationship between urbanization and climate indicators. We will be using traffic count data as our urbanization metric, and National Oceanographic and Atmospheric Administration (NOAA) climate and storm event data as our environmental quality data.
 
-To investigate this problem, we used three datasets: traffic data, climate data, and storm event data. 
+To investigate this problem, we used three datasets: traffic data, climate data, and storm event data.
 
 Each dataset we used had a combination of geographic information and . A prominent part of this project was merging our various datasets
 
@@ -170,11 +170,11 @@ def grid_bin(df, proj='EPSG:4326', xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, n
 
 ### Traffic Data
 
-Traffic congestion is a major source of air pollution in and around traffic areas (https://onlinepubs.trb.org/onlinepubs/sr/sr264.pdf). Consequently, high traffic congestion has been shown to have a negative health impact on drivers, pedestrians, and residents in areas near roadways. https://books.google.com/books?hl=en&lr=&id=b2G3k51rd0oC&oi=fnd&pg=PR1&ots=O94u9zCs4y&sig=v1JEfno-HjkbKf3im4iDQLJJUQ0#v=onepage&q&f=false, https://pmc.ncbi.nlm.nih.gov/articles/PMC4243514/ We selected traffic data as our urbanization metric as the monitoring was fairly robust throughout areas of different types (eg. rural, urban, agricultural). We measured traffic volume as a value of gross counts in a given year. The traffic data were sourced from the Department of Transportation (DOT) Federal Highway Administration (FHWA) and included traffic count data and monitoring station data. The traffic count data were seperated into files for each month spanning our five years of interest (2019-2023). Each line was a single day of counts at a single traffic station. The columns included a count for each hour of that day. The aggregate our traffic count data, we summed the hourly counts into a gross daily count, and then grouped the dataset by `station_id` summing the newly created daily traffic count. This led to very high counts on the order of magnitude of 10e7. The traffic station held the geographic information for the traffic stations. Each row was a different station location deployed by FHWA that year. It included the features `station_id`, `latitude`, `longitude`, and `county_code`. We omitted features like the number of lanes and the direction of traffic flow. The traffic data were merged on `station_id` which linked the geographic location with the traffic counts. 
+Traffic congestion is a major source of air pollution in and around traffic areas (https://onlinepubs.trb.org/onlinepubs/sr/sr264.pdf). Consequently, high traffic congestion has been shown to have a negative health impact on drivers, pedestrians, and residents in areas near roadways. https://books.google.com/books?hl=en&lr=&id=b2G3k51rd0oC&oi=fnd&pg=PR1&ots=O94u9zCs4y&sig=v1JEfno-HjkbKf3im4iDQLJJUQ0#v=onepage&q&f=false, https://pmc.ncbi.nlm.nih.gov/articles/PMC4243514/ We selected traffic data as our urbanization metric as the monitoring was fairly robust throughout areas of different types (eg. rural, urban, agricultural). We measured traffic volume as a value of gross counts in a given year. The traffic data were sourced from the Department of Transportation (DOT) Federal Highway Administration (FHWA) and included traffic count data and monitoring station data. The traffic count data were seperated into files for each month spanning our five years of interest (2019-2023). Each line was a single day of counts at a single traffic station. The columns included a count for each hour of that day. The aggregate our traffic count data, we summed the hourly counts into a gross daily count, and then grouped the dataset by `station_id` summing the newly created daily traffic count. This led to very high counts on the order of magnitude of 10e7. The traffic station held the geographic information for the traffic stations. Each row was a different station location deployed by FHWA that year. It included the features `station_id`, `latitude`, `longitude`, and `county_code`. We omitted features like the number of lanes and the direction of traffic flow. The traffic data were merged on `station_id` which linked the geographic location with the traffic counts.
 
- Picturing this in real life, a traffic station is a deployed
+Picturing this in real life, a traffic station is a deployed
 
- A potential issue in our approach is that gross counts alone are not an indicator of traffic congestion. Traffic congestion takes into account how long a car is on the road in a specific area, which is affected by gross count, number of lanes, and car speed. As Interstate-8, Interstate-10, and Interstate-40 are major shipping lanes that are represented in our data, they may be associated with high gross count but a low urbanization factor as trucks travel at high speed through rural areas.
+A potential issue in our approach is that gross counts alone are not an indicator of traffic congestion. Traffic congestion takes into account how long a car is on the road in a specific area, which is affected by gross count, number of lanes, and car speed. As Interstate-8, Interstate-10, and Interstate-40 are major shipping lanes that are represented in our data, they may be associated with high gross count but a low urbanization factor as trucks travel at high speed through rural areas.
 
 ### Traffic Data - Feature Engineering and Visualization
 
@@ -229,14 +229,22 @@ for i in range(19, 24):   # Iterate through years of interest
   # maintaining features used in our research questions and dropping the rest for handleability 
   df_year = df_year[['station_id','latitude','longitude', 'traffic_counts', 'county_code']]
 
+  # initialize df for 5 year averages
   if (year == '19'):
     df_traffic_5yavg = df_year.copy()
+
   df_traffic_5yavg[f'traffic_counts_{year}'] = df_year['traffic_counts']
 
+```
 
-# Ref: https://saturncloud.io/blog/how-to-sum-two-columns-in-a-pandas-dataframe/
+### Temporal Normalization
 
-####### 1. make 5 year avg df
+While we have addressed regional normalization using our `gridspace` feature, we had to find a way to normalize our data in the time dimension. The most common approach to see how features change over time is to perform regression where the independent variable is time. Common examples of this are seeing how a stock's value changes over time, or see how temperature for one city changes day to day. Since our independent variable changes region by region, we accounted for temporal variability by comparing a year of interest (2022) to a dataset of averages for the same features over a 5 year time span (2019-2023). We did this through engineering the features for the 2022 dataset.
+
+```{python}
+
+
+####### 1. Calculate averages for 5 year average traffic df
 
 # remove column that was duplicate added during looping
 df_traffic_5yavg = df_traffic_5yavg.drop('traffic_counts',axis=1)
@@ -251,7 +259,7 @@ df_traffic_2022 = df_traffic_5yavg.drop(['traffic_counts_{:02}'.format(year) for
 
 df_traffic = df_traffic_2022.drop('traffic_counts_23', axis=1)
 
-# add counts above 5yavg feature
+# add counts above 5yavg feature (Ref: https://saturncloud.io/blog/how-to-sum-two-columns-in-a-pandas-dataframe/)
 df_traffic['traffic_counts_above_5yavg'] = df_traffic_2022['traffic_counts_22'] - df_traffic_2022['traffic_counts_5yavg']
 
 # rename for consistency with environmental df
@@ -595,14 +603,11 @@ storm_features_2022.info()
 
 ## Geospatial Normalization
 
-The data were normalized geospatially during our merging process. Any data that had a station location that was within a given gridspace would be merged into that gridspace and assigned a gridspace number and a gridspace geometry. In cartography, geometries describe the shape of a region. Generally speaking, geometries include Points, Lines,and Polygons (https://geopandas.org/en/stable/docs/user_guide/data_structures.html). The traffic and NOAA station data include latitude and longitude information, which would be classified as a Point. The gridspace geometry however is a rectangle which would be considered a Polygon. We utilized the GeoPandas Spatial Join (`geopandas.sjoin()`) function to spatially join our data. Spatial joining works by joining GeoDataFrames on geometries that intersect. So traffic and climate data would be grouped together in the same gridspace if they fell within the same region. This form of normalization is helpful because it ensures all data share the same projection information and it assures the regions are the same size. 
+The data were normalized geospatially during our merging process. Any data that had a station location that was within a given gridspace would be merged into that gridspace and assigned a gridspace number and a gridspace geometry. In cartography, geometries describe the shape of a region. Generally speaking, geometries include Points, Lines,and Polygons (https://geopandas.org/en/stable/docs/user_guide/data_structures.html). The traffic and NOAA station data include latitude and longitude information, which would be classified as a Point. The gridspace geometry however is a rectangle which would be considered a Polygon. We utilized the GeoPandas Spatial Join (`geopandas.sjoin()`) function to spatially join our data. Spatial joining works by joining GeoDataFrames on geometries that intersect. So traffic and climate data would be grouped together in the same gridspace if they fell within the same region. This form of normalization is helpful because it ensures all data share the same projection information and it assures the regions are the same size.
 
-For our map, we used the 
-
+For our map, we used the
 
 The NOAA data was assigned a gridspace and was merged with the traffic data on the gridspace. This merging preserved only gridspaces that had data from both the traffic dataset and NOAA dataset. The gridspaces represented in our data decreased from 336 initialized cells down to approximately (use .shape function).
-
-
 
 ### Merge Traffic and NOAA Datasets on `gridspace`
 

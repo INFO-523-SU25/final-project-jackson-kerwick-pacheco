@@ -487,7 +487,6 @@ gdf_noaa1
 # convert back from df into gdf
 gdf_noaa1 = gpd.GeoDataFrame(gdf_noaa1, geometry="geometry", crs=gdf_noaa.crs)
 
-
 # US state and arizona shapefile for plotting
 states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
 states = states.to_crs(gdf_noaa1.crs)

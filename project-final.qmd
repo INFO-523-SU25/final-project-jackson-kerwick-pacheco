@@ -83,14 +83,11 @@ from sklearn.linear_model import LogisticRegression, Ridge, Lasso
 from scipy import stats
 ```
 
-## Geospatial Normalization
 
-Since our research question is about regional relationships, we had to combine our data regionally. Since each dataset had unique geographic qualities, it was not a straightforward process. Since latitude and longitude are specific and discrete, we were unable to merge on latitude and longitude pair points. In order to merge on specific points, it would mean that the traffic station, the climate measurement, and the storm identification would have had to occur at the exact same location. To account for this, we implemented geospatial normalization in the form of a gridspace.
-
-Our gridspace is a 2-dimensional grid overlayed on the state of Arizona that encompasses pre-defined ranges of latitude and longitude. So a traffic station and a climate measurement that are within the same latitude and longitude range will be grouped together in the corresponding gridspace. We manufactured a grid of 336 spaces that is 16 cells horizontally and 21 cells vertically. Each measurement within a gridspace was the mean of all corresponding values in that cell. For our regression analysis, our final DataFrame was structured such that each row corresponded to a gridspace and each column was a traffic, climate, or storm event value. An interesting problem that arose was with the storm event data which did not include latitude and longitude values. Since storms travel across regions, the dataset included a county variable and starting latitude and longitude values. We were able to merge the storm data into the traffic and climate datasets on the county value.
 
 ```{python}
 #| label: gdf-function
+
 
 def get_grid(xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, num_x=15, num_y=20, proj='EPSG:4326'):
   """
@@ -164,7 +161,36 @@ def grid_bin(df, proj='EPSG:4326', xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, n
   gdf_joined = gdf_joined.drop(['index_right'], axis=1)
 
   return gdf_joined
+
+
+# Future shape grid information
+
+num_x = 15
+num_y = 20
+
+grid_size = (num_x+1) * (num_y+1)
+
 ```
+
+
+## Geospatial Normalization
+
+Since our research question is about regional relationships, we had to combine our data regionally. Since each dataset had unique geographic qualities, it was not a straightforward process. The two main forms of location information given in our datasets were latitude/longitude pairs and county names. Since latitude and longitude are specific and discrete, we were unable to merge on latitude and longitude pair points alone. In order to merge on specific points, it would mean that the traffic station, the climate measurement, and the storm identification would have had to occur at the exact same location. To account for this, we implemented geospatial normalization in the form of a gridspace.
+
+Our gridspace is a 2-dimensional grid overlayed on the state of Arizona that encompasses pre-defined ranges of latitude and longitude. We manufactured a grid of 336 spaces that is 16 cells horizontally and 21 cells vertically. Any data that had a station location that was within a given gridspace would be merged into that gridspace and assigned a gridspace number and a gridspace geometry. In cartography, geometries describe the shape of a region. Generally speaking, geometries include Points, Lines,and Polygons (https://geopandas.org/en/stable/docs/user_guide/data_structures.html). The traffic and NOAA station data include latitude and longitude information, which would be classified as a Point. The gridspace geometry however is a rectangle which would be considered a Polygon.  This form of normalization is helpful because it ensures all data share the same projection information and it assures the regions are the same size. We utilized the GeoPandas Spatial Join (`geopandas.sjoin()`) function to spatially join our data which we implemented as we merged our datasets. Spatial joining works by joining GeoDataFrames on geometries that intersect. So traffic and climate data would be grouped together in the same gridspace if they fell within the same region.
+
+First, we combined the NOAA climate data and the traffic data. When we grouped data that had multiple station locations within the same gridspace, we assigned the mean of those measurements to be the feature value for that gridspace. The spatial join function only maintains gridspaces that are represented in both datasets. This means that our initial gridspace of `{python}grid_size` was decreased to ~80 gridspaces. An interesting problem that arose was with the storm event data which did not include latitude and longitude values. Since storms travel across regions, the dataset included a county variable and starting and ending latitude and longitude values. We decided to preserve the county feature from the raw traffic data to merge on. This made the storm values unique in that a single storm event would be represented in every gridspace within the county in which it occured.
+
+For our regression analyses, our final DataFrame was structured such that each row corresponded to a gridspace and each column was a traffic, climate, or storm event value.
+
+
+
+
+
+
+
+For our map, we used the
+
 
 ## Datasets
 
@@ -266,7 +292,8 @@ df_traffic = df_traffic.drop('traffic_counts_5yavg', axis=1)
 
 
 # 3. grid_bin dataframes
-gdf_traffic = grid_bin(df_traffic)
+
+gdf_traffic = grid_bin(df_traffic, num_x=num_x, num_y=num_y)
 
 # 4. average values over gridspace
 gdf_traffic = grid_bin(df_traffic)
@@ -616,10 +643,6 @@ storm_features_2022.info()
 ```
 
 
-```{python}
-
-
-```
 
 
 
@@ -695,11 +718,7 @@ plt.show()
 
 ## Geospatial Normalization
 
-The data were normalized geospatially during our merging process. Any data that had a station location that was within a given gridspace would be merged into that gridspace and assigned a gridspace number and a gridspace geometry. In cartography, geometries describe the shape of a region. Generally speaking, geometries include Points, Lines,and Polygons (https://geopandas.org/en/stable/docs/user_guide/data_structures.html). The traffic and NOAA station data include latitude and longitude information, which would be classified as a Point. The gridspace geometry however is a rectangle which would be considered a Polygon. We utilized the GeoPandas Spatial Join (`geopandas.sjoin()`) function to spatially join our data. Spatial joining works by joining GeoDataFrames on geometries that intersect. So traffic and climate data would be grouped together in the same gridspace if they fell within the same region. This form of normalization is helpful because it ensures all data share the same projection information and it assures the regions are the same size.
 
-For our map, we used the
-
-The NOAA data was assigned a gridspace and was merged with the traffic data on the gridspace. This merging preserved only gridspaces that had data from both the traffic dataset and NOAA dataset. The gridspaces represented in our data decreased from 336 initialized cells down to approximately (use .shape function).
 
 ### Merge Traffic and NOAA Datasets on `gridspace`
 

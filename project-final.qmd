@@ -379,7 +379,7 @@ for col in noaaNum.columns:
 The features from the NOAA data included the following:
 
 | Feature Name | Description | Use |
-|-----------------------------|---------------------------|----------------|
+|----------------------------|--------------------------|------------------|
 | STATION | name of land-based station for collection | aggregating climate data |
 | LATITUDE | latitude of station position | combining datasets regionally |
 | LONGITUDE | longitude of station position | combining datasets regionally |

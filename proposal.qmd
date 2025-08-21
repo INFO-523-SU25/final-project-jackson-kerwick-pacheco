@@ -291,16 +291,16 @@ The traffic data are sourced from two different file structures, counts data and
 ## Schedule
 
 | Date | Task | Details | Completed? |
-|----------------------|-----------------|-----------------|-----------------|
+|---------------------|-----------------|-----------------|-----------------|
 | **Aug 9** | Final Proposal Submission | Submit this project proposal to meet course requirements and include peer edits. Ensure all datasets are identified and accessible. | ✅ |
 | **Aug 10** | Data Validation & Cleaning | Verify all NOAA, storm event, and traffic datasets are complete and free of formatting issues. Handle missing data, unify column formats, and confirm geospatial coordinate accuracy. | ✅ |
-| **Aug 11** | Exploratory Data Analysis (EDA) | Perform initial descriptive statistics and visualizations for each dataset (storm events, climate data, traffic counts). Identify trends, anomalies, and data distribution shapes. |  |
-| **Aug 12** | Dataset Integration | Merge storm, climate, and traffic data into a single regional dataset for 2022. Create temporal normalization dataset for 2019–2023 averages. |  |
-| **Aug 13** | Feature Engineering | Create engineered features outlined in the proposal (e.g., `max_temp_above_5yavg`, `traffic_counts_above_5yavg`). Ensure proper units and scaling for regression. |  |
-| **Aug 14** | Regression Analysis Setup | Split data into training/testing sets. Implement baseline linear and quadratic regression models to predict environmental quality from urbanization indicators. |  |
-| **Aug 15** | Model Tuning & Evaluation | Perform hyperparameter tuning for regression models. Compare linear vs. quadratic fits. Assess model performance. |  |
-| **Aug 16** | PCA & Regional Comparison | Run PCA on the combined dataset. Identify clusters of similar regions and interpret principal components in relation to urbanization and environmental quality. |  |
-| **Aug 17** | Visualization Development | Create regression plots, PCA scatterplots, and geospatial maps of Arizona showing urbanization and climate impact patterns. |  |
-| **Aug 18** | Presentation Recording | Develop and record project presentation, including visualizations and key findings. Ensure explanation of model results and their policy implications. |  |
-| **Aug 19** | Final Write-Up | Complete detailed report including methodology, results, discussion, and limitations. Prepare references and appendices with code snippets. |  |
-| **Aug 20 (11:59 PM)** | Submission Deadline | Submit final write-up and presentation. |  |
+| **Aug 11** | Exploratory Data Analysis (EDA) | Perform initial descriptive statistics and visualizations for each dataset (storm events, climate data, traffic counts). Identify trends, anomalies, and data distribution shapes. | ✅ |
+| **Aug 12** | Dataset Integration | Merge storm, climate, and traffic data into a single regional dataset for 2022. Create temporal normalization dataset for 2019–2023 averages. | ✅ |
+| **Aug 13** | Feature Engineering | Create engineered features outlined in the proposal (e.g., `max_temp_above_5yavg`, `traffic_counts_above_5yavg`). Ensure proper units and scaling for regression. | ✅ |
+| **Aug 14** | Regression Analysis Setup | Split data into training/testing sets. Implement baseline linear and quadratic regression models to predict environmental quality from urbanization indicators. | ✅ |
+| **Aug 15** | Model Tuning & Evaluation | Perform hyperparameter tuning for regression models. Compare linear vs. quadratic fits. Assess model performance. | ✅ |
+| **Aug 16** | PCA & Regional Comparison | Run PCA on the combined dataset. Identify clusters of similar regions and interpret principal components in relation to urbanization and environmental quality. | ✅ |
+| **Aug 17** | Visualization Development | Create regression plots, PCA scatterplots, and geospatial maps of Arizona showing urbanization and climate impact patterns. | ✅ |
+| **Aug 18** | Presentation Recording | Develop and record project presentation, including visualizations and key findings. Ensure explanation of model results and their policy implications. | ✅ |
+| **Aug 19** | Final Write-Up | Complete detailed report including methodology, results, discussion, and limitations. Prepare references and appendices with code snippets. | ✅ |
+| **Aug 20 (11:59 PM)** | Submission Deadline | Submit final write-up and presentation. | ✅ |

@@ -5,7 +5,7 @@ author:
   - name: "Vera Jackson, Molly Kerwick, Brooke Pacheco"
     affiliations:
       - name: "College of Information Science, University of Arizona"
-description: "Project description"
+description: "Final Project for course INFO 523: Data Mining and Discovery"
 format:
    html:
     code-tools: true

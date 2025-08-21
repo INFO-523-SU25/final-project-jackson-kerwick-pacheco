@@ -627,6 +627,7 @@ storm_features_2022.info()
 
 While we have addressed regional normalization using our `gridspace` feature, we had to find a way to normalize our data in the time dimension. The most common approach to see how features change over time is to perform regression where the independent variable is time. Common examples of this are seeing how a stock's value changes over time, or seeing how temperature for one city changes day to day. Since our independent variable changes region by region, we accounted for temporal variability by comparing a year of interest (2022) to a dataset of averages for the same features over a 5 year time span (2019-2023). We did this through engineering features that were differences between values measured in 2022 and values that were measured over the 5 year average.
 
+::: {.column width="50%"}
 ```{python}
 # US state and arizona shapefile for plotting
 states = gpd.read_file("data/state_outline/cb_2018_us_state_20m/cb_2018_us_state_20m.shp")  # path to downloaded shapefile for state outlines
@@ -662,7 +663,7 @@ plt.ylabel("Longitude")
 plt.autoscale(False)
 plt.show()
 ```
-
+:::
 
 
 ### Engineered Features

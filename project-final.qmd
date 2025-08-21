@@ -93,6 +93,11 @@ Our gridspace is a 2-dimensional grid overlayed on the state of Arizona that enc
 #| label: gdf-function
 
 def get_grid(xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, num_x=15, num_y=20, proj='EPSG:4326'):
+  """
+  Initialized grid used in gridspace normalization with grid geometry for mapping
+  """
+
+
     # Calculate width and height of each grid cell
     cell_size_x = (xmax - xmin) / num_x
     cell_size_y = (ymax - ymin) / num_y
@@ -174,12 +179,13 @@ Traffic congestion is a major source of air pollution in and around traffic area
 ### Traffic Data - Feature Engineering and Visualization
 
 ```{python}
-# Engineering DataFrames of traffic data
-# going to store each year's dataframe in a dictionary {year: df}
+# Iterating through traffic station and traffic count files to
+# engineer DataFrames of traffic data
 
 df_traffic_5yavg = pd.DataFrame()
 
-for i in range(19, 24):   # for year of interest
+
+for i in range(19, 24):   # Iterate through years of interest
   # format values for files/features
   year = "{:02}".format(i)
   yearnum = int(f'20{year}')
@@ -190,22 +196,22 @@ for i in range(19, 24):   # for year of interest
   # define data types for merging later
   df_year['station_id'] = df_year['station_id'].astype(str)
 
-  for j in range(1,13):   # for month of interest
+  for j in range(1,13):   # Iterate through months of interest
     # format strings for files/features 
     monthyear = "{:02}".format(j) + year
     month = "{:02}".format(j)
 
-    # read in counts data
+    # Accessing traffic files from data directory
     # Note: the format of data changed in 2022 so we have to account for the delimiter changing
     if (i < 22):
       df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL")
     else:
       df_month = pd.read_csv(f"data/Traffic/counts/AZ{monthyear}.VOL", delimiter='|')
 
-    # formatting so merging works later
+    # converting all text to lowercase so merging works later
     df_month.columns = [col.lower() for col in df_month.columns]
 
-    # sum hour counts to daily count per day
+    # sum hour counts to daily count for every line (one line is measurements per station per day)
     df_month[f'daily_volume_{month}'] = df_month[["hour_{:02}".format(i) for i in range(24)]].sum(axis=1) 
 
     # sum daily counts to monthly count per station
@@ -220,7 +226,7 @@ for i in range(19, 24):   # for year of interest
   # summing monthly counts so we have an annual count
   df_year['traffic_counts'] = df_year[["daily_volume_{:02}".format(i) for i in range(1,13)]].sum(axis=1)
 
-  # removing unused columns
+  # maintaining features used in our research questions and dropping the rest for handleability 
   df_year = df_year[['station_id','latitude','longitude', 'traffic_counts', 'county_code']]
 
   if (year == '19'):

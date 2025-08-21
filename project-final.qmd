@@ -478,7 +478,7 @@ gdf_noaa = grid_bin(noaa_features)
 gdf_noaa1 = gdf_noaa.groupby('gridspace', as_index=False)[['max_temp_2022', 'max_temp_above_5yavg', 'avg_temp_2022', 'avg_temp_above_5yavg', 'rainfall_2022', 'rainfall_below_5yavg', 'latitude', 'longitude']].mean()   # important note: lat and lon averages are not very useful, but they will be replaced later. Just wanted to preserve the feature for rudimentary mapping
 
 # need to get geometry points back
-geometry_noaa = gdf_noaa.groupby('gridspace')['geometry'].first().reset_index()
+geometry_noaa = gdf_noaa.groupby('gridspace')['geometry'].first().reset_index() 
 
 gdf_noaa1 = gdf_noaa1.merge(geometry_noaa, on = 'gridspace')
 

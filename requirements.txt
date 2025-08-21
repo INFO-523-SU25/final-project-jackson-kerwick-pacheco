@@ -6,6 +6,6 @@ pandas
 numpy
 shapely
 scikit-learn
-sklearn
 statsmodels
 scipy
+

@@ -83,8 +83,6 @@ from sklearn.linear_model import LogisticRegression, Ridge, Lasso
 from scipy import stats
 ```
 
-
-
 ```{python}
 #| label: gdf-function
 
@@ -172,25 +170,17 @@ grid_size = (num_x+1) * (num_y+1)
 
 ```
 
-
 ## Geospatial Normalization
 
 Since our research question is about regional relationships, we had to combine our data regionally. Since each dataset had unique geographic qualities, it was not a straightforward process. The two main forms of location information given in our datasets were latitude/longitude pairs and county names. Since latitude and longitude are specific and discrete, we were unable to merge on latitude and longitude pair points alone. In order to merge on specific points, it would mean that the traffic station, the climate measurement, and the storm identification would have had to occur at the exact same location. To account for this, we implemented geospatial normalization in the form of a gridspace.
 
-Our gridspace is a 2-dimensional grid overlayed on the state of Arizona that encompasses pre-defined ranges of latitude and longitude. We manufactured a grid of 336 spaces that is 16 cells horizontally and 21 cells vertically. Any data that had a station location that was within a given gridspace would be merged into that gridspace and assigned a gridspace number and a gridspace geometry. In cartography, geometries describe the shape of a region. Generally speaking, geometries include Points, Lines,and Polygons (https://geopandas.org/en/stable/docs/user_guide/data_structures.html). The traffic and NOAA station data include latitude and longitude information, which would be classified as a Point. The gridspace geometry however is a rectangle which would be considered a Polygon.  This form of normalization is helpful because it ensures all data share the same projection information and it assures the regions are the same size. We utilized the GeoPandas Spatial Join (`geopandas.sjoin()`) function to spatially join our data which we implemented as we merged our datasets. Spatial joining works by joining GeoDataFrames on geometries that intersect. So traffic and climate data would be grouped together in the same gridspace if they fell within the same region.
+Our gridspace is a 2-dimensional grid overlayed on the state of Arizona that encompasses pre-defined ranges of latitude and longitude. We manufactured a grid of 336 spaces that is 16 cells horizontally and 21 cells vertically. Any data that had a station location that was within a given gridspace would be merged into that gridspace and assigned a gridspace number and a gridspace geometry. In cartography, geometries describe the shape of a region. Generally speaking, geometries include Points, Lines,and Polygons (https://geopandas.org/en/stable/docs/user_guide/data_structures.html). The traffic and NOAA station data include latitude and longitude information, which would be classified as a Point. The gridspace geometry however is a rectangle which would be considered a Polygon. This form of normalization is helpful because it ensures all data share the same projection information and it assures the regions are the same size. We utilized the GeoPandas Spatial Join (`geopandas.sjoin()`) function to spatially join our data which we implemented as we merged our datasets. Spatial joining works by joining GeoDataFrames on geometries that intersect. So traffic and climate data would be grouped together in the same gridspace if they fell within the same region.
 
-First, we combined the NOAA climate data and the traffic data. When we grouped data that had multiple station locations within the same gridspace, we assigned the mean of those measurements to be the feature value for that gridspace. The spatial join function only maintains gridspaces that are represented in both datasets. This means that our initial gridspace of `{python}grid_size` was decreased to ~80 gridspaces. An interesting problem that arose was with the storm event data which did not include latitude and longitude values. Since storms travel across regions, the dataset included a county variable and starting and ending latitude and longitude values. We decided to preserve the county feature from the raw traffic data to merge on. This made the storm values unique in that a single storm event would be represented in every gridspace within the county in which it occured.
+First, we combined the NOAA climate data and the traffic data. When we grouped data that had multiple station locations within the same gridspace, we assigned the mean of those measurements to be the feature value for that gridspace. The spatial join function only maintains gridspaces that are represented in both datasets. This means that our initial gridspace of `{python}grid_size` was decreased to \~80 gridspaces. An interesting problem that arose was with the storm event data which did not include latitude and longitude values. Since storms travel across regions, the dataset included a county variable and starting and ending latitude and longitude values. We decided to preserve the county feature from the raw traffic data to merge on. This made the storm values unique in that a single storm event would be represented in every gridspace within the county in which it occured.
 
 For our regression analyses, our final DataFrame was structured such that each row corresponded to a gridspace and each column was a traffic, climate, or storm event value.
 
-
-
-
-
-
-
 For our map, we used the
-
 
 ## Datasets
 
@@ -199,7 +189,6 @@ For our map, we used the
 Traffic congestion is a major source of air pollution in and around traffic areas (https://onlinepubs.trb.org/onlinepubs/sr/sr264.pdf). Consequently, high traffic congestion has been shown to have a negative health impact on drivers, pedestrians, and residents in areas near roadways. https://books.google.com/books?hl=en&lr=&id=b2G3k51rd0oC&oi=fnd&pg=PR1&ots=O94u9zCs4y&sig=v1JEfno-HjkbKf3im4iDQLJJUQ0#v=onepage&q&f=false, https://pmc.ncbi.nlm.nih.gov/articles/PMC4243514/ We selected traffic data as our urbanization metric as the monitoring was fairly robust throughout areas of different types (eg. rural, urban, agricultural). We measured traffic volume as a value of gross counts in a given year. The traffic data were sourced from the Department of Transportation (DOT) Federal Highway Administration (FHWA) and included traffic count data and monitoring station data. The traffic count data were seperated into files for each month spanning our five years of interest (2019-2023). Each line was a single day of counts at a single traffic station. The columns included a count for each hour of that day. The aggregate our traffic count data, we summed the hourly counts into a gross daily count, and then grouped the dataset by `station_id` summing the newly created daily traffic count. This led to very high counts on the order of magnitude of 10e7. The traffic station held the geographic information for the traffic stations. Each row was a different station location deployed by FHWA that year. It included the features `station_id`, `latitude`, `longitude`, and `county_code`. We omitted features like the number of lanes and the direction of traffic flow. The traffic data were merged on `station_id` which linked the geographic location with the traffic counts.
 
 A potential issue in our approach is that gross counts alone are not an indicator of traffic congestion. Traffic congestion takes into account how long a car is on the road in a specific area, which is affected by gross count, number of lanes, and car speed. As Interstate-8, Interstate-10, and Interstate-40 are major shipping lanes that are represented in our data, they may be associated with high gross count but a low urbanization factor as trucks travel at high speed through rural areas.
-
 
 ```{python}
 # Iterating through traffic station and traffic count files to
@@ -259,10 +248,6 @@ for i in range(19, 24):   # Iterate through years of interest
   df_traffic_5yavg[f'traffic_counts_{year}'] = df_year['traffic_counts']
 
 ```
-
-
-
-
 
 ```{python}
 
@@ -344,7 +329,6 @@ plt.show()
 
 ## NOAA Data
 
-
 ```{python}
 # load data
 all_files = glob.glob("data/NOAA/" + "*.csv")
@@ -369,7 +353,6 @@ noaa1 = noaa1.drop(['DAPR', 'DASF', 'MDSF', 'PGTM', 'WDF2', 'WDF5', 'WESD', 'WES
 
 ```
 
-
 ```{python}
 # investigate missing values
 # print("Missing values (NaN): \n" + str(noaa1.isnull().sum()))
@@ -393,11 +376,10 @@ for col in noaaNum.columns:
 # print("Missing values NOW (NaN): \n" + str(noaa1.isnull().sum()))
 ```
 
-
 The features from the NOAA data included the following:
 
 | Feature Name | Description | Use |
-|--------------|-------------|-----|
+|-----------------------------|---------------------------|----------------|
 | STATION | name of land-based station for collection | aggregating climate data |
 | LATITUDE | latitude of station position | combining datasets regionally |
 | LONGITUDE | longitude of station position | combining datasets regionally |
@@ -406,7 +388,7 @@ The features from the NOAA data included the following:
 | TAVG | average temperature (Fahrenheit) | `avg_temp_2022` and `avg_temp_above_5yavg` |
 | TMAX | maximum temperature (Fahrenheit) | `max_temp_2022` and `max_temp_above_5yavg` |
 
-TMAX and TAVG were used to calculate the maximum and average temperatures (respectively) for 2022 and the 5-year average 2019-2023; then these results were used to determine the difference between the max or average temperature in 2022 and 2019-2023 average. PRCP was used to determine the average rainfall (in inches) in 2022 and 2019-2023 5-yera average; likewise, the difference between the 2022 and 2019-2023 averages were calculated from these engineered features.
+TMAX and TAVG were used to calculate the maximum and average temperatures (respectively) for 2022 and the 5-year average 2019-2023; then these results were used to determine the difference between the max or average temperature in 2022 and 2019-2023 average. PRCP was used to determine the average rainfall (in inches) in 2022 and 2019-2023 5-year average; likewise, the difference between the 2022 and 2019-2023 averages were calculated from these engineered features.
 
 ```{python}
 # Date is in correct time format
@@ -439,8 +421,6 @@ plt.show()
 ```
 
 It is easy to spot the cyclical nature of our climate measurements in the temperature data where each period spans one year. However, the pattern in precipitation and snow in inches over time is more difficult to identify.
-
-
 
 ```{python}
 # Extract year from date
@@ -491,7 +471,6 @@ noaa_features = features_2022
 noaa_features.info()
 ```
 
-
 ```{python}
 # create grid_bin dataframes
 gdf_noaa = grid_bin(noaa_features)
@@ -539,21 +518,26 @@ plt.show()
 
 Relevant Variables in the dataset (these are the storm event variables we used for modeling and visualizations):
 
-    BEGIN_DATE – date the storm event began
-    YEAR – extracted from BEGIN_DATE, used to filter and group data
-    MAGNITUDE – numeric severity/intensity of the storm event
-    CZ_FIPS – county FIPS code identifier used to group data by county
+```         
+BEGIN_DATE – date the storm event began
+YEAR – extracted from BEGIN_DATE, used to filter and group data
+MAGNITUDE – numeric severity/intensity of the storm event
+CZ_FIPS – county FIPS code identifier used to group data by county
+```
 
 From these base variables, we created several engineered features:
 
-    df_2022 – subset of data for storm events that occurred in 2022
-    lowmag_2022 – number of low magnitude storm events in 2022
-    lowmag_5yavg – 5-year average (2019–2023) of low magnitude storm events per year
-    highmag_2022 – number of high magnitude storm events in 2022
-    highmag_5yavg – 5-year average (2019–2023) of high magnitude storm events per year
-    avg_mag_2022 – average storm magnitude for each county/zone in 2022
+```         
+df_2022 – subset of data for storm events that occurred in 2022
+lowmag_2022 – number of low magnitude storm events in 2022
+lowmag_5yavg – 5-year average (2019–2023) of low magnitude storm events per year
+highmag_2022 – number of high magnitude storm events in 2022
+highmag_5yavg – 5-year average (2019–2023) of high magnitude storm events per year
+avg_mag_2022 – average storm magnitude for each county/zone in 2022
+```
 
-The engineered features (lowmag, highmag, and avg_mag) were used to compare storm activity in 2022 against the 5-year averages and to evaluate how storm intensity varied across counties. 
+The engineered features (lowmag, highmag, and avg_mag) were used to compare storm activity in 2022 against the 5-year averages and to evaluate how storm intensity varied across counties.
+
 ```{python}
 # Path to your folder
 folder_path = "data/StormEvents/"
@@ -596,7 +580,6 @@ plt.show()
 storm_df = df_all
 storm_df.info()
 ```
-
 
 ```{python}
 # Make sure dates and magnitude are correct type
@@ -651,8 +634,6 @@ storm_features_2022['highmagstorm_events_above_5yavg'] = (
 storm_features_2022.info()
 ```
 
-
-
 ### Temporal Normalization
 
 While we have addressed regional normalization using our `gridspace` feature, we had to find a way to normalize our data in the time dimension. The most common approach to see how features change over time is to perform regression where the independent variable is time. Common examples of this are seeing how a stock's value changes over time, or seeing how temperature for one city changes day to day. Since our independent variable changes region by region, we accounted for temporal variability by comparing a year of interest (2022) to a dataset of averages for the same features over a 5 year time span (2019-2023). We did this through engineering features that were differences between values measured in 2022 and values that were measured over the 5 year average.
@@ -679,6 +660,7 @@ plt.show()
 
 ```
 :::
+
 ::: {.column width="50%"}
 ```{python}
 
@@ -695,9 +677,7 @@ plt.show()
 ```
 :::
 
-
 ### Engineered Features
-
 
 ### Climate Features
 
@@ -722,10 +702,6 @@ plt.show()
 | traffic_counts | total number of vehicles detected in 2022 |
 | traffic_counts_above_5yavg | traffic counts in 2022 minus traffic counts averaged 2019-2023 |
 
-
-
-
-
 ```{python}
 ### Merge Traffic and NOAA Datasets on `gridspace`
 
@@ -742,7 +718,6 @@ gdf_traffic_noaa.head()
 
 ```
 
-
 ```{python}
 
 
@@ -758,7 +733,8 @@ merged_df.isnull().sum()
 ```
 
 ### Data Preprocessing
-1. Handle Missing Data and Remove Outliers
+
+1.  Handle Missing Data and Remove Outliers
 
 ```{python}
 # For numerical columns, fill nulls with mean
@@ -792,7 +768,7 @@ plt.xticks(rotation=45)
 
 ```
 
-2. Feature Scaling
+2.  Feature Scaling
 
 ```{python}
 # Initialize the scaler
@@ -816,7 +792,7 @@ plt.show()
 
 ```
 
-3. Grouping Environmental and Urbanization Metrics
+3.  Grouping Environmental and Urbanization Metrics
 
 ```{python}
 # 2022 urbanization metrics
@@ -862,7 +838,7 @@ plt.show()
 
 ```
 
-4. Data Reduction
+4.  Data Reduction
 
 ```{python}
 # Keep only numeric columns
@@ -900,7 +876,7 @@ for component, features in top_features.items():
 
 # \<\<\<\<\<\<\< HEAD
 
-5. Label Encoding 
+5.  Label Encoding
 
 ```{python}
 # Transform Catagorical Variables into Numeric Labels
@@ -1131,8 +1107,30 @@ poly_reg(env_above_below_5yavg, 'traffic_counts_2022', degree=2)
 
 # References
 
-grid construction reference: https://james-brennan.github.io/posts/fast_gridding_geopandas/
+1.  Grid Construction Reference
+
+    1.  Brennan, J. (2020). Fast and easy gridding of point data with geopandas. <https://james-brennan.github.io/posts/fast_gridding_geopandas/>
+
+2.  Traffic Data
+
+    1.  U.S. Department of Transportation Federal Highway Administration. (n.d.). Travel Monitoring. <https://www.fhwa.dot.gov/policyinformation/travel_monitoring/tvt.cfm>
+
+3.  Storm Data
+
+    1.  NOAA National Centers for Environmental Information. (n.d.). Storm Events Databse. <https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/>
+
+4.  Climate Data
+
+    1.  NOAA National Centers for Environmental Information. (n.d.). Climate Data. <https://www.ncdc.noaa.gov/cdo-web/search;jsessionid=2851FE4A6791F4BF429988727483E450>
+
+    2.  Global Historical Climatology Network. (n.d.). Daily Documentation. <https://www.ncei.noaa.gov/pub/data/cdo/documentation/GHCND_documentation.pdf>
+
+5.  Trenberth, K.E. (2007). The Impact of Climate Change and Variability on Heavy Precipitation, Floods and Droughts. <https://web.archive.org/web/20170809113035id_/http://www.cgd.ucar.edu/cas/Trenberth/website-archive/trenberth.papers-moved/The%20Impact%20of%20Climate%20Change%20on%20the%20Water%20Cycle%20v%204_ss.pdf>
+
+6.  Zhang M., Gao, Y., & Ge, J. (2025). Different responses of extreme and mean precipitation to land use and land cover changes. <https://www.nature.com/articles/s41612-025-01049-1>
 
 https://saturncloud.io/blog/how-to-sum-two-columns-in-a-pandas-dataframe/
 
-\<\<\<\<\<\<\< HEAD Storm Data: https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/ Traffic Data: https://www.fhwa.dot.gov/policyinformation/travel_monitoring/tvt.cfm Climate Data: https://www.ncdc.noaa.gov/cdo-web/search;jsessionid=2851FE4A6791F4BF429988727483E450 ======= \>\>\>\>\>\>\> 1b1f939f7c7e7a0a486a0c421a2af2a34ef63aa7
+\<\<\<\<\<\<\< HEAD
+
+======= \>\>\>\>\>\>\> 1b1f939f7c7e7a0a486a0c421a2af2a34ef63aa7

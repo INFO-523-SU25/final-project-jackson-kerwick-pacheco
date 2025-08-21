@@ -364,7 +364,7 @@ Vera Jackson, Molly Kerwick, Brooke Pacheco
 <p>Traffic distribution in Arizona</p>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div id="5671590b" class="cell" data-execution_count="7">
+<div id="7a652cc1" class="cell" data-execution_count="7">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -374,7 +374,7 @@ Vera Jackson, Molly Kerwick, Brooke Pacheco
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div id="873af8e4" class="cell" data-execution_count="8">
+<div id="52c84396" class="cell" data-execution_count="8">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -390,7 +390,7 @@ Vera Jackson, Molly Kerwick, Brooke Pacheco
 <p>Temperature and precipitation patterns throughout Arizona</p>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div id="6b7c3df8" class="cell" data-execution_count="9">
+<div id="ce87259e" class="cell" data-execution_count="9">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -400,7 +400,7 @@ Vera Jackson, Molly Kerwick, Brooke Pacheco
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div id="88741fb9" class="cell" data-execution_count="10">
+<div id="575afcfb" class="cell" data-execution_count="10">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -420,17 +420,17 @@ Vera Jackson, Molly Kerwick, Brooke Pacheco
 <h2>Feature Scaling</h2>
 
 <img data-src="presentation_files/figure-revealjs/cell-14-output-1.png" class="r-stretch"></section>
-<section id="visualize-relationships-for-5-year-average-datasets" class="slide level2">
-<h2>Visualize Relationships for 5-year-average datasets</h2>
+<section id="relationships-for-5-year-average" class="slide level2">
+<h2>Relationships for 5-year-average</h2>
 
 <img data-src="presentation_files/figure-revealjs/cell-15-output-1.png" class="r-stretch"></section>
-<section id="visualize-relationships-for-2022-datasets" class="slide level2">
-<h2>Visualize Relationships for 2022 datasets</h2>
+<section id="relationships-for-2022" class="slide level2">
+<h2>Relationships for 2022</h2>
 
 <img data-src="presentation_files/figure-revealjs/cell-16-output-1.png" class="r-stretch"></section>
 <section id="data-reduction" class="slide level2">
 <h2>Data Reduction</h2>
-<div id="73d6ae3e" class="cell" data-execution_count="16">
+<div id="2bbe90a3" class="cell" data-execution_count="16">
 <div class="cell-output cell-output-stdout">
 <pre><code>Component 1: ['max_temp_2022', 'highmagstorm_events_2022', 'highmagstorm_5yavg', 'highmagstorm_events_above_5yavg']
 Component 2: ['traffic_counts_2022', 'fips_code', 'highmagstorm_events_2022', 'highmagstorm_5yavg', 'highmagstorm_events_above_5yavg']
@@ -448,7 +448,7 @@ Component 9: ['avg_temp_2022', 'rainfall_below_5yavg', 'lowmagstorm_5yavg']</cod
 <h2>Linear Regression Model Results</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div id="2d7d883a" class="cell" data-execution_count="19">
+<div id="7a1406bd" class="cell" data-execution_count="19">
 <div class="cell-output cell-output-stdout">
 <pre><code>Environmental Data (5 Year Averages)
 Traffic Data (5 Year Averages)
@@ -469,12 +469,11 @@ Lasso best alpha selected: 1000 with CV MSE: 1.174985534201412
 Lasso Regression Model:
     Mean-squared error: 0.5601840743214328
     Root mean-squared error: 0.7484544570790082
-    R-squared value: -0.2493172702195181
- </code></pre>
+    R-squared value: -0.2493172702195181</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div id="c40a96f1" class="cell" data-execution_count="20">
+<div id="e80b9f45" class="cell" data-execution_count="20">
 <div class="cell-output cell-output-stdout">
 <pre><code>Environmental Data (2022)
 Traffic Data (2022)
@@ -493,8 +492,7 @@ Lasso best alpha selected: 100 with CV MSE: 1.1758120989820233
 Lasso Regression Model:
     Mean-squared error: 0.4315963501853747
     Root mean-squared error: 0.6569599304260304
-    R-squared value: -0.43166796970271903
- </code></pre>
+    R-squared value: -0.43166796970271903</code></pre>
 </div>
 </div>
 </div></div>
@@ -503,7 +501,7 @@ Lasso Regression Model:
 <h2>Linear Regression Model Results (continued)</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div id="e88338e4" class="cell" data-execution_count="21">
+<div id="75255885" class="cell" data-execution_count="21">
 <div class="cell-output cell-output-stdout">
 <pre><code>Environmental Data (2022)
 Traffic Data (5 Year Averages)
@@ -522,12 +520,11 @@ Lasso best alpha selected: 1 with CV MSE: 1.1759802832153639
 Lasso Regression Model:
     Mean-squared error: 0.5601840743214328
     Root mean-squared error: 0.7484544570790082
-    R-squared value: -0.2493172702195181
- </code></pre>
+    R-squared value: -0.2493172702195181</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div id="65bf98de" class="cell" data-execution_count="22">
+<div id="aee7ed1e" class="cell" data-execution_count="22">
 <div class="cell-output cell-output-stdout">
 <pre><code>Environmental Data (5 Year Averages)
 Traffic Data (2022)
@@ -555,7 +552,7 @@ Lasso Regression Model:
 </section>
 <section id="polynomial-regression-results" class="slide level2">
 <h2>Polynomial Regression Results</h2>
-<div id="546c57f3" class="cell" data-execution_count="23">
+<div id="ae61fbd8" class="cell" data-execution_count="23">
 <div class="cell-output cell-output-stdout">
 <pre><code>Environmental Data (5 Year Averages)
 Traffic Data (5 Year Averages)
@@ -594,14 +591,9 @@ R-squared: -18.919632592900072</code></pre>
 <ul>
 <li>Combining datasets (only two at a time)</li>
 <li>Longer time period (more data points)</li>
+<li>Integrity low with multiple public data resources</li>
 </ul>
 <p><strong>Thank you!</strong></p>
-</section>
-<section id="references" class="slide level2">
-<h2>References</h2>
-<ul>
-<li>Trenberth, K.E. (2008). The Impact of Climate Change and Variability on Heavy Precipitation, Floods and Droughts. Encyocyclopedia of Hydrological Sciences.</li>
-</ul>
 
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">

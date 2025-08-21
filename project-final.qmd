@@ -239,7 +239,7 @@ for i in range(19, 24):   # Iterate through years of interest
 
 ### Temporal Normalization
 
-While we have addressed regional normalization using our `gridspace` feature, we had to find a way to normalize our data in the time dimension. The most common approach to see how features change over time is to perform regression where the independent variable is time. Common examples of this are seeing how a stock's value changes over time, or see how temperature for one city changes day to day. Since our independent variable changes region by region, we accounted for temporal variability by comparing a year of interest (2022) to a dataset of averages for the same features over a 5 year time span (2019-2023). We did this through engineering the features for the 2022 dataset.
+While we have addressed regional normalization using our `gridspace` feature, we had to find a way to normalize our data in the time dimension. The most common approach to see how features change over time is to perform regression where the independent variable is time. Common examples of this are seeing how a stock's value changes over time, or seeing how temperature for one city changes day to day. Since our independent variable changes region by region, we accounted for temporal variability by comparing a year of interest (2022) to a dataset of averages for the same features over a 5 year time span (2019-2023). We did this through engineering features that were differences between values measured in 2022 and values that were measured over the 5 year average.
 
 ```{python}
 

@@ -344,9 +344,6 @@ plt.show()
 
 ## NOAA Data
 
-(needs description here)
-
-### Load and Merge NOAA Files
 
 ```{python}
 # load data
@@ -372,7 +369,6 @@ noaa1 = noaa1.drop(['DAPR', 'DASF', 'MDSF', 'PGTM', 'WDF2', 'WDF5', 'WESD', 'WES
 
 ```
 
-### NOAA - Remove Missing Values
 
 ```{python}
 # investigate missing values
@@ -397,7 +393,6 @@ for col in noaaNum.columns:
 # print("Missing values NOW (NaN): \n" + str(noaa1.isnull().sum()))
 ```
 
-### NOAA Data
 
 The features from the NOAA data included the following:
 
@@ -446,7 +441,6 @@ plt.show()
 It is easy to spot the cyclical nature of our climate measurements in the temperature data where each period spans one year. However, the pattern in precipitation and snow in inches over time is more difficult to identify.
 
 
-### NOAA - Engineered Features
 
 ```{python}
 # Extract year from date
@@ -497,7 +491,6 @@ noaa_features = features_2022
 noaa_features.info()
 ```
 
-### Load Shapfile for Plotting
 
 ```{python}
 # create grid_bin dataframes
@@ -542,8 +535,25 @@ plt.autoscale(False)
 plt.show()
 ```
 
-### Storm Data - Load File and Visualize Data
+### Storm Event Data (from NOAA)
 
+Relevant Variables in the dataset (these are the storm event variables we used for modeling and visualizations):
+
+    BEGIN_DATE – date the storm event began
+    YEAR – extracted from BEGIN_DATE, used to filter and group data
+    MAGNITUDE – numeric severity/intensity of the storm event
+    CZ_FIPS – county FIPS code identifier used to group data by county
+
+From these base variables, we created several engineered features:
+
+    df_2022 – subset of data for storm events that occurred in 2022
+    lowmag_2022 – number of low magnitude storm events in 2022
+    lowmag_5yavg – 5-year average (2019–2023) of low magnitude storm events per year
+    highmag_2022 – number of high magnitude storm events in 2022
+    highmag_5yavg – 5-year average (2019–2023) of high magnitude storm events per year
+    avg_mag_2022 – average storm magnitude for each county/zone in 2022
+
+The engineered features (lowmag, highmag, and avg_mag) were used to compare storm activity in 2022 against the 5-year averages and to evaluate how storm intensity varied across counties. 
 ```{python}
 # Path to your folder
 folder_path = "data/StormEvents/"
@@ -587,7 +597,6 @@ storm_df = df_all
 storm_df.info()
 ```
 
-### Storm Data - Data Prepocessing and Engineered Features
 
 ```{python}
 # Make sure dates and magnitude are correct type
@@ -641,8 +650,6 @@ storm_features_2022['highmagstorm_events_above_5yavg'] = (
 
 storm_features_2022.info()
 ```
-
-
 
 
 
@@ -716,13 +723,13 @@ plt.show()
 | traffic_counts_above_5yavg | traffic counts in 2022 minus traffic counts averaged 2019-2023 |
 
 
-## Geospatial Normalization
 
 
-
-### Merge Traffic and NOAA Datasets on `gridspace`
 
 ```{python}
+### Merge Traffic and NOAA Datasets on `gridspace`
+
+
 gdf_traffic_premerge = gdf_traffic.drop(['latitude', 'longitude'], axis=1)
 
 # remove Point geometry to preserve gridspace geometry from traffic df
@@ -735,9 +742,11 @@ gdf_traffic_noaa.head()
 
 ```
 
-### Merge Storm and Traffic/NOAA Dataset on `fips_code`
 
 ```{python}
+
+
+### Merge Storm and Traffic/NOAA Dataset on `fips_code`
 
 df_storm_premerge = storm_features_2022.rename({'CZ_FIPS': 'fips_code'}, axis=1)
 df_storm_premerge.columns
@@ -748,7 +757,8 @@ merged_df.isnull().sum()
 
 ```
 
-### Handle Missing Data and Remove Outliers
+### Data Preprocessing
+1. Handle Missing Data and Remove Outliers
 
 ```{python}
 # For numerical columns, fill nulls with mean
@@ -782,7 +792,7 @@ plt.xticks(rotation=45)
 
 ```
 
-### Data Transformation - Feature Scaling
+2. Feature Scaling
 
 ```{python}
 # Initialize the scaler
@@ -806,7 +816,7 @@ plt.show()
 
 ```
 
-### Visualizing Relationships for 5-year-average datasets and 2022 datasets
+3. Grouping Environmental and Urbanization Metrics
 
 ```{python}
 # 2022 urbanization metrics
@@ -852,7 +862,7 @@ plt.show()
 
 ```
 
-### Data Reduction
+4. Data Reduction
 
 ```{python}
 # Keep only numeric columns
@@ -890,9 +900,10 @@ for component, features in top_features.items():
 
 # \<\<\<\<\<\<\< HEAD
 
-### Label Encoding - Transform Catagorical Variables into Numeric Labels
+5. Label Encoding 
 
 ```{python}
+# Transform Catagorical Variables into Numeric Labels
 # One hot encoding for catagorical variables with multiple categories
 categorical_cols = merged_df_scaled.select_dtypes(include='object').columns
 merged_df_scaled = pd.get_dummies(merged_df_scaled, columns= categorical_cols, drop_first=True)
@@ -905,7 +916,11 @@ print(merged_df_scaled.head())
 print(merged_df_scaled.dtypes)
 ```
 
+## Regression Analysis
+
 ### Linear Regression Models
+
+We utilized Ordinary Least Squares Regression, Ridge Regression, and Lasso Regression.
 
 ```{python}
 
@@ -1057,6 +1072,8 @@ run_regression_models(env_above_below_5yavg, 'traffic_counts_2022')
 ```
 
 ### Polynomial regression
+
+We implemented a 2nd order polynomial regression (quadratic) to compare against our linear models
 
 ```{python}
 def poly_reg(X_val, y_val, degree=2):

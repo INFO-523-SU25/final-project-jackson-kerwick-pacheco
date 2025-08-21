@@ -98,33 +98,33 @@ def get_grid(xmin=-114.5, ymin=31.2, xmax=-109, ymax=37, num_x=15, num_y=20, pro
   """
 
 
-    # Calculate width and height of each grid cell
-    cell_size_x = (xmax - xmin) / num_x
-    cell_size_y = (ymax - ymin) / num_y
+  # Calculate width and height of each grid cell
+  cell_size_x = (xmax - xmin) / num_x
+  cell_size_y = (ymax - ymin) / num_y
 
-    # Define coordinate reference system (CRS) for the grid
-    crs = proj
+  # Define coordinate reference system (CRS) for the grid
+  crs = proj
 
-    # Initialize a list to hold grid cell geometries
-    grid_cells = []
+  # Initialize a list to hold grid cell geometries
+  grid_cells = []
 
-    # Create the grid by looping through x and y ranges
-    for x0 in np.arange(xmin, xmax + cell_size_x, cell_size_x):
-      for y0 in np.arange(ymin, ymax + cell_size_y, cell_size_y):
-          # Define opposite corner of the box (left and upper side)
-          x1 = x0 - cell_size_x
-          y1 = y0 + cell_size_y
+  # Create the grid by looping through x and y ranges
+  for x0 in np.arange(xmin, xmax + cell_size_x, cell_size_x):
+    for y0 in np.arange(ymin, ymax + cell_size_y, cell_size_y):
+        # Define opposite corner of the box (left and upper side)
+        x1 = x0 - cell_size_x
+        y1 = y0 + cell_size_y
 
-          # Create a rectangular polygon and add it to the list
-          grid_cells.append(shapely.geometry.box(x0, y0, x1, y1))
+        # Create a rectangular polygon and add it to the list
+        grid_cells.append(shapely.geometry.box(x0, y0, x1, y1))
 
-    # Create a GeoDataFrame from the list of polygons with specified CRS
-    grid = gpd.GeoDataFrame(grid_cells, columns=['geometry'], crs=crs)
+  # Create a GeoDataFrame from the list of polygons with specified CRS
+  grid = gpd.GeoDataFrame(grid_cells, columns=['geometry'], crs=crs)
 
-    # Assign a unique ID to each grid cell
-    grid['gridspace'] = [i for i in range(336)]  # Assumes 336 cells
+  # Assign a unique ID to each grid cell
+  grid['gridspace'] = [i for i in range(336)]  # Assumes 336 cells
 
-    return grid
+  return grid
 
 
 def add_grid_geometry(df):
@@ -340,7 +340,7 @@ noaa1 = noaa
 # dropping columns that have too low non-null count (cannot extract valuable estimates from to fill null values)
 noaa1 = noaa1.drop(['DAPR', 'DASF', 'MDSF', 'PGTM', 'WDF2', 'WDF5', 'WESD', 'WESF'], axis = 1)
 
-noaa1.info()
+# noaa1.info()
 
 
 ```
@@ -349,17 +349,17 @@ noaa1.info()
 
 ```{python}
 # investigate missing values
-print("Missing values (NaN): \n" + str(noaa1.isnull().sum()))
+# print("Missing values (NaN): \n" + str(noaa1.isnull().sum()))
 unique_stations = noaa1['STATION'].unique()
 station_count = noaa1['STATION'].value_counts()
 
-print("Stations: " + str(unique_stations))
-print("Station count: " + str(station_count))
+# print("Stations: " + str(unique_stations))
+# print("Station count: " + str(station_count))
 
 # group by station
 noaaNum = noaa1.select_dtypes(include = np.number)
 
-print(noaaNum)
+# print(noaaNum)
 
 # For all values in the numerical column list from above
 for col in noaaNum.columns:
@@ -367,17 +367,32 @@ for col in noaaNum.columns:
         noaa1.groupby('STATION')[col].transform('median')
     )
 
-print("Missing values NOW (NaN): \n" + str(noaa1.isnull().sum()))
+# print("Missing values NOW (NaN): \n" + str(noaa1.isnull().sum()))
 ```
 
-### NOAA - Visualize Al of the Features
+### NOAA Data
+
+The features from the NOAA data included the following:
+
+| Feature Name | Description | Use |
+|--------------|-------------|-----|
+| STATION | name of land-based station for collection | aggregating climate data |
+| LATITUDE | latitude of station position | combining datasets regionally |
+| LONGITUDE | longitude of station position | combining datasets regionally |
+| DATE | date (year-month-day) of data collection | aggregating climate data temporally |
+| PRCP | precipitation (inches) | `rainfall_2022` and `rainfall_below_5yavg` |
+| TAVG | average temperature (Fahrenheit) | `avg_temp_2022` and `avg_temp_above_5yavg` |
+| TMAX | maximum temperature (Fahrenheit) | `max_temp_2022` and `max_temp_above_5yavg` |
+
+TMAX and TAVG were used to calculate the maximum and average temperatures (respectively) for 2022 and the 5-year average 2019-2023; then these results were used to determine the difference between the max or average temperature in 2022 and 2019-2023 average. PRCP was used to determine the average rainfall (in inches) in 2022 and 2019-2023 5-yera average; likewise, the difference between the 2022 and 2019-2023 averages were calculated from these engineered features.
 
 ```{python}
 # Date is in correct time format
 noaa1['DATE'] = pd.to_datetime(noaa1['DATE'])
 
 # Selecting variables to plot
-noaa1_scatter_eda = noaa1[['DATE', 'AWND', 'EVAP', 'PRCP', 'SNOW', 'SNWD', 'TAVG', 'TMAX', 'TMIN', 'TOBS', 'WSF2', 'WSF5']]
+noaa1_scatter_eda = noaa1[['DATE', 'PRCP', 'TAVG', 'TMAX', 'SNOW']]
+# noaa1_scatter_eda = noaa1[['DATE', 'AWND', 'EVAP', 'PRCP', 'SNOW', 'SNWD', 'TAVG', 'TMAX', 'TMIN', 'TOBS', 'WSF2', 'WSF5']]
 
 # Numeric columns
 num_cols = noaa1_scatter_eda.select_dtypes(include=np.number).columns
@@ -396,10 +411,13 @@ for i, col in enumerate(num_cols):
     axes[i].grid(True, linestyle='--', alpha=0.5)
 
 axes[-1].set_xlabel("Date")
-
+fig.suptitle('Climate Features from NOAA')
 fig.tight_layout()
 plt.show()
 ```
+
+It is easy to spot the cyclical nature of our climate measurements in the temperature data where each period spans one year. However, the pattern in precipitation and snow in inches over time is more difficult to identify.
+
 
 ### NOAA - Engineered Features
 

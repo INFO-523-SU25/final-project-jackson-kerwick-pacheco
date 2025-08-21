@@ -241,8 +241,35 @@ for i in range(19, 24):   # Iterate through years of interest
 
 While we have addressed regional normalization using our `gridspace` feature, we had to find a way to normalize our data in the time dimension. The most common approach to see how features change over time is to perform regression where the independent variable is time. Common examples of this are seeing how a stock's value changes over time, or seeing how temperature for one city changes day to day. Since our independent variable changes region by region, we accounted for temporal variability by comparing a year of interest (2022) to a dataset of averages for the same features over a 5 year time span (2019-2023). We did this through engineering features that were differences between values measured in 2022 and values that were measured over the 5 year average.
 
-```{python}
+### Engineered Features
 
+
+### Climate Features
+
+| Feature | Description |
+|------------------------------|------------------------------------------|
+| max_temp_2022 | maximum temperature for 2022 |
+| max_temp_above_5yavg | maximum temperature for 2022 minus maximum temperature averaged 2019-2023 |
+| avg_temp_2022 | average temperature for 2022 |
+| avg_temp_above_5yavg | average temperature for 2022 minus average temperature averaged 2019-2023 |
+| rainfall_2022 | total inches of rainfall in 2022 |
+| rainfall_below_5yavg | inches of annual rainfall averaged 2019-2023 minus inches of annual rainfall in 2022 |
+| lowmagstorm_events_2022 | sum of low magnitude storm events in 2022 |
+| lowmagstorm_events_above_5yavg | sum of low magnitude storm events for 2022 minus sum of low magnitude storm events averaged 2019-2023 |
+| highmagstorm_events_2022 | sum of high magnitude storm events in 2022 |
+| highmagstorm_events_above_5yavg | sum of high magnitude storm events for 2022 minus sum of high magnitude storm events averaged 2019-2023 |
+| average_storm_mag_2022 | average storm event magnitude for 2022 |
+
+### Urbanization Features
+
+| Feature | Description |
+|------------------------------|------------------------------------------|
+| traffic_counts | total number of vehicles detected in 2022 |
+| traffic_counts_above_5yavg | traffic counts in 2022 minus traffic counts averaged 2019-2023 |
+
+
+
+```{python}
 
 ####### 1. Calculate averages for 5 year average traffic df
 

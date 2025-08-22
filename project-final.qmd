@@ -47,8 +47,6 @@ This project will consist of 2 studies:
 
     Study 2: A PCA analysis of the state of Arizona comparing both climate data and traffic data to identify similar regions.
 
-
-
 ```{python}
 # Import Libraries 
 
@@ -181,7 +179,7 @@ grid_size = (num_x+1) * (num_y+1)
 
 ### Traffic Data
 
-Traffic congestion is a major source of air pollution in and around traffic areas (https://onlinepubs.trb.org/onlinepubs/sr/sr264.pdf). Consequently, high traffic congestion has been shown to have a negative health impact on drivers, pedestrians, and residents in areas near roadways. https://books.google.com/books?hl=en&lr=&id=b2G3k51rd0oC&oi=fnd&pg=PR1&ots=O94u9zCs4y&sig=v1JEfno-HjkbKf3im4iDQLJJUQ0#v=onepage&q&f=false, https://pmc.ncbi.nlm.nih.gov/articles/PMC4243514/ We selected traffic data as our urbanization metric as the monitoring was fairly robust throughout areas of different types (eg. rural, urban, agricultural). We measured traffic volume as a value of gross counts in a given year. The traffic data were sourced from the Department of Transportation (DOT) Federal Highway Administration (FHWA) and included traffic count data and monitoring station data. The traffic count data were seperated into files for each month spanning our five years of interest (2019-2023). Each line was a single day of counts at a single traffic station. The columns included a count for each hour of that day. The aggregate our traffic count data, we summed the hourly counts into a gross daily count, and then grouped the dataset by `station_id` summing the newly created daily traffic count. This led to very high counts on the order of magnitude of 10e7. The traffic station held the geographic information for the traffic stations. Each row was a different station location deployed by FHWA that year. It included the features `station_id`, `latitude`, `longitude`, and `county_code`. We omitted features like the number of lanes and the direction of traffic flow. The traffic data were merged on `station_id` which linked the geographic location with the traffic counts.
+Traffic congestion is a major source of air pollution in and around traffic areas (Transportation Research Board). Consequently, high traffic congestion has been shown to have a negative health impact on drivers, pedestrians, and residents in areas near roadways (World Health Organization). We selected traffic data as our urbanization metric as the monitoring was fairly robust throughout areas of different types (eg. rural, urban, agricultural). We measured traffic volume as a value of gross counts in a given year. The traffic data were sourced from the Department of Transportation (DOT) Federal Highway Administration (FHWA) and included traffic count data and monitoring station data. The traffic count data were seperated into files for each month spanning our five years of interest (2019-2023). Each line was a single day of counts at a single traffic station. The columns included a count for each hour of that day. The aggregate our traffic count data, we summed the hourly counts into a gross daily count, and then grouped the dataset by `station_id` summing the newly created daily traffic count. This led to very high counts on the order of magnitude of 10e7. The traffic station held the geographic information for the traffic stations. Each row was a different station location deployed by FHWA that year. It included the features `station_id`, `latitude`, `longitude`, and `county_code`. We omitted features like the number of lanes and the direction of traffic flow. The traffic data were merged on `station_id` which linked the geographic location with the traffic counts.
 
 A potential issue in our approach is that gross counts alone are not an indicator of traffic congestion. Traffic congestion takes into account how long a car is on the road in a specific area, which is affected by gross count, number of lanes, and car speed. As Interstate-8, Interstate-10, and Interstate-40 are major shipping lanes that are represented in our data, they may be associated with high gross count but a low urbanization factor as trucks travel at high speed through rural areas.
 
@@ -1153,6 +1151,10 @@ Some ideas for improvement when investigating our research question include:
 2.  Traffic Data
 
     1.  U.S. Department of Transportation Federal Highway Administration. (n.d.). Travel Monitoring. <https://www.fhwa.dot.gov/policyinformation/travel_monitoring/tvt.cfm>
+    
+    2.  Transportation Research Board. The Congestion Mitigation and Air Quality Improvement Programs. <https://onlinepubs.trb.org/onlinepubs/sr/sr264.pdf>
+
+    3.  World Health Organization. Health Effects of Transport-Related Air Pollution <https://books.google.com/books?hl=en&lr=&id=b2G3k51rd0oC&oi=fnd&pg=PR1&ots=O94u9zCs4y&sig=v1JEfno-HjkbKf3im4iDQLJJUQ0#v=onepage&q&f=false>
 
 3.  Storm Data
 
